@@ -1,5 +1,6 @@
 import React from "react";
 import Cell from "./Cell";
+import { motion } from "framer-motion";
 
 interface ColumnProps {
   rows: number;
@@ -14,14 +15,14 @@ const Column: React.FC<ColumnProps> = ({ rows, pattern }) => {
 
   return (
     <>
-      <div className="flex flex-col">
+      <motion.div className="flex flex-col">
         <div>Col Header</div>
         <div>
           {rowArray.map(row => (
             <Cell key={row} num={row} pattern={pattern} />
           ))}
         </div>
-      </div>
+      </motion.div>
     </>
   );
 };

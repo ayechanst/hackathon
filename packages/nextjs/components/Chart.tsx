@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Column from "./Column";
+import { motion } from "framer-motion";
 
 interface ChartProps {
   numRows: number;
