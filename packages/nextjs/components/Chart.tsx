@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Cell from "./Cell";
 import Column from "./Column";
 
 interface ChartProps {
@@ -20,17 +19,15 @@ const Chart: React.FC<ChartProps> = ({ numRows, numCols }) => {
 
   return (
     <>
-      {colArray.map(col => (
-        <Column key={col} rows={numRows} />
-      ))}
-      {/* {colArray.map(col => (
-        <div key={col}>
-          col: {col}
-          {rowArray.map(row => (
-            <Cell key={row} num={row} />
-          ))}
-        </div>
-      ))} */}
+      {colArray.map(col => {
+        {
+          if (col % 2 === 0) {
+            return <Column key={col} rows={numRows} pattern={0} />;
+          } else {
+            return <Column key={col} rows={numRows} pattern={1} />;
+          }
+        }
+      })}
     </>
   );
 };

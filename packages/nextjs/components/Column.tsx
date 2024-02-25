@@ -3,9 +3,10 @@ import Cell from "./Cell";
 
 interface ColumnProps {
   rows: number;
+  pattern: number;
 }
 
-const Column: React.FC<ColumnProps> = ({ rows }) => {
+const Column: React.FC<ColumnProps> = ({ rows, pattern }) => {
   const rowArray: number[] = [];
   for (let i = 0; i < rows; i++) {
     rowArray.push(i);
@@ -16,13 +17,9 @@ const Column: React.FC<ColumnProps> = ({ rows }) => {
       <div className="flex flex-col">
         <div>Col Header</div>
         <div>
-          {rowArray.map(row => {
-            if (row % 2 === 0) {
-              return <Cell key={row} num={row} isEvenCol={true} />;
-            } else {
-              return <Cell key={row} num={row} isEvenCol={false} />;
-            }
-          })}
+          {rowArray.map(row => (
+            <Cell key={row} num={row} pattern={pattern} />
+          ))}
         </div>
       </div>
     </>

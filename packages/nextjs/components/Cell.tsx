@@ -2,22 +2,18 @@ import React from "react";
 
 interface CellProps {
   num: number;
-  isEvenCol: boolean;
+  pattern: number;
 }
-const Cell: React.FC<CellProps> = ({ num, isEvenCol }) => {
+const Cell: React.FC<CellProps> = ({ num, pattern }) => {
   const isEven = num % 2 === 0;
-
-  // let cellColor = isEven ? "bg-blue-500" : "bg-red-500";
-  let cellColor;
-
-  if (isEvenCol) {
-    cellColor = isEven ? "bg-blue-500" : "bg-red-500";
-  } else {
-    cellColor = isEven ? "bg-red-500" : "bg-blue-500";
-  }
-  // let bgColor = "bg-transparent";
+  let cellColor: string;
   let bgColor = "bg-indigo-900";
-  // let zPos = isEven ? "z-0" : "z-10";
+
+  if (pattern === 0) {
+    cellColor = isEven ? "bg-red-500" : "bg-blue-500";
+  } else {
+    cellColor = isEven ? "bg-blue-500" : "bg-red-500";
+  }
 
   return (
     <>
