@@ -4,7 +4,7 @@ const Data = () => {
   // what are the dimensions of the chart?
   return (
     <>
-      <Chart numRows={2} numCols={2} />
+      <Chart numRows={4} numCols={3} />
     </>
   );
 };

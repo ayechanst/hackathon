@@ -2,12 +2,21 @@ import React from "react";
 
 interface CellProps {
   num: number;
+  isEvenCol: boolean;
 }
-const Cell: React.FC<CellProps> = ({ num }) => {
+const Cell: React.FC<CellProps> = ({ num, isEvenCol }) => {
   const isEven = num % 2 === 0;
 
-  let cellColor = isEven ? "bg-blue-500" : "bg-red-500";
-  let bgColor = "bg-gray-950";
+  // let cellColor = isEven ? "bg-blue-500" : "bg-red-500";
+  let cellColor;
+
+  if (isEvenCol) {
+    cellColor = isEven ? "bg-blue-500" : "bg-red-500";
+  } else {
+    cellColor = isEven ? "bg-red-500" : "bg-blue-500";
+  }
+  // let bgColor = "bg-transparent";
+  let bgColor = "bg-indigo-900";
   // let zPos = isEven ? "z-0" : "z-10";
 
   return (
@@ -15,7 +24,7 @@ const Cell: React.FC<CellProps> = ({ num }) => {
       <div className="grid grid-cols-4 grid-rows-2 w-auto h-auto">
         <div className="row-span-2 flex flex-col flex-grow h-full">
           <div className={`${cellColor} grid grid-cols-2 h-full`}>
-            {/* tll DONE*/}
+            {/* top left left */}
             <div className={`relative ${cellColor}`}>
               <div className={`absolute rounded-tr-full inset-0 ${bgColor}`}></div>
             </div>
@@ -41,7 +50,7 @@ const Cell: React.FC<CellProps> = ({ num }) => {
           </div>
         </div>
 
-        <div className={`${cellColor} col-span-2 row-span-2 text-white p-4 flex`}>Data {num} wee pee pee poo</div>
+        <div className={`${cellColor} col-span-2 row-span-2 text-white p-4 flex`}>Data {num}</div>
 
         <div className="row-span-2 flex flex-col flex-grow h-full">
           {/* bottom right */}

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Cell from "./Cell";
+import Column from "./Column";
 
 interface ChartProps {
   numRows: number;
@@ -17,19 +18,19 @@ const Chart: React.FC<ChartProps> = ({ numRows, numCols }) => {
     colArray.push(i);
   }
 
-  console.log(rowArray);
-  console.log(colArray);
-
   return (
     <>
       {colArray.map(col => (
+        <Column key={col} rows={numRows} />
+      ))}
+      {/* {colArray.map(col => (
         <div key={col}>
           col: {col}
           {rowArray.map(row => (
-            <Cell num={row} />
+            <Cell key={row} num={row} />
           ))}
         </div>
-      ))}
+      ))} */}
     </>
   );
 };
