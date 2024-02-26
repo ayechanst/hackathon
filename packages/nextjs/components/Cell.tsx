@@ -17,29 +17,29 @@ const Cell: React.FC<CellProps> = ({ num, pattern }) => {
 
   return (
     <>
+      {/* Whole cell */}
       <div className="grid grid-cols-4 grid-rows-2 w-auto h-auto">
+        {/* Left side, separates top from bottom */}
         <div className="row-span-2 flex flex-col flex-grow h-full">
-          <div className={`${cellColor} grid grid-cols-2 h-full`}>
-            {/* top left left */}
+          {/* Top */}
+          <div className={`${cellColor} relative z-1 grid grid-cols-2 h-full`}>
+            {/* Left */}
             <div className={`relative ${cellColor}`}>
               <div className={`absolute rounded-tr-full inset-0 ${bgColor}`}></div>
             </div>
-
-            {/* tlr */}
+            {/* Right */}
             <div className={`relative ${cellColor}`}>
-              <div className="">tlr</div>
+              <div className="text-transparent">tlr</div>
             </div>
           </div>
 
-          {/* bottom left */}
-          <div className={`${cellColor} grid grid-cols-2`}>
-            {/* bottom left left */}
+          {/* Bottom */}
+          <div className={`${cellColor} relative z-0 grid grid-cols-2`}>
+            {/* Left */}
             <div className={`${bgColor}`}>
-              <div>bll</div>
+              <div className="text-transparent">bll</div>
             </div>
-
-            {/* bottom left right */}
-
+            {/* Right */}
             <div className={`relative ${bgColor}`}>
               <div className={`absolute rounded-bl-full inset-0 ${cellColor}`}></div>
             </div>
@@ -48,25 +48,26 @@ const Cell: React.FC<CellProps> = ({ num, pattern }) => {
 
         <div className={`${cellColor} col-span-2 row-span-2 text-white p-4 flex`}>Data {num}</div>
 
+        {/* Right side */}
         <div className="row-span-2 flex flex-col flex-grow h-full">
-          {/* bottom right */}
-          <div className={`${cellColor} grid grid-cols-2 h-full`}>
-            {/* bottom right right */}
+          {/* Top */}
+          <div className={`${cellColor} relative z-0 grid grid-cols-2 h-full`}>
+            {/* Left */}
             <div className={`relative ${bgColor}`}>
               <div className={`absolute rounded-tr-full inset-0 ${cellColor}`}></div>
             </div>
-            {/* top right right */}
+            {/* Right */}
             <div className={`${bgColor}`}>
-              <div>trr</div>
+              <div className="border border-black text-transparent">trr</div>
             </div>
           </div>
-          {/* bottom right */}
-          <div className={`${cellColor} grid grid-cols-2`}>
-            {/* bottom right left */}
-            <div className="">brl</div>
-            {/* bottom right right */}
+          {/* Bottom */}
+          <div className={`${cellColor} relative z-1 grid grid-cols-2`}>
+            {/* Left */}
+            <div className="text-transparent">brl</div>
+            {/* Right */}
             <div className={`relative ${cellColor}`}>
-              <div className={`absolute rounded-bl-full inset-0 ${bgColor}`}></div>
+              <div className={`absolute rounded-bl-full inset-0 border border-black ${bgColor}`}></div>
             </div>
           </div>
         </div>

@@ -44,7 +44,7 @@ const Column: React.FC<ColumnProps> = ({ rows, cols, pattern, id }) => {
       <motion.div
         initial={{ x: initialValue }}
         animate={{ x: animateValue }}
-        transition={{ duration: 2, delay: delayValue }}
+        transition={{ duration: 1, delay: delayValue }}
         className="flex flex-col"
       >
         <div>Col Header</div>
