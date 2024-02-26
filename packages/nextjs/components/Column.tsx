@@ -15,7 +15,7 @@ const Column: React.FC<ColumnProps> = ({ rows, pattern }) => {
 
   return (
     <>
-      <motion.div className="flex flex-col">
+      <motion.div initial={{ x: -1200 }} animate={{ x: 0 }} className="flex flex-col">
         <div>Col Header</div>
         <div>
           {rowArray.map(row => (
