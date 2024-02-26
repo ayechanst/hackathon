@@ -22,9 +22,9 @@ const Chart: React.FC<ChartProps> = ({ numRows, numCols }) => {
       {colArray.map(col => {
         {
           if (col % 2 === 0) {
-            return <Column key={col} rows={numRows} pattern={0} />;
+            return <Column key={col} id={col} cols={numCols} rows={numRows} pattern={0} />;
           } else {
-            return <Column key={col} rows={numRows} pattern={1} />;
+            return <Column key={col} id={col} cols={numCols} rows={numRows} pattern={1} />;
           }
         }
       })}
