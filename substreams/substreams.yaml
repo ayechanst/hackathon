@@ -23,7 +23,8 @@ modules:
     initialBlock: 8928157
     inputs:
       - source: sf.ethereum.type.v2.Block
+      - source: sf.substreams.v1.Clock
     output:
-      type: proto:debbie.Erc20Deployments
+      type: proto:debbie.ERC20Deployments
 
 network: mainnet
