@@ -28,6 +28,7 @@ export function useSubgraph({ rows, orderDirection }: UseSubgraphProps) {
     });
 
     const { data } = await response.json();
+    console.log(data);
     setData(data.addresses);
   };
 

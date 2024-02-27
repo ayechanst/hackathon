@@ -1,32 +1,34 @@
 import React, { useEffect, useState } from "react";
-import Column from "./Column";
+import Cell from "./Cell";
 
-interface ChartProps {
-  numRows: number;
-  numCols: number;
+interface Address {
+  id: string;
+  numTxs: number;
+  isContract: boolean;
 }
 
-const Chart: React.FC<ChartProps> = ({ numRows, numCols }) => {
-  const rowArray: number[] = [];
-  for (let i = 0; i < numRows; i++) {
-    rowArray.push(i);
-  }
+interface ChartProps {
+  sampleData: {
+    addresses: Address[];
+  };
+}
 
-  const colArray: number[] = [];
-  for (let i = 0; i < numCols; i++) {
-    colArray.push(i);
-  }
-
+const Chart: React.FC<ChartProps> = ({ sampleData }) => {
+  const dataArray = sampleData.addresses;
+  const sampleDatum = dataArray[0];
+  const keysArray = Object.keys(sampleDatum);
+  console.log(keysArray);
+  const numOfCols = Object.keys(sampleDatum).length;
+  // for each thing in an object, make a cell that holds just that
+  // for each key, make a column
+  // for each object, make a row
   return (
     <>
-      {colArray.map(col => {
-        {
-          if (col % 2 === 0) {
-            return <Column key={col} id={col} cols={numCols} rows={numRows} pattern={0} />;
-          } else {
-            return <Column key={col} id={col} cols={numCols} rows={numRows} pattern={1} />;
-          }
-        }
+      {keysArray.map(key => {
+        dataArray.map(datum => {
+          <Cell key={datum} data={datum.} />;
+
+        })
       })}
     </>
   );

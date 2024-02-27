@@ -1,24 +1,25 @@
 import React from "react";
 
 interface CellProps {
-  num: number;
-  pattern: number;
+  data: number | string;
 }
-const Cell: React.FC<CellProps> = ({ num, pattern }) => {
-  const isEven = num % 2 === 0;
+
+const Cell: React.FC<CellProps> = ({ data }) => {
+  // const isEven = num % 2 === 0;
   let cellColor: string;
   let bgColor = "bg-indigo-900";
+  cellColor = "bg-red-500";
 
-  if (pattern === 0) {
-    cellColor = isEven ? "bg-red-500" : "bg-blue-500";
-  } else {
-    cellColor = isEven ? "bg-blue-500" : "bg-red-500";
-  }
+  // if (pattern === 1) {
+  //   cellColor = isEven ? "bg-red-500" : "bg-blue-500";
+  // } else {
+  //   cellColor = isEven ? "bg-blue-500" : "bg-red-500";
+  // }
 
   return (
     <>
       {/* Whole cell */}
-      <div className="grid grid-cols-4 grid-rows-2 w-auto h-auto">
+      <div className="grid grid-cols-4 grid-rows-2 w-auto h-auto m-3">
         {/* Left side, separates top from bottom */}
         <div className="row-span-2 flex flex-col flex-grow h-full">
           {/* Top */}
@@ -46,7 +47,7 @@ const Cell: React.FC<CellProps> = ({ num, pattern }) => {
           </div>
         </div>
 
-        <div className={`${cellColor} col-span-2 row-span-2 text-white p-4 flex`}>Data {num}</div>
+        <div className={`${cellColor} col-span-2 row-span-2 text-white p-4 flex`}>data: {data}</div>
 
         {/* Right side */}
         <div className="row-span-2 flex flex-col flex-grow h-full">
