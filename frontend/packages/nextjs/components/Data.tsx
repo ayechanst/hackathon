@@ -3,8 +3,8 @@ import { useSubgraph } from "~~/hooks/scaffold-eth/useSubgraph";
 
 const Data = () => {
   const { data } = useSubgraph({
-    rows: 5,
-    orderDirection: "asc",
+    rows: 20,
+    orderDirection: "desc",
   });
 
   return (

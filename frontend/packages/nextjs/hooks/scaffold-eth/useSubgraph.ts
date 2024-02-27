@@ -6,17 +6,19 @@ type UseSubgraphProps = {
 };
 
 export function useSubgraph({ rows, orderDirection }: UseSubgraphProps) {
-  const endpoint = "https://api.studio.thegraph.com/query/64372/test-genesis/0.0.3";
+  const endpoint = "https://api.studio.thegraph.com/query/64372/kelpdao-sps/0.2.3";
   const [data, setData] = useState<any>(null);
 
   const queryAddys = `
-    query {
-        addresses(first: ${rows}, orderBy: numTxs, orderDirection: ${orderDirection}) {
-            id
-            numTxs
-            isContract
-        }
-    }`;
+  query {
+  depositors(first: ${rows}, orderBy: rsEthMinted, orderDirection: ${orderDirection}) {
+    id
+    rsEthMintedReadable
+    stETHReadable
+    sfrxETHReadable
+    ETHxReadable
+  }
+}`;
 
   const fetchSubgraph = async (query: String) => {
     const response = await fetch(endpoint, {
@@ -29,7 +31,7 @@ export function useSubgraph({ rows, orderDirection }: UseSubgraphProps) {
 
     const { data } = await response.json();
     console.log(data);
-    setData(data.addresses);
+    setData(data.depositors);
   };
 
   useEffect(() => {
