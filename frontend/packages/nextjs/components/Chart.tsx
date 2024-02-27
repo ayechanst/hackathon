@@ -19,7 +19,11 @@ const Chart: React.FC<any> = ({ data }) => {
           return (
             <div key={dataKey.toString()}>
               {data.map((datum: any, index: any) => {
-                return <Cell key={index + keyIndex} data={datum[dataKey].toString()} />;
+                if (keyIndex % 2 === 0) {
+                  return <Cell key={index + keyIndex} data={datum[dataKey].toString()} id={index} pattern={0} />;
+                } else {
+                  return <Cell key={index + keyIndex} data={datum[dataKey].toString()} id={index} pattern={1} />;
+                }
               })}
             </div>
           );

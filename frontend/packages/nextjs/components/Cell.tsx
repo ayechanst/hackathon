@@ -2,23 +2,27 @@ import React from "react";
 
 interface CellProps {
   data: number | string;
+  id: number;
+  pattern: number;
 }
 
-const Cell: React.FC<CellProps> = ({ data }) => {
-  // const isEven = num % 2 === 0;
+const Cell: React.FC<CellProps> = ({ data, id, pattern }) => {
+  const isEven = id % 2 === 0;
   let cellColor: string;
   let bgColor = "bg-indigo-900";
   cellColor = "bg-red-500";
 
-  // if (pattern === 1) {
-  //   cellColor = isEven ? "bg-red-500" : "bg-blue-500";
-  // } else {
-  //   cellColor = isEven ? "bg-blue-500" : "bg-red-500";
-  // }
+  if (pattern === 1) {
+    cellColor = isEven ? "bg-red-500" : "bg-blue-500";
+  } else {
+    cellColor = isEven ? "bg-blue-500" : "bg-red-500";
+  }
 
   return (
     <>
-      <div className={`${cellColor} m-2 p-2`}>{data}</div>
+      <div className={`${cellColor} m-2 p-2`}>
+        {data} id: {id}
+      </div>
     </>
   );
 
