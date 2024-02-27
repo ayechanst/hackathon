@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package debbie;
+
+message ERC20Deployment {
+  string address = 1;
+  string name = 2;
+  string symbol = 3;
+  string total_supply = 4;
+  string blocknumber = 5;
+}
+
+message ERC20Deployments {
+  repeated ERC20Deployment contracts = 1;
+}
+
+message ERC721Deployment {
+  string address = 1;
+  string name = 2;
+  string symbol = 3;
+  string blocknumber = 4;
+}
+
+message ERC721Deployments {
+  repeated ERC721Deployment contracts = 1;
+}
+
+message ERC20Transfer {
+  string address = 1;
+  string to = 2;
+  string from = 3;
+  string amount = 4;
+  string count = 5;
+  string volume = 6;
+}
+
+message ERC20Transfers {
+  repeated ERC20Transfer transfers = 1;
+}
+
+message ERC721Transfer {
+  string address = 1;
+  string to = 2;
+  string from = 3;
+  string token_id = 4;
+  string blocknumber = 5;
+  string volume = 6;
+}
+
+message ERC721Transfers {
+  repeated ERC721Transfer transfers = 1;
+}
+
+message MasterProto {
+  ERC20Deployments erc20contracts = 1;
+  ERC721Deployments erc721contracts = 2;
+  ERC20Transfers erc20transfers = 3;
+  ERC721Transfers erc721transfers = 4;
+}
