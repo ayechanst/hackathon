@@ -1,35 +1,32 @@
 import React, { useEffect, useState } from "react";
 import Cell from "./Cell";
 
-interface Address {
-  id: string;
-  numTxs: number;
-  isContract: boolean;
-}
+// interface ChartProps {
+//   data: [
+//     {
+//       id: string;
+//       numTxs: number;
+//       isContract: boolean;
+//     },
+//   ];
+// }
 
-interface ChartProps {
-  sampleData: {
-    addresses: Address[];
-  };
-}
-
-const Chart: React.FC<ChartProps> = ({ sampleData }) => {
-  const dataArray = sampleData.addresses;
-  const sampleDatum = dataArray[0];
-  const keysArray = Object.keys(sampleDatum);
-  console.log(keysArray);
-  const numOfCols = Object.keys(sampleDatum).length;
-  // for each thing in an object, make a cell that holds just that
-  // for each key, make a column
-  // for each object, make a row
+const Chart: React.FC<any> = ({ data }) => {
   return (
     <>
-      {keysArray.map(key => {
-        dataArray.map(datum => {
-          <Cell key={datum} data={datum.} />;
-
+      {data ? (
+        Object.keys(data[0]).map((dataKey: any, keyIndex: any) => {
+          return (
+            <div key={dataKey.toString()}>
+              {data.map((datum: any, index: any) => {
+                return <Cell key={index + keyIndex} data={datum[dataKey].toString()} />;
+              })}
+            </div>
+          );
         })
-      })}
+      ) : (
+        <div>no data</div>
+      )}
     </>
   );
 };

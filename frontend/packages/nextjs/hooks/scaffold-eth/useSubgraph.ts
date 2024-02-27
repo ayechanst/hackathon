@@ -6,7 +6,7 @@ type UseSubgraphProps = {
 };
 
 export function useSubgraph({ rows, orderDirection }: UseSubgraphProps) {
-  const endpoint = "https://api.studio.thegraph.com/query/64372/test-genesis/0.0.2";
+  const endpoint = "https://api.studio.thegraph.com/query/64372/test-genesis/0.0.3";
   const [data, setData] = useState<any>(null);
 
   const queryAddys = `
