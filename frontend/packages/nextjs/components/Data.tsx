@@ -22,6 +22,7 @@ import Tabs from "./Tabs";
 const Data = () => {
   const [subgraphQueryName, setSubgraphQueryName] = useState<string>("");
   function handleButtonNameFromMenu(buttonName: string) {
+    console.log("buttonName being sent to subgraphQuery from Data.tsx: ", buttonName);
     setSubgraphQueryName(buttonName);
   }
 

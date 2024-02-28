@@ -8,6 +8,12 @@ interface MenuProps {
 
 const Menu: React.FC<MenuProps> = ({ sendButtonNameToMenu }) => {
   const [address, setAddress] = useState("");
+  // TODO: only one button should be on at a time
+  // const [activeButton, setActiveButton] = useState(null);
+  // const handleButtonClick = buttonName => {
+  //   setActiveButton(buttonName);
+  // };
+
   // const [dataFromButton, setDataFromButton] = useState("");
   // const handleDataFromButton = (data) => {
   //   setDataFromButton(data);

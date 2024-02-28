@@ -15,15 +15,17 @@ const Button: React.FC<ButtonProps> = ({ buttonName, onClick }) => {
     bg = "bg-accent";
     text = "text-primary";
   }
-  // function handleClick() {
-  //   setActive(true);
-  //   // render new <Tabs /> with appropriate tab names
-  // }
+  function handleClick() {
+    onClick(buttonName);
+    setActive(true);
+    // render new <Tabs /> with appropriate tab names
+  }
+
   return (
     <>
       <button
         onClick={() => {
-          onClick();
+          onClick(handleClick);
           setActive(!active);
         }}
         className={`m-1 p-1 ${bg} ${text} rounded-lg w-full shadow-lg`}
