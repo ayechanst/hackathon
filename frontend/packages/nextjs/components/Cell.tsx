@@ -19,6 +19,7 @@ const Cell: React.FC<CellProps> = ({ data, id, pattern }) => {
   }
 
   let cellColor: string;
+  cellColor = "bg-gradient-to-r from-yellow-500 from-1% via-zinc-700 from-2% to-zinc-700";
   // if (pattern === 1) {
   //   cellColor = isEven
   //     ? "bg-gradient-to-l from-zinc-700 from-90% to-yellow-500"
@@ -28,11 +29,12 @@ const Cell: React.FC<CellProps> = ({ data, id, pattern }) => {
   //     ? "bg-gradient-to-l from-yellow-500 from-90% to-zinc-700"
   //     : "bg-gradient-to-l from-zinc-700 from-10% to-yellow-500";
   // }
-  cellColor = "bg-gradient-to-r from-yellow-500 from-1% via-zinc-700 from-2% to-zinc-700";
+
+  // let border = isEven ? "border-b border-t border-accent" : "";
 
   return (
     <motion.div initial={{ x: initialValue }} animate={{ x: 0 }} transition={{ duration: 0.4, delay: delayValue }}>
-      <div className={`${cellColor} m-2 p-2 rounded-lg text-yellow-100 shadow-lg hover:bg-yellow-400 ring-opacity-50`}>
+      <div className={`border-b border-accent m-4 text-yellow-100`}>
         {data} id: {id}
       </div>
     </motion.div>
@@ -98,5 +100,4 @@ const Cell: React.FC<CellProps> = ({ data, id, pattern }) => {
   //   </>
   // );
 };
-
 export default Cell;

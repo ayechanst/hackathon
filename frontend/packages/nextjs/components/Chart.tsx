@@ -1,27 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Cell from "./Cell";
-import Nav from "./Nav";
-import Tabs from "./Tabs";
-
-// interface ChartProps {
-//   data: [
-//     {
-//       id: string;
-//       numTxs: number;
-//       isContract: boolean;
-//     },
-//   ];
-// }
 
 const Chart: React.FC<any> = ({ data }) => {
   return (
     <>
-      {/* <Tabs tabName={tabNames} /> */}
-      <div className="flex rounded-b-lg bg-secondary">
+      <div className="flex bg-secondary p-3 rounded-2xl">
         {data ? (
           Object.keys(data[0]).map((dataKey: any, keyIndex: any) => {
             return (
               <div key={dataKey.toString()}>
+                <div className="flex justify-center text-lg">{dataKey}</div>
                 {data.map((datum: any, index: any) => {
                   if (keyIndex % 2 === 0) {
                     return <Cell key={index + keyIndex} data={datum[dataKey].toString()} id={index} pattern={0} />;

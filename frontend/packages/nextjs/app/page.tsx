@@ -10,13 +10,13 @@ import Nav from "~~/components/Nav";
 const Home: NextPage = () => {
   return (
     <>
-      <div className="bg-primary h-screen">
+      <div className="bg-primary">
         <Nav />
-        <div className="flex h-screen justify-between">
-          <div className="mt-2 ml-5">
+        <div className="flex">
+          <div className="mt-2 mx-5 w-1/5">
             <Menu />
           </div>
-          <div className="justify-center mr-5">
+          <div className="mr-5 w-4/5">
             <Data />
           </div>
         </div>

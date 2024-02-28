@@ -1,7 +1,5 @@
 import { useState } from "react";
-import Chart from "./Chart";
 import Tabs from "./Tabs";
-import { useSubgraph } from "~~/hooks/scaffold-eth/useSubgraph";
 
 const Data = () => {
   const [tabNames, setTabNames] = useState<string[]>([
@@ -15,7 +13,6 @@ const Data = () => {
   return (
     <>
       <Tabs tabName={tabNames} />
-      {/* <Chart data={data} tabNames={tabNames} /> */}
     </>
   );
 };

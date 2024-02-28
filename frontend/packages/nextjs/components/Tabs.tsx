@@ -8,26 +8,29 @@ interface TabsProps {
 
 const Tabs: React.FC<TabsProps> = ({ tabName }) => {
   const { data } = useSubgraph({
-    rows: 20,
+    rows: 10,
     orderDirection: "desc",
   });
+
   return (
     <>
-      <div role="tablist" className="tabs tabs-lifted">
-        {data ? (
-          tabName.map((tab: any) => {
-            return (
-              <>
-                <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label={tab} />
-                <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
-                  <Chart data={data} />
-                </div>
-              </>
-            );
-          })
-        ) : (
-          <div>no data from tabs</div>
-        )}
+      <div className="flex w-full">
+        <div role="tablist" className="tabs tabs-lifted">
+          {data ? (
+            tabName.map(tab => {
+              return (
+                <>
+                  <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label={tab} />
+                  <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
+                    <Chart data={data} />
+                  </div>
+                </>
+              );
+            })
+          ) : (
+            <div>no data from tabs</div>
+          )}
+        </div>
       </div>
     </>
   );
