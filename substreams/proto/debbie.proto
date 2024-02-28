@@ -7,7 +7,8 @@ message ERC20Deployment {
   string name = 2;
   string symbol = 3;
   string total_supply = 4;
-  string blocknumber = 5;
+  string decimals = 5;
+  string blocknumber = 6;
 }
 
 message ERC20Deployments {
@@ -52,8 +53,8 @@ message ERC721Transfers {
 }
 
 message MasterProto {
-  ERC20Deployments erc20contracts = 1;
-  ERC721Deployments erc721contracts = 2;
-  ERC20Transfers erc20transfers = 3;
-  ERC721Transfers erc721transfers = 4;
+  repeated ERC20Deployment erc20contracts = 1;
+  repeated ERC721Deployment erc721contracts = 2;
+  repeated ERC20Transfer erc20transfers = 3;
+  repeated ERC721Transfer erc721transfers = 4;
 }

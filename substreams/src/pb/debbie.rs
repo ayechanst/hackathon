@@ -11,6 +11,8 @@ pub struct Erc20Deployment {
     #[prost(string, tag="4")]
     pub total_supply: ::prost::alloc::string::String,
     #[prost(string, tag="5")]
+    pub decimals: ::prost::alloc::string::String,
+    #[prost(string, tag="6")]
     pub blocknumber: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -84,13 +86,13 @@ pub struct Erc721Transfers {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct MasterProto {
-    #[prost(message, optional, tag="1")]
-    pub erc20contracts: ::core::option::Option<Erc20Deployments>,
-    #[prost(message, optional, tag="2")]
-    pub erc721contracts: ::core::option::Option<Erc721Deployments>,
-    #[prost(message, optional, tag="3")]
-    pub erc20transfers: ::core::option::Option<Erc20Transfers>,
-    #[prost(message, optional, tag="4")]
-    pub erc721transfers: ::core::option::Option<Erc721Transfers>,
+    #[prost(message, repeated, tag="1")]
+    pub erc20contracts: ::prost::alloc::vec::Vec<Erc20Deployment>,
+    #[prost(message, repeated, tag="2")]
+    pub erc721contracts: ::prost::alloc::vec::Vec<Erc721Deployment>,
+    #[prost(message, repeated, tag="3")]
+    pub erc20transfers: ::prost::alloc::vec::Vec<Erc20Transfer>,
+    #[prost(message, repeated, tag="4")]
+    pub erc721transfers: ::prost::alloc::vec::Vec<Erc721Transfer>,
 }
 // @@protoc_insertion_point(module)

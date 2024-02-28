@@ -1,7 +1,8 @@
 mod abi;
 mod helpers;
 mod pb;
-use pb::debbie::{Erc20Deployment, Erc20Deployments, MasterProto};
+use pb::debbie::{Erc721Deployment, Erc721Transfer};
+use pb::debbie::{Erc20Deployment, Erc20Transfer, MasterProto};
 use primitive_types::H256;
 use std::collections::HashMap;
 use std::string;
@@ -27,7 +28,7 @@ pub struct ERC20Creation {
 
 impl ERC20Creation {
     pub fn from_call(
-        address: Vec<u8>,
+        address: &Vec<u8>,
         code: Vec<u8>,
         storage_changes: HashMap<H256, Vec<u8>>,
     ) -> Option<Self> {
@@ -38,7 +39,7 @@ impl ERC20Creation {
             && code_string.contains("18160ddd")
         {
             Some(Self {
-                address,
+                address: address.to_vec(),
                 code,
                 storage_changes,
             })
@@ -48,12 +49,45 @@ impl ERC20Creation {
     }
 }
 
+pub struct ERC721Creation {
+    address: Vec<u8>,
+    code: Vec<u8>,
+    storage_changes: HashMap<H256, Vec<u8>>,
+}
+
+impl ERC721Creation {
+    pub fn from_call(
+        address: &Vec<u8>,
+        code: Vec<u8>,
+        storage_changes: HashMap<H256, Vec<u8>>,
+    ) -> Option<Self> {
+        let code_string = Hex::encode(&code);
+        if code_string.contains("06fdde03")
+            && code_string.contains("95d89b41")
+            && code_string.contains("c87b56dd")
+        {
+            Some(Self {
+                address: address.to_vec(),
+                code,
+                storage_changes,
+            })
+        } else {
+            None
+        }
+    }
+}
+
+
+
 #[substreams::handlers::map]
 fn map_erc20_deployments(
     blk: Block,
     clk: Clock,
-) -> Result<Erc20Deployments, substreams::errors::Error> {
-    let mut deployment_contracts: Vec<Erc20Deployment> = Vec::new();
+) -> Result<MasterProto, substreams::errors::Error> {
+    let mut erc20_contracts: Vec<Erc20Deployment> = Vec::new();
+    let mut erc721_contracts: Vec<Erc721Deployment> = Vec::new();
+    let mut erc20_transfers: Vec<Erc20Transfer> = Vec::new();
+    let mut erc721_transfers: Vec<Erc721Transfer> = Vec::new();
     let filtered_calls: Vec<_> = blk
         .transaction_traces
         .into_iter()
@@ -69,30 +103,46 @@ fn map_erc20_deployments(
         if let Some(last_code_change) = call.code_changes.iter().last() {
             let code = &last_code_change.new_code;
             let address = call.address;
-            let storage_changes = call
+            let storage_changes: HashMap<H256, Vec<u8>> = call
                 .storage_changes
                 .into_iter()
                 .map(|s| (H256::from_slice(s.key.as_ref()), s.new_value))
                 .collect();
-            if let Some(token) = ERC20Creation::from_call(address, code.to_vec(), storage_changes) {
-                let deployment = substream_test_data(token, clk.number.to_string());
-                deployment_contracts.push(deployment);
-            }
+            if let Some(token) = ERC20Creation::from_call(&address, code.to_vec(), storage_changes.clone()) {
+                let deployment = erc20_test_data(token, clk.number.to_string());
+                erc20_contracts.push(deployment);
+            } else if let Some(token) = ERC721Creation::from_call(&address, code.to_vec(), storage_changes.clone()) {
+                let deployment = erc721_test_data(token, clk.number.to_string());
+                erc721_contracts.push(deployment);
+            } 
         }
     }
-    Ok(Erc20Deployments {
-        contracts: deployment_contracts,
+    // Erc20Deployments {contracts: erc20_contracts};
+    // Erc721Deployments {contracts: erc721_contracts};
+    Ok(MasterProto {
+        erc20contracts: erc20_contracts,
+        erc721contracts: erc721_contracts,
     })
 }
 
 
 
-pub fn substream_test_data(contract: ERC20Creation, blocknumber: String) -> Erc20Deployment {
+pub fn erc20_test_data(contract: ERC20Creation, blocknumber: String) -> Erc20Deployment {
     Erc20Deployment {
         address: Hex::encode(contract.address),
         name: String::from("DebbieCoin"),
         symbol: String::from("DBC"),
         total_supply: String::from("100,000,000"),
+        decimals: String::from("18"),
+        blocknumber,
+    }
+}
+
+pub fn erc721_test_data(contract: ERC721Creation, blocknumber: String) -> Erc721Deployment {
+    Erc721Deployment {
+        address: Hex::encode(contract.address),
+        name: String::from("debbie road surf club"),
+        symbol: String::from("DRSC"),
         blocknumber,
     }
 }
