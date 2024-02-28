@@ -40,7 +40,7 @@ impl ERC20Creation {
 
 pub fn process_contract(contract_creation: ERC20Creation, clock: Clock) -> Option<Erc20Deployment> {
     let mut contract = Erc20Deployment {
-        address: String::new(),
+        address: Hex::encode(&contract_creation.address),
         name: String::new(),
         symbol: String::new(),
         total_supply: String::new(),
@@ -51,7 +51,7 @@ pub fn process_contract(contract_creation: ERC20Creation, clock: Clock) -> Optio
 
     // Name
     match execute_on(
-        &contract_creation.address,
+        Hex::encode(&contract_creation.address),
         code.clone(),
         functions::Name {}.encode(),
         &contract_creation.storage_changes,
@@ -71,7 +71,7 @@ pub fn process_contract(contract_creation: ERC20Creation, clock: Clock) -> Optio
 
     // Symbol
     match execute_on(
-        &contract_creation.address,
+        Hex::encode(&contract_creation.address),
         code.clone(),
         functions::Symbol {}.encode(),
         &contract_creation.storage_changes,
@@ -91,7 +91,7 @@ pub fn process_contract(contract_creation: ERC20Creation, clock: Clock) -> Optio
 
     // Decimals
     match execute_on(
-        &contract_creation.address,
+        Hex::encode(&contract_creation.address),
         code.clone(),
         functions::Decimals {}.encode(),
         &contract_creation.storage_changes,
@@ -111,7 +111,7 @@ pub fn process_contract(contract_creation: ERC20Creation, clock: Clock) -> Optio
 
     //total supply
     match execute_on(
-        &contract_creation.address,
+        Hex::encode(&contract_creation.address),
         code.clone(),
         functions::Decimals {}.encode(),
         &contract_creation.storage_changes,
@@ -133,7 +133,7 @@ pub fn process_contract(contract_creation: ERC20Creation, clock: Clock) -> Optio
 }
 
 fn execute_on(
-    address: &Vec<u8>,
+    address: String,
     code: Rc<Vec<u8>>,
     data: Vec<u8>,
     storage_changes: &HashMap<H256, Vec<u8>>,
@@ -148,7 +148,7 @@ fn execute_on(
 
     log::info!(
         "Trying contract: {:?} with {} valid jump destinations (code len {}))",
-        Hex(address),
+        address,
         jump_dest,
         code.len(),
     );
