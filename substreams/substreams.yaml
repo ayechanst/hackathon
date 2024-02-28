@@ -25,6 +25,14 @@ modules:
       - source: sf.ethereum.type.v2.Block
       - source: sf.substreams.v1.Clock
     output:
-      type: proto:debbie.ERC20Deployments
+      type: proto:debbie.MasterProto
+
+  - name: map_delegates
+    kind: map
+    initialBlock: 8928157
+    inputs:
+      - source: sf.ethereum.type.v2.Block
+    output:
+      type: proto:debbie.ERC20Deployment   
 
 network: mainnet
