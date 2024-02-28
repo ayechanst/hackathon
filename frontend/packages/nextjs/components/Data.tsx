@@ -1,15 +1,21 @@
+import { useState } from "react";
 import Chart from "./Chart";
+import Tabs from "./Tabs";
 import { useSubgraph } from "~~/hooks/scaffold-eth/useSubgraph";
 
 const Data = () => {
-  const { data } = useSubgraph({
-    rows: 20,
-    orderDirection: "desc",
-  });
+  const [tabNames, setTabNames] = useState<string[]>([
+    "NFT",
+    "NFT Holders",
+    "NFT Collections",
+    "Tokens",
+    "Token Holders",
+  ]);
 
   return (
     <>
-      <Chart data={data} />
+      <Tabs tabName={tabNames} />
+      {/* <Chart data={data} tabNames={tabNames} /> */}
     </>
   );
 };

@@ -10,13 +10,16 @@ const Dropdown: React.FC<DropdownProps> = ({ dropdownListItems, dropdownName }) 
   const listItemArray = dropdownListItems;
   return (
     <>
-      <div className="dropdown dropdown-bottom">
-        <div tabIndex={0} role="button" className="btn m-1">
+      <div className="dropdown dropdown-bottom dropdown-end">
+        <div tabIndex={0} role="button" className="btn m-3 bg-yellow-500">
           {dropdownName}
         </div>
-        <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+        <ul
+          tabIndex={0}
+          className="dropdown-content z-[1] menu shadow bg-gradient-to-b from-yellow-500 rounded-box w-auto"
+        >
           {listItemArray.map(listItem => (
-            <li>
+            <li className="">
               <a>
                 <Button key={listItem} buttonName={listItem} />
               </a>

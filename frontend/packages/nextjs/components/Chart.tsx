@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Cell from "./Cell";
+import Nav from "./Nav";
+import Tabs from "./Tabs";
 
 // interface ChartProps {
 //   data: [
@@ -14,7 +16,8 @@ import Cell from "./Cell";
 const Chart: React.FC<any> = ({ data }) => {
   return (
     <>
-      <div className="flex">
+      {/* <Tabs tabName={tabNames} /> */}
+      <div className="flex rounded-b-lg bg-secondary">
         {data ? (
           Object.keys(data[0]).map((dataKey: any, keyIndex: any) => {
             return (

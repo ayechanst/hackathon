@@ -8,7 +8,6 @@ interface CellProps {
 }
 
 const Cell: React.FC<CellProps> = ({ data, id, pattern }) => {
-  // let bgColor = "bg-indigo-900";
   const isEven = id % 2 === 0;
 
   let initialValue;
@@ -16,29 +15,24 @@ const Cell: React.FC<CellProps> = ({ data, id, pattern }) => {
 
   let delayValue: number = 0;
   for (let i = 0; i <= id; i++) {
-    delayValue ? (delayValue += 0.1) : (delayValue += 0.1);
+    delayValue ? (delayValue += 0.05) : (delayValue += 0.05);
   }
 
   let cellColor: string;
   // if (pattern === 1) {
-  //   cellColor = isEven ? "bg-gradient-to-l from-yellow-500" : "bg-gradient-to-r from-yellow-500";
+  //   cellColor = isEven
+  //     ? "bg-gradient-to-l from-zinc-700 from-90% to-yellow-500"
+  //     : "bg-gradient-to-l from-yellow-500 from-10% to-zinc-700";
   // } else {
-  //   cellColor = isEven ? "bg-gradient-to-r from-yellow-500" : "bg-gradient-to-l from-yellow-500";
+  //   cellColor = isEven
+  //     ? "bg-gradient-to-l from-yellow-500 from-90% to-zinc-700"
+  //     : "bg-gradient-to-l from-zinc-700 from-10% to-yellow-500";
   // }
-  if (pattern === 1) {
-    cellColor = isEven ? "bg-gradient-to-l from-gray-500 to-slate-600" : "bg-gradient-to-r from-slate-600";
-  } else {
-    cellColor = isEven ? "bg-gradient-to-r from-gray-500" : "bg-gradient-to-l from-slate-600 to-gray-500";
-  }
+  cellColor = "bg-gradient-to-r from-yellow-500 from-1% via-zinc-700 from-2% to-zinc-700";
 
   return (
-    <motion.div
-      initial={{ x: initialValue }}
-      animate={{ x: 0 }}
-      transition={{ duration: 0.7, delay: delayValue }}
-      exit={{ opacity: 0 }}
-    >
-      <div className={`${cellColor} m-2 p-2 rounded-lg text-yellow-100`}>
+    <motion.div initial={{ x: initialValue }} animate={{ x: 0 }} transition={{ duration: 0.4, delay: delayValue }}>
+      <div className={`${cellColor} m-2 p-2 rounded-lg text-yellow-100 shadow-lg hover:bg-yellow-400 ring-opacity-50`}>
         {data} id: {id}
       </div>
     </motion.div>
