@@ -7,7 +7,7 @@ const Nav = () => {
       <div className="m-5 bg-zinc-700 rounded-lg shadow-xl">
         <div className="navbar text-neutral-content">
           <div className="flex justify-between items-center">
-            <button className="btn btn-ghost text-white text-xl">Dr. Data Doctor</button>
+            <button className="btn btn-ghost text-white text-xl">Deliberate Data Detective A.K.A. Triple D's</button>
           </div>
           <Breadcrumbs breadcrumbList={["do", "re", "mi", "fa", "sol", "la", "ti"]} />
         </div>

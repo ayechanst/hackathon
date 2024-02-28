@@ -13,9 +13,6 @@ const Home: NextPage = () => {
       <div className="bg-primary">
         <Nav />
         <div className="flex">
-          <div className="mt-2 mx-5 w-1/5">
-            <Menu />
-          </div>
           <div className="mr-5 w-4/5">
             <Data />
           </div>
