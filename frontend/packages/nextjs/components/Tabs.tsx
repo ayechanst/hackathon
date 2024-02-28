@@ -12,7 +12,10 @@ const Tabs: React.FC<TabsProps> = ({ subgraphQuery }) => {
   const { data } = useSubgraph({
     subgraphQuery,
   });
+
+  useEffect(() => {
   console.log("data in Tabs", data);
+  }, [data])
   // try to unpack tabNames from { data }
   const tabNames = ["pee", "poo"];
 
