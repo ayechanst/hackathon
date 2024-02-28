@@ -7,6 +7,7 @@ interface TabsProps {
 }
 
 const Tabs: React.FC<TabsProps> = ({ tabName }) => {
+  // add a param that inputs the correct querry for the subgraph hook
   const { data } = useSubgraph({
     rows: 10,
     orderDirection: "desc",

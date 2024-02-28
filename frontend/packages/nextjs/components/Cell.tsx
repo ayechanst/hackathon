@@ -4,10 +4,11 @@ import { motion } from "framer-motion";
 interface CellProps {
   data: number | string;
   id: number;
-  pattern: number;
+  // pattern: number;
 }
 
-const Cell: React.FC<CellProps> = ({ data, id, pattern }) => {
+// add patern param if u want to make a cool pattern with the cells
+const Cell: React.FC<CellProps> = ({ data, id }) => {
   const isEven = id % 2 === 0;
 
   let initialValue;
