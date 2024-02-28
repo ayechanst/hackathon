@@ -8,7 +8,7 @@ use std::collections::HashMap;
 use std::string;
 use substreams::pb::substreams::Clock;
 use substreams::Hex;
-use substreams_ethereum::pb::eth::v2::Block;
+use substreams_ethereum::pb::eth::v2::{Block, StorageChange};
 use substreams_ethereum::pb::eth::v2::Call;
 use substreams_ethereum::pb::sf::ethereum::r#type::v2 as eth;
 use abi::erc20::events as erc20;
@@ -114,6 +114,7 @@ fn map_erc20_deployments(
             } else if let Some(token) = ERC721Creation::from_call(&address, code.to_vec(), storage_changes.clone()) {
                 let deployment = erc721_test_data(token, clk.number.to_string());
                 erc721_contracts.push(deployment);
+               
             } 
         }
     }
@@ -122,6 +123,8 @@ fn map_erc20_deployments(
     Ok(MasterProto {
         erc20contracts: erc20_contracts,
         erc721contracts: erc721_contracts,
+        erc20transfers: erc20_transfers,
+        erc721transfers: erc721_transfers,
     })
 }
 
