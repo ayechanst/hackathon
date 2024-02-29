@@ -5,11 +5,11 @@ import { useSubgraph } from "~~/hooks/scaffold-eth/useSubgraph";
 
 interface TabsProps {
   subgraphQuery: string;
-  sendFiltersToData: any;
+  setFilterButtons: any;
 }
 
 // TODO: send more filters to data depending which tab its on
-const Tabs: React.FC<TabsProps> = ({ subgraphQuery, sendFiltersToData }) => {
+const Tabs: React.FC<TabsProps> = ({ subgraphQuery, setFilterButtons }) => {
   const [clickedTab, setClickedTab] = useState("");
   const tabNames = ["NFTs", "NFT Collection", "NFT Holders", "Tokens", "Token Holders"];
   const active = "text-primary";
@@ -19,10 +19,6 @@ const Tabs: React.FC<TabsProps> = ({ subgraphQuery, sendFiltersToData }) => {
     queryProps: { rows: 10 },
   });
 
-  useEffect(() => {
-    console.log("data in Tabs", data);
-  }, [data]);
-
   function handleClick(tabName: string) {
     setClickedTab(tabName);
     // move the whole component out of here
@@ -30,23 +26,22 @@ const Tabs: React.FC<TabsProps> = ({ subgraphQuery, sendFiltersToData }) => {
     // everything here can also be filtered by time
     if (clickedTab === "NFTs") {
       filters = ["transfer volume"];
-      sendFiltersToData(filters);
+      setFilterButtons(filters);
     } else if (clickedTab === "NFT Collection") {
-      // will be sorted by time
       filters = ["transfer volume"];
-      sendFiltersToData(filters);
+      setFilterButtons(filters);
     } else if (clickedTab === "NFT Holders") {
       // need to specify tokeken collection by UI input, maybe name or symbol, but easiest was will be address
       // by how much of the colletion they own
       filters = ["input component"];
-      sendFiltersToData(filters);
+      setFilterButtons(filters);
     } else if (clickedTab === "Tokens") {
       // will be sorted by time
       filters = ["transfer volume", "relative transfer volume"];
-      sendFiltersToData(filters);
+      setFilterButtons(filters);
     } else if (clickedTab === "Token Holders") {
       filters = ["input component", "token balance", "transfer volume"]; // token balance || what percentage of the tokens they hold
-      sendFiltersToData(filters);
+      setFilterButtons(filters);
     } else {
       console.log("error from tabs and filters");
     }

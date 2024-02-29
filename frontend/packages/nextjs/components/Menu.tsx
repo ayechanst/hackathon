@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "./Button";
 import SearchInput from "./SearchInput";
 import { motion } from "framer-motion";

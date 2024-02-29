@@ -13,11 +13,6 @@ const Data = () => {
     setSubgraphQueryName(buttonName);
   }
 
-  function handleFiltersFromTabs(filters: string[]) {
-    console.log("from data: filter button array => ", filters);
-    setFilterButtons(filters);
-  }
-
   function handleTimeButtonNameFromTimeMenu(buttonName: string) {
     setSubgraphTimeQuery(buttonName);
   }
@@ -29,7 +24,7 @@ const Data = () => {
           <Menu sendButtonNameToData={handleButtonNameFromMenu} filterButtons={filterButtons} />
         </div>
         <div className="mr-5 mt-2 col-span-7">
-          <Tabs subgraphQuery={subgraphQueryName} sendFiltersToData={handleFiltersFromTabs} />
+          <Tabs subgraphQuery={subgraphQueryName} setFilterButtons={setFilterButtons} />
         </div>
         <div className="mr-5 mt-2 col-span-1">
           <TimeMenu sendTimeButtonNameToData={handleTimeButtonNameFromTimeMenu} />
