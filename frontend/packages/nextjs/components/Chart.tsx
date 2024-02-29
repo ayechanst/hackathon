@@ -13,10 +13,15 @@ const Chart: React.FC<any> = ({ data }) => {
             return (
               <div key={dataKey.toString()}>
                 <div className="flex justify-center text-lg">{dataKey}</div>
+
                 {data.map((datum: any, index: any) => {
                   if (dataKey === "from" || dataKey === "to") {
                     return (
                       <Cell key={index + keyIndex} keyType={"address"} data={datum[dataKey].toString()} id={index} />
+                    );
+                  } else if (dataKey === "tokenId") {
+                    return (
+                      <Cell key={index + keyIndex} keyType={"tokenId"} data={datum[dataKey].toString()} id={index} />
                     );
                   } else {
                     return (

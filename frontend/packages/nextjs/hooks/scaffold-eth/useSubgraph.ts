@@ -35,7 +35,7 @@ export function useSubgraph({ subgraphQuery, queryProps }: UseSubgraphProps) {
   return { data, loading, error };
 }
 
-const getQuery = (subgraphQuery: string, queryProps?: any) => {
+const getQuery = (subgraphQuery: string) => {
   if (subgraphQuery === "erc20Transfers") {
     return gql`
       query erc20Transfers($rows: Int) {
