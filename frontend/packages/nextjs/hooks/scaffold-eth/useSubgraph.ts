@@ -45,6 +45,7 @@ query {
   }
 }
 `;
+
 export function useSubgraph({ subgraphQuery }: UseSubgraphProps) {
   const [data, setData] = useState<any>(null);
 

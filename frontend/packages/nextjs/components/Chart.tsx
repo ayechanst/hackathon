@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import Cell from "./Cell";
 
 const Chart: React.FC<any> = ({ data }) => {
-  console.log(data);
+  console.log("data from Chart: ", data);
+  const keyArray = Object.keys(data[0]);
+  console.log("keys from data: ", keyArray);
   return (
     <>
       <div className="flex bg-secondary p-3 rounded-2xl">
@@ -12,13 +14,15 @@ const Chart: React.FC<any> = ({ data }) => {
               <div key={dataKey.toString()}>
                 <div className="flex justify-center text-lg">{dataKey}</div>
                 {data.map((datum: any, index: any) => {
-                  //   if (keyIndex % 2 === 0) {
-                  //     return <Cell key={index + keyIndex} data={datum[dataKey].toString()} id={index} pattern={0} />;
-                  //   } else {
-                  //     return <Cell key={index + keyIndex} data={datum[dataKey].toString()} id={index} pattern={1} />;
-                  //   }
-                  // }
-                  return <Cell key={index + keyIndex} data={datum[dataKey].toString()} id={index} />;
+                  if (dataKey === "from" || dataKey === "to") {
+                    return (
+                      <Cell key={index + keyIndex} keyType={"address"} data={datum[dataKey].toString()} id={index} />
+                    );
+                  } else {
+                    return (
+                      <Cell key={index + keyIndex} keyType={"number"} data={datum[dataKey].toString()} id={index} />
+                    );
+                  }
                 })}
               </div>
             );
