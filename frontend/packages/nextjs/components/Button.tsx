@@ -3,22 +3,17 @@ import React, { useState } from "react";
 interface ButtonProps {
   buttonName: string;
   onClick: any;
+  isActive: boolean;
 }
-const Button: React.FC<ButtonProps> = ({ buttonName, onClick }) => {
-  const [active, setActive] = useState(false);
-  let bg;
-  let text;
-  if (active) {
-    bg = "bg-zinc-900";
-    text = "text-accent";
+const Button: React.FC<ButtonProps> = ({ buttonName, onClick, isActive }) => {
+  let activeClass;
+  if (isActive) {
+    activeClass = "bg-zinc-800 text-accent shadow-md shadow-accent-500/50";
   } else {
-    bg = "bg-accent";
-    text = "text-primary";
+    activeClass = "bg-accent text-primary";
   }
   function handleClick() {
     onClick(buttonName);
-    setActive(true);
-    // render new <Tabs /> with appropriate tab names
   }
 
   return (
@@ -26,9 +21,9 @@ const Button: React.FC<ButtonProps> = ({ buttonName, onClick }) => {
       <button
         onClick={() => {
           onClick(handleClick);
-          setActive(!active);
         }}
-        className={`m-1 p-1 ${bg} ${text} rounded-lg w-full shadow-lg`}
+        // onClick={() => buttonName}
+        className={`m-1 p-1 ${activeClass} rounded-lg w-full `}
       >
         {buttonName}
       </button>

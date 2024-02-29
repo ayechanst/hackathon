@@ -28,11 +28,11 @@ const Data = () => {
 
   return (
     <>
-      <div className="flex">
-        <div className="mt-2 mx-5 w-1/5">
+      <div className="grid grid-cols-10">
+        <div className="mt-2 mx-5 col-span-2">
           <Menu sendButtonNameToMenu={handleButtonNameFromMenu} />
         </div>
-        <div className="mr-5 w-4/5">
+        <div className="mr-5 col-span-8">
           <Tabs subgraphQuery={subgraphQueryName} />
         </div>
       </div>

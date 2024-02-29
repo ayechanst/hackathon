@@ -15,6 +15,7 @@ export function useSubgraph({ subgraphQuery, queryProps }: UseSubgraphProps) {
     variables: queryProps,
     pollInterval: 10000,
   });
+  
   const [data, setData] = useState<any>(null);
 
   useEffect(() => {
