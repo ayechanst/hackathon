@@ -12,7 +12,7 @@ run: build
 
 .PHONY: gui
 gui: build
-	substreams gui -e $(ENDPOINT) substreams.yaml db_out -s $(START_BLOCK) -t $(STOP_BLOCK)
+	substreams gui -e $(ENDPOINT) substreams.yaml map_erc20_transfer_vol -s $(START_BLOCK) -t $(STOP_BLOCK)
 
 .PHONY: protogen
 protogen:

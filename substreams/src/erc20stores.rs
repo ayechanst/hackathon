@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use crate::pb::debbie::{Erc20Deployment, Erc20Transfer, MasterProto};
 use crate::pb::debbie::{Erc721Deployment, Erc721Transfer};
 use substreams::scalar::BigInt;
@@ -7,11 +9,10 @@ use substreams::Hex;
 #[substreams::handlers::store]
 pub fn store_erc20_transfer_vol(transfers: MasterProto, store: StoreAddBigInt) {
     for transfer in transfers.erc20transfers {
-        let amount_bytes = transfer.amount.as_bytes();
         store.add(
             0,
             transfer.address,
-            BigInt::from_unsigned_bytes_be(amount_bytes),
+            BigInt::from_str(&transfer.amount).unwrap(),
         )
     }
 }
