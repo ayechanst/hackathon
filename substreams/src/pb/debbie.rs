@@ -95,4 +95,28 @@ pub struct MasterProto {
     #[prost(message, repeated, tag="4")]
     pub erc721transfers: ::prost::alloc::vec::Vec<Erc721Transfer>,
 }
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct TokenHolders {
+    #[prost(message, repeated, tag="1")]
+    pub token_holders: ::prost::alloc::vec::Vec<TokenHolder>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct TokenHolder {
+    #[prost(string, tag="1")]
+    pub holder_address: ::prost::alloc::string::String,
+    #[prost(string, tag="2")]
+    pub token_address: ::prost::alloc::string::String,
+    #[prost(string, tag="3")]
+    pub balance: ::prost::alloc::string::String,
+    #[prost(string, tag="4")]
+    pub transfer_volume: ::prost::alloc::string::String,
+    #[prost(string, tag="5")]
+    pub transfer_count: ::prost::alloc::string::String,
+    #[prost(string, tag="6")]
+    pub transfer_amount: ::prost::alloc::string::String,
+    #[prost(bool, tag="7")]
+    pub transfer_from: bool,
+}
 // @@protoc_insertion_point(module)
