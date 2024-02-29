@@ -16,25 +16,34 @@ pub struct ERC721Creation {
 }
 
 impl ERC721Creation {
-    pub fn from_call(
-        address: &Vec<u8>,
-        code: Vec<u8>,
-        storage_changes: HashMap<H256, Vec<u8>>,
-    ) -> Option<Self> {
-        let code_string = Hex::encode(&code);
-        if code_string.contains("b88d4fde")
-        // if code_string.contains("06fdde03")
-        //     && code_string.contains("95d89b41")
-        //     && code_string.contains("c87b56dd")
-        {
-            Some(Self {
-                address: address.to_vec(),
-                code,
-                storage_changes,
-            })
-        } else {
-            None
-        }
+    pub fn from_call(calls: Vec<&Call>) -> Option<Self> {
+        for call in calls {
+            if let Some(last_code_change) = call.code_changes.iter().last() {
+                let code = &last_code_change.new_code;
+                let address = &call.address;
+                let code_string = Hex::encode(&code);
+                if code_string.contains("b88d4fde") {
+                    if code_string.contains("06fdde03")
+                        && code_string.contains("95d89b41")
+                        && code_string.contains("c87b56dd")
+                    {
+                        let storage_changes: HashMap<H256, Vec<u8>> = call
+                            .storage_changes
+                            .iter()
+                            .map(|s| (H256::from_slice(s.key.as_ref()), s.new_value.to_vec()))
+                            .collect();
+                        return Some(Self {
+                            address: address.to_vec(),
+                            code: code.to_vec(),
+                            storage_changes,
+                        });
+                    } else {
+                        
+                    }
+                }
+            }
+        };
+        None
     }
 }
 
