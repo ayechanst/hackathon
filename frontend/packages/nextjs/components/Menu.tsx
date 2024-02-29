@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Button from "./Button";
-import { AddressInput } from "./scaffold-eth";
+import SearchInput from "./SearchInput";
 
 interface MenuProps {
   sendButtonNameToData: any;
@@ -24,12 +24,12 @@ const Menu: React.FC<MenuProps> = ({ sendButtonNameToData, filterButtons }) => {
           <div className="divider divider-start divider-warning">Investigate</div>
           <div className="flex flex-col items-start">
             {/* <input type="text" placeholder="input an address" className="w-full max-w-xs p-2 border-accent" /> */}
-            <AddressInput onChange={setAddress} value={address} placeholder="Input your address" />
+            <SearchInput />
           </div>
         </div>
         <div className="px-3">
           <div className="divider divider-start divider-warning">NFTs</div>
-          <div className="flex flex-col items-start">
+          <div className="flex flex-col items-center">
             <Button
               onClick={() => sendButtonNameToMenuOnClick("erc721Transfers")}
               isActive={activeButton === "erc721Transfers"}
@@ -45,14 +45,21 @@ const Menu: React.FC<MenuProps> = ({ sendButtonNameToData, filterButtons }) => {
 
         <div className="px-3 pb-3">
           <div className="divider divider-start divider-warning">Dynamic Filters</div>
-          <div className="flex flex-col items-start">
-            {filterButtons.map((filter: string) => (
-              <Button
-                onClick={() => sendButtonNameToMenuOnClick(filter)}
-                isActive={activeButton === filter}
-                buttonName={filter}
-              />
-            ))}
+          <div className="flex flex-col items-center">
+            {filterButtons.map((filter: string) => {
+              if (filter === "input component") {
+                return <SearchInput key={filter} />;
+              } else {
+                return (
+                  <Button
+                    key={filter}
+                    onClick={() => sendButtonNameToMenuOnClick(filter)}
+                    isActive={activeButton === filter}
+                    buttonName={filter}
+                  />
+                );
+              }
+            })}
           </div>
         </div>
       </div>

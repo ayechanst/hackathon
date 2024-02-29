@@ -8,6 +8,7 @@ interface TabsProps {
   sendFiltersToData: any;
 }
 
+// TODO: send more filters to data depending which tab its on
 const Tabs: React.FC<TabsProps> = ({ subgraphQuery, sendFiltersToData }) => {
   const [clickedTab, setClickedTab] = useState("");
   const tabNames = ["NFTs", "NFT Collection", "NFT Holders", "Tokens", "Token Holders"];
@@ -66,7 +67,6 @@ const Tabs: React.FC<TabsProps> = ({ subgraphQuery, sendFiltersToData }) => {
                   name="tabs"
                   role="tab"
                   className={`tab w-full text-primary text-lg ${isActive ? active : "text-yellow-100"}`}
-                  // className="tab"
                   aria-label={tab}
                   onClick={() => handleClick(tab)}
                 />
