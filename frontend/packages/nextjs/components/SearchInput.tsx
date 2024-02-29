@@ -7,7 +7,7 @@ const SearchInput = () => {
   return (
     <motion.div
       // className={`rounded-lg w-full mr-3 ${isFocused ? "ring ring-sky-500 shadow-md" : ""}`}
-      className={`rounded-lg w-full mr-3`}
+      className={`rounded-lg w-full m-2`}
       animate={{
         backgroundColor: isActive ? "#27272a" : "#eab308",
         color: isActive ? "#eab308" : "#27272a",

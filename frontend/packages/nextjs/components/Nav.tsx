@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 const Nav = () => {
-  const [isPulsating, setIsPulsating] = useState(false);
+  const [isPulsating, setIsPulsating] = useState(true);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -17,8 +17,8 @@ const Nav = () => {
         animate={{
           boxShadow: isPulsating ? "0 0 10px 3px rgba(66, 153, 225, 0.5)" : "0 0 0px 0px rgba(0, 0, 0, 0)", // Toggle between pulsating and no shadow
         }}
-        transition={{ duration: 3, ease: "easeInOut" }}
-        className="m-5 bg-zinc-700 rounded-lg shadow-xl"
+        transition={{ duration: 2, ease: "easeInOut" }}
+        className="mx-5 mt-5 mb-2 bg-zinc-700 rounded-lg shadow-xl"
       >
         <div className="navbar text-neutral-content">
           <div className="flex justify-between items-center">

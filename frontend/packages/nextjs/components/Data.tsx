@@ -1,11 +1,12 @@
 import { useState } from "react";
 import Menu from "./Menu";
 import Tabs from "./Tabs";
-import TimeRange from "./TimeRange";
+import TimeMenu from "./TimeMenu";
 
 const Data = () => {
   const [subgraphQueryName, setSubgraphQueryName] = useState<string>("erc20Transfers");
   const [filterButtons, setFilterButtons] = useState<string[]>([""]);
+  const [subgraphTimeQuery, setSubgraphTimeQuery] = useState<string>("1 Hour");
 
   function handleButtonNameFromMenu(buttonName: string) {
     console.log("buttonName being sent to subgraphQuery from Data.tsx: ", buttonName);
@@ -17,6 +18,10 @@ const Data = () => {
     setFilterButtons(filters);
   }
 
+  function handleTimeButtonNameFromTimeMenu(buttonName: string) {
+    setSubgraphTimeQuery(buttonName);
+  }
+
   return (
     <>
       <div className="grid grid-cols-10">
@@ -26,9 +31,8 @@ const Data = () => {
         <div className="mr-5 mt-2 col-span-7">
           <Tabs subgraphQuery={subgraphQueryName} sendFiltersToData={handleFiltersFromTabs} />
         </div>
-
         <div className="mr-5 mt-2 col-span-1">
-          <TimeRange />
+          <TimeMenu sendTimeButtonNameToData={handleTimeButtonNameFromTimeMenu} />
         </div>
       </div>
     </>

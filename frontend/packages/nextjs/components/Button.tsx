@@ -8,12 +8,6 @@ interface ButtonProps {
 }
 
 const Button: React.FC<ButtonProps> = ({ buttonName, onClick, isActive }) => {
-  let activeClass;
-  // if (isActive) {
-  //   activeClass = "bg-zinc-800 text-accent shadow-md shadow-accent-500/50";
-  // } else {
-  //   activeClass = "bg-accent text-primary";
-  // }
   function handleClick() {
     onClick(buttonName);
   }

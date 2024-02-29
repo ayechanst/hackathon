@@ -952,9 +952,9 @@ __metadata:
   linkType: hard
 
 "@jridgewell/set-array@npm:^1.0.1":
-  version: 1.1.2
-  resolution: "@jridgewell/set-array@npm:1.1.2"
-  checksum: 69a84d5980385f396ff60a175f7177af0b8da4ddb81824cb7016a9ef914eee9806c72b6b65942003c63f7983d4f39a5c6c27185bbca88eb4690b62075602e28e
+  version: 1.2.1
+  resolution: "@jridgewell/set-array@npm:1.2.1"
+  checksum: 832e513a85a588f8ed4f27d1279420d8547743cc37fcad5a5a76fc74bb895b013dfe614d0eed9cb860048e6546b798f8f2652020b4b2ba0561b05caa8c654b10
   languageName: node
   linkType: hard
 
@@ -2055,7 +2055,7 @@ __metadata:
     "@uniswap/v2-sdk": ~3.0.1
     autoprefixer: ~10.4.12
     blo: ~1.0.1
-    daisyui: 4.5.0
+    daisyui: 4.7.2
     eslint: ~8.24.0
     eslint-config-next: ~14.0.4
     eslint-config-prettier: ~8.5.0
@@ -2588,12 +2588,12 @@ __metadata:
   linkType: hard
 
 "@types/eslint@npm:~8":
-  version: 8.56.4
-  resolution: "@types/eslint@npm:8.56.4"
+  version: 8.56.5
+  resolution: "@types/eslint@npm:8.56.5"
   dependencies:
     "@types/estree": "*"
     "@types/json-schema": "*"
-  checksum: 3d0798c8694c47519d28cca56187b70731fd7d1d2a0b6d25433b071ed297a1fb3404250daea8ba48aac9b18de223c196004a196d4f0b8d3c2b88b45cb13de12b
+  checksum: 95a7a23ca38c78e5c27a2ed36ef60f094d5e6589e3473c320b6ff69eb3ca6333d5b7f0d5053416369f5ab2fb86874df19562d4d67a98237c17def6e30abff540
   languageName: node
   linkType: hard
 
@@ -2666,11 +2666,11 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*":
-  version: 20.11.22
-  resolution: "@types/node@npm:20.11.22"
+  version: 20.11.24
+  resolution: "@types/node@npm:20.11.24"
   dependencies:
     undici-types: ~5.26.4
-  checksum: ef8fd0b561c3c9810f3c23c990c856619232934e54308c84e79d4e39d44b66668eceb6eca89c64ebcbc78fb514446661ad58b0f8e6b5fa3d9ed9ff0983aac4ef
+  checksum: b11a650e09e254f4725c94f226752b69949a9ac4a5e004e98f109437ac50b02df3ab4d12b2086722fedf2cb62e68b9e723abd3f358a7d7d90d741a0d3bee90c2
   languageName: node
   linkType: hard
 
@@ -2765,13 +2765,13 @@ __metadata:
   linkType: hard
 
 "@types/react@npm:*, @types/react@npm:^18.0.21":
-  version: 18.2.60
-  resolution: "@types/react@npm:18.2.60"
+  version: 18.2.61
+  resolution: "@types/react@npm:18.2.61"
   dependencies:
     "@types/prop-types": "*"
     "@types/scheduler": "*"
     csstype: ^3.0.2
-  checksum: 4cd2000c4c5d93aec92bca9fce3a6050a6a20c5827409099a4cc9e68a259a937b2acc77aecbcea555eb99e295373903da17bc833e3f711442eec20e3c6cc5895
+  checksum: a100c09bc0d6d1a0a42b3fa0944b71d209b5adea6515fc21109972ec3267185372cc416c0467b1998afce6b90fc80f4c0029b5d975afb0b3070d864c7a924a5e
   languageName: node
   linkType: hard
 
@@ -5581,15 +5581,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"daisyui@npm:4.5.0":
-  version: 4.5.0
-  resolution: "daisyui@npm:4.5.0"
+"daisyui@npm:4.7.2":
+  version: 4.7.2
+  resolution: "daisyui@npm:4.7.2"
   dependencies:
     css-selector-tokenizer: ^0.8
     culori: ^3
     picocolors: ^1
     postcss-js: ^4
-  checksum: 156182dec5b8792df39602984e94916f997f304d5b260a2ff0ab6908bfa8e8a84213481bcb81296d922c7c93c91f53948fd81ec5135ba5072a1460298ab2aa43
+  checksum: 46470b40905f768c7adbfe7ddecf967a7a91fe2012cbb387f79f4babe4a1a126c8a6196c1b2171b3a8afd775d1ac386986b3b50fe8c917eaecf9fb9d4782376a
   languageName: node
   linkType: hard
 
@@ -5927,9 +5927,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.668":
-  version: 1.4.686
-  resolution: "electron-to-chromium@npm:1.4.686"
-  checksum: 5360d21a3bf020cee151da32246335a0cb1cc9e67e1815f9d6e2557bae2453dcdc73b58c7b98fa88ab85fc39155d967f3e21e7d92a182b01222672f2d858142a
+  version: 1.4.688
+  resolution: "electron-to-chromium@npm:1.4.688"
+  checksum: 3f82c348a771de758788fd774b8af8e6c4cf2634af2bb066dffa98946c7405755982163cb51bf559f4c83383cb204e432180af265fa56ad3449145fa9ddac9c1
   languageName: node
   linkType: hard
 
@@ -7430,8 +7430,8 @@ __metadata:
   linkType: hard
 
 "framer-motion@npm:^11.0.6":
-  version: 11.0.6
-  resolution: "framer-motion@npm:11.0.6"
+  version: 11.0.8
+  resolution: "framer-motion@npm:11.0.8"
   dependencies:
     "@emotion/is-prop-valid": ^0.8.2
     tslib: ^2.4.0
@@ -7446,7 +7446,7 @@ __metadata:
       optional: true
     react-dom:
       optional: true
-  checksum: 5b843ca004725c1f90d00bfcb4dcfd5221b37b0ab305774164048e94f2f6e98b3f5e38faa2326bba348e50ada14d78bd9d01167870d1295ba1c31845e953333d
+  checksum: 5009b748045c3bd4e123925de493cee0e754269f5fc43fe1a6cba7e53f4024f286cbfba78b85b024bfcbbd3b87a777e70d09e7cafcefd8ada80743037e429c30
   languageName: node
   linkType: hard
 
@@ -12193,14 +12193,14 @@ __metadata:
   linkType: hard
 
 "side-channel@npm:^1.0.4":
-  version: 1.0.5
-  resolution: "side-channel@npm:1.0.5"
+  version: 1.0.6
+  resolution: "side-channel@npm:1.0.6"
   dependencies:
-    call-bind: ^1.0.6
+    call-bind: ^1.0.7
     es-errors: ^1.3.0
     get-intrinsic: ^1.2.4
     object-inspect: ^1.13.1
-  checksum: 640446b4e5a9554116ed6f5bec17c6740fa8da2c1a19e4d69c1202191185d4cc24f21ba0dd3ccca140eb6a8ee978d0b5bc5132f09b7962db7f9c4bc7872494ac
+  checksum: bfc1afc1827d712271453e91b7cd3878ac0efd767495fd4e594c4c2afaa7963b7b510e249572bfd54b0527e66e4a12b61b80c061389e129755f34c493aad9b97
   languageName: node
   linkType: hard
 
