@@ -3,16 +3,17 @@ import Button from "./Button";
 import { AddressInput } from "./scaffold-eth";
 
 interface MenuProps {
-  sendButtonNameToMenu: any;
+  sendButtonNameToData: any;
+  filterButtons: any;
 }
 
-const Menu: React.FC<MenuProps> = ({ sendButtonNameToMenu }) => {
+const Menu: React.FC<MenuProps> = ({ sendButtonNameToData, filterButtons }) => {
   const [address, setAddress] = useState("");
   const [activeButton, setActiveButton] = useState<string | null>(null);
 
   const sendButtonNameToMenuOnClick = (buttonName: string) => {
     setActiveButton(buttonName);
-    sendButtonNameToMenu(buttonName);
+    sendButtonNameToData(buttonName);
   };
 
   return (
