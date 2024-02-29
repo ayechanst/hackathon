@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Menu from "./Menu";
 import Tabs from "./Tabs";
+import TimeRange from "./TimeRange";
 
 const Data = () => {
   const [subgraphQueryName, setSubgraphQueryName] = useState<string>("erc20Transfers");
@@ -22,8 +23,12 @@ const Data = () => {
         <div className="mt-2 mx-5 col-span-2">
           <Menu sendButtonNameToData={handleButtonNameFromMenu} filterButtons={filterButtons} />
         </div>
-        <div className="mr-5 mt-2 col-span-8">
+        <div className="mr-5 mt-2 col-span-7">
           <Tabs subgraphQuery={subgraphQueryName} sendFiltersToData={handleFiltersFromTabs} />
+        </div>
+
+        <div className="mr-5 mt-2 col-span-1">
+          <TimeRange />
         </div>
       </div>
     </>

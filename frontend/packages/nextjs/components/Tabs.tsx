@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Chart from "./Chart";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useSubgraph } from "~~/hooks/scaffold-eth/useSubgraph";
 
 interface TabsProps {
@@ -25,6 +25,7 @@ const Tabs: React.FC<TabsProps> = ({ subgraphQuery, sendFiltersToData }) => {
 
   function handleClick(tabName: string) {
     setClickedTab(tabName);
+    // move the whole component out of here
     let filters: string[];
     // everything here can also be filtered by time
     if (clickedTab === "NFTs") {
@@ -55,32 +56,47 @@ const Tabs: React.FC<TabsProps> = ({ subgraphQuery, sendFiltersToData }) => {
   // TODO
 
   return (
-    <div className="flex w-full">
-      <div role="tablist" className="tabs tabs-lifted">
-        {data ? (
-          tabNames.map(tab => {
-            const isActive = clickedTab === tab;
-            return (
-              <>
-                <input
-                  type="radio"
-                  name="tabs"
-                  role="tab"
-                  className={`tab w-full text-primary text-lg ${isActive ? active : "text-yellow-100"}`}
-                  aria-label={tab}
-                  onClick={() => handleClick(tab)}
-                />
-                <div role="tabpanel" className="tab-content bg-base-100 border-base-300 w-full rounded-box p-6 ">
-                  <Chart data={data} />
-                </div>
-              </>
-            );
-          })
-        ) : (
-          <div>no data from tabs</div>
-        )}
-      </div>
-    </div>
+    <AnimatePresence>
+      <motion.div key="tab-containers" transition={{ duration: 0.5 }} style={{ originY: 0.55 }}>
+        <div className="flex w-full">
+          <div role="tablist" className="tabs tabs-lifted">
+            {data ? (
+              tabNames.map(tab => {
+                const isActive = clickedTab === tab;
+                return (
+                  <>
+                    <input
+                      type="radio"
+                      name="tabs"
+                      role="tab"
+                      className={`tab w-full text-primary text-lg ${isActive ? active : "text-yellow-100"}`}
+                      aria-label={tab}
+                      onClick={() => handleClick(tab)}
+                    />
+                    <AnimatePresence>
+                      {isActive && (
+                        <motion.div
+                          key={tab}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          role="tabpanel"
+                          className="tab-content bg-base-100 border-base-300 w-full rounded-box p-6 "
+                        >
+                          <Chart data={data} />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </>
+                );
+              })
+            ) : (
+              <div>no data from tabs</div>
+            )}
+          </div>
+        </div>
+      </motion.div>
+    </AnimatePresence>
   );
 };
 export default Tabs;
