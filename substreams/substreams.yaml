@@ -8,7 +8,7 @@ imports:
 
 protobuf:
   files:
-    - erc721.proto
+    - debbie.proto
   importPaths:
     - ./proto
 
@@ -18,31 +18,40 @@ binaries:
     file: ./target/wasm32-unknown-unknown/release/substreams.wasm
 
 modules:
-  - name: map_transfers
+  - name: map_blocks
     kind: map
-    initialBlock: 12287507
+    initialBlock: 8928157
+    inputs:
+      - source: sf.ethereum.type.v2.Block
+      - source: sf.substreams.v1.Clock
+    output:
+      type: proto:debbie.MasterProto
+
+  - name: map_delegates
+    kind: map
+    initialBlock: 8928157
     inputs:
       - source: sf.ethereum.type.v2.Block
     output:
-      type: proto:eth.erc721.v1.Transfers
+      type: proto:debbie.ERC20Deployment 
 
-  - name: store_transfers
+  - name: store_erc20_transfer_vol
     kind: store
-    initialBlock: 12287507
+    initialBlock: 8928157
     updatePolicy: add
-    valueType: int64
+    valueType: bigint
     inputs:
-      - map: map_transfers
+      - map: map_blocks
 
-  - name: db_out
+  - name: map_erc20_transfer_vol
     kind: map
-    initialBlock: 12287507
+    initialBlock: 8928157
     inputs:
-      - source: sf.substreams.v1.Clock
-      - map: map_transfers
-      - store: store_transfers
-        mode: deltas
+      - map: map_blocks
+      - store: store_erc20_transfer_vol
+        mode: get
     output:
-      type: proto:sf.substreams.sink.database.v1.DatabaseChanges
+      type: proto:debbie.ERC20Transfers
+  
 
 network: mainnet
