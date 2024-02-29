@@ -20,7 +20,7 @@ const Data = () => {
     <>
       <div className="grid grid-cols-10">
         <div className="mt-2 mx-5 col-span-2">
-          <Menu sendButtonNameToData={handleButtonNameFromMenu} />
+          <Menu sendButtonNameToData={handleButtonNameFromMenu} filterButtons={filterButtons} />
         </div>
         <div className="mr-5 mt-2 col-span-8">
           <Tabs subgraphQuery={subgraphQueryName} sendFiltersToData={handleFiltersFromTabs} />

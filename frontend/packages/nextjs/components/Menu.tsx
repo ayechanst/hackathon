@@ -42,19 +42,17 @@ const Menu: React.FC<MenuProps> = ({ sendButtonNameToData, filterButtons }) => {
             />
           </div>
         </div>
+
         <div className="px-3 pb-3">
-          <div className="divider divider-start divider-warning">Tokens</div>
+          <div className="divider divider-start divider-warning">Dynamic Filters</div>
           <div className="flex flex-col items-start">
-            <Button
-              onClick={() => sendButtonNameToMenuOnClick("erc20Transfers")}
-              isActive={activeButton === "erc20Transfers"}
-              buttonName="erc20Transfers"
-            />
-            <Button
-              onClick={() => sendButtonNameToMenuOnClick("erc20Deployments")}
-              isActive={activeButton === "erc20Deployments"}
-              buttonName="erc20Deployments"
-            />
+            {filterButtons.map((filter: string) => (
+              <Button
+                onClick={() => sendButtonNameToMenuOnClick(filter)}
+                isActive={activeButton === filter}
+                buttonName={filter}
+              />
+            ))}
           </div>
         </div>
       </div>
