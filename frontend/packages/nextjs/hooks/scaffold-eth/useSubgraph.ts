@@ -1,81 +1,84 @@
 import { useEffect, useState } from "react";
+import { gql, useQuery } from "@apollo/client";
 
 type UseSubgraphProps = {
   subgraphQuery: string;
+  queryProps?: any;
 };
 
-const erc20Transfers = `
-  query {
-    erc20Transfers(first: 5) {
-    id
-    from
-    to
-    amount
-  }
-}`;
-
-const erc721Transfers = `
-  query {
-    erc721Transfers(first: 5) {
-    id
-    from
-    to
-    tokenId
-    blocknumber
-  }
-}`;
-
-const erc20Deployments = `
-  query {
-    erc20Deployments(first: 5) {
-    id
-    name
-    symbol
-    totalSupply
-  }
-}`;
-
-const erc721Deployments = `
-query {
-  erc721Deployments(first: 5) {
-    id
-    name
-    symbol
-    blocknumber
-  }
-}
-`;
-export function useSubgraph({ subgraphQuery }: UseSubgraphProps) {
+export function useSubgraph({ subgraphQuery, queryProps }: UseSubgraphProps) {
+  const {
+    loading,
+    error,
+    data: responseData,
+  } = useQuery(getQuery(subgraphQuery), {
+    variables: queryProps,
+    pollInterval: 10000,
+  });
   const [data, setData] = useState<any>(null);
 
   useEffect(() => {
-    let currentQuery = "";
-    if (subgraphQuery == "erc20Transfers") {
-      currentQuery = erc20Transfers;
-    } else if (subgraphQuery == "erc721Transfers") {
-      currentQuery = erc721Transfers;
-    } else if (subgraphQuery == "erc20Deployments") {
-      currentQuery = erc20Deployments;
-    } else {
-      currentQuery = erc721Deployments;
-    }
+    if (!responseData) return;
 
-    fetchSubgraph(currentQuery).then(data => console.log(data));
-  }, [subgraphQuery]);
+    const keys = Object.keys(responseData);
+    const getRidOfTypeName = responseData[keys[0]];
 
-  const fetchSubgraph = async (query: string) => {
-    const response = await fetch("https://api.studio.thegraph.com/query/64372/debbie-hack/0.0.2", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ query }),
+    const returnData = getRidOfTypeName.map((item: any) => {
+      const { __typename, ...rest } = item;
+      return rest;
     });
 
-    const { data } = await response.json();
-    const keys = Object.keys(data);
-    setData(data[keys[0]]);
-  };
+    setData(returnData);
+  }, [responseData]);
 
-  return { data };
+  return { data, loading, error };
 }
+
+const getQuery = (subgraphQuery: string, queryProps?: any) => {
+  if (subgraphQuery === "erc20Transfers") {
+    return gql`
+      query erc20Transfers($rows: Int) {
+        erc20Transfers(first: $rows) {
+          id
+          from
+          to
+          amount
+        }
+      }
+    `;
+  } else if (subgraphQuery == "erc721Transfers") {
+    return gql`
+      query erc721Transfers($rows: Int) {
+        erc721Transfers(first: $rows, orderBy: blocknumber, orderDirection: desc) {
+          id
+          from
+          to
+          tokenId
+          blocknumber
+        }
+      }
+    `;
+  } else if (subgraphQuery == "erc20Deployments") {
+    return gql`
+      query erc20Deployments($rows: Int) {
+        erc20Deployments(first: $rows) {
+          id
+          name
+          symbol
+          totalSupply
+        }
+      }
+    `;
+  } else if (subgraphQuery == "erc721Deployments") {
+    return gql`
+      query erc721Deployments($rows: Int) {
+        erc721Deployments(first: $rows) {
+          id
+          name
+          symbol
+          blocknumber
+        }
+      }
+    `;
+  }
+};
