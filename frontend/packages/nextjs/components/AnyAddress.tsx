@@ -1,16 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { Address as AddressType, isAddress } from "viem";
-import { useEnsAvatar, useEnsName } from "wagmi";
 import { CheckCircleIcon, DocumentDuplicateIcon } from "@heroicons/react/24/outline";
-import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 
 type AddressProps = {
   address?: AddressType;
 };
+// TODO: if from address is 0000 burn, if to, mint
+// TODO: make links to etherscan
 
 export const AnyAddress = ({ address }: AddressProps) => {
   const [addressCopied, setAddressCopied] = useState(false);

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Chart from "./Chart";
+import { motion } from "framer-motion";
 import { useSubgraph } from "~~/hooks/scaffold-eth/useSubgraph";
 
 interface TabsProps {
@@ -14,21 +15,29 @@ const Tabs: React.FC<TabsProps> = ({ subgraphQuery }) => {
   });
 
   useEffect(() => {
-  console.log("data in Tabs", data);
-  }, [data])
+    console.log("data in Tabs", data);
+  }, [data]);
   // try to unpack tabNames from { data }
   const tabNames = ["pee", "poo"];
 
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    setIsVisible(!isVisible);
+    // const timeout = setTimeout(() => setIsVisible(!isVisible), 500); // Adjust the duration as needed
+    // return () => clearTimeout(timeout);
+  }, [data]);
+
   return (
-    <>
-      <div className="flex w-full">
+    <motion.div animate={{ opacity: isVisible ? 1 : 0 }}>
+      <div className="flex w-500">
         <div role="tablist" className="tabs tabs-lifted">
           {data ? (
             tabNames.map(tab => {
               return (
                 <>
-                  <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label={tab} />
-                  <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
+                  <input type="radio" name="my_tabs_2" role="tab" className="tab w-full" aria-label={tab} />
+                  <div role="tabpanel" className="tab-content bg-base-100 border-base-300 w-full rounded-box p-6 ">
                     <Chart data={data} />
                   </div>
                 </>
@@ -39,7 +48,7 @@ const Tabs: React.FC<TabsProps> = ({ subgraphQuery }) => {
           )}
         </div>
       </div>
-    </>
+    </motion.div>
   );
 };
 export default Tabs;

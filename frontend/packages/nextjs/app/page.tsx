@@ -12,10 +12,8 @@ const Home: NextPage = () => {
     <>
       <div className="bg-primary">
         <Nav />
-        <div className="flex">
-          <div className="mr-5 w-4/5">
-            <Data />
-          </div>
+        <div className="w-screen">
+          <Data />
         </div>
       </div>
     </>

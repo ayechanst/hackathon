@@ -21,7 +21,8 @@ const Cell: React.FC<CellProps> = ({ data, id, keyType }) => {
   }
 
   return (
-    <motion.div initial={{ x: initialValue }} animate={{ x: 0 }} transition={{ duration: 0.4, delay: delayValue }}>
+    // <motion.div initial={{ x: initialValue }} animate={{ x: 0 }} transition={{ duration: 0.4, delay: delayValue }}>
+    <>
       {keyType === "address" ? (
         <div className={`border-b border-accent m-4 text-yellow-100`}>
           <AnyAddress address={data.toString()} />
@@ -29,7 +30,8 @@ const Cell: React.FC<CellProps> = ({ data, id, keyType }) => {
       ) : (
         <div className={`border-b border-accent m-4 text-yellow-100`}>{data}</div>
       )}
-    </motion.div>
+    </>
+    // </motion.div>
   );
 };
 
