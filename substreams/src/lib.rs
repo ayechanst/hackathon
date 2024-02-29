@@ -1,8 +1,12 @@
 mod abi;
+mod erc20maps;
+mod erc20stores;
 mod helpers;
 mod pb;
 use abi::erc20::events as erc20;
+use abi::erc20::events::Transfer as Erc20TransferEvent;
 use abi::erc721::events as erc721;
+use abi::erc721::events::Transfer as Erc721TransferEvent;
 use helpers::erc20helpers::*;
 use helpers::erc721helpers::*;
 use pb::debbie::{Erc20Deployment, Erc20Transfer, MasterProto};
@@ -15,6 +19,10 @@ use substreams::Hex;
 use substreams_ethereum::pb::eth::v2::Call;
 use substreams_ethereum::pb::eth::v2::{Block, StorageChange};
 use substreams_ethereum::pb::sf::ethereum::r#type::v2 as eth;
+use substreams_ethereum::Event;
+
+pub use erc20maps::*;
+pub use erc20stores::*;
 
 pub struct ContractCreation {
     pub address: String,
@@ -80,7 +88,7 @@ pub struct ContractCreation {
 // }
 
 #[substreams::handlers::map]
-fn map_erc20_deployments(blk: Block, clk: Clock) -> Result<MasterProto, substreams::errors::Error> {
+fn map_blocks(blk: Block, clk: Clock) -> Result<MasterProto, substreams::errors::Error> {
     let mut erc20_contracts: Vec<Erc20Deployment> = Vec::new();
     let mut erc721_contracts: Vec<Erc721Deployment> = Vec::new();
     let mut erc20_transfers: Vec<Erc20Transfer> = Vec::new();
@@ -90,35 +98,62 @@ fn map_erc20_deployments(blk: Block, clk: Clock) -> Result<MasterProto, substrea
         .into_iter()
         .filter(|tx| tx.status == 1)
         .flat_map(|tx| {
-            tx.calls
-                .into_iter()
-                .filter(|call| !call.state_reverted)
-                .filter(|call| call.call_type == eth::CallType::Create as i32)
+            tx.calls.into_iter().filter(|call| !call.state_reverted)
+            // .filter(|call| call.call_type == eth::CallType::Create as i32)
         })
         .collect();
     for call in filtered_calls {
-        if let Some(last_code_change) = call.code_changes.iter().last() {
-            let code = &last_code_change.new_code;
-            let address = call.address;
-            let storage_changes: HashMap<H256, Vec<u8>> = call
-                .storage_changes
-                .into_iter()
-                .map(|s| (H256::from_slice(s.key.as_ref()), s.new_value))
-                .collect();
-            if let Some(token) =
-                ERC20Creation::from_call(&address, code.to_vec(), storage_changes.clone())
-            {
-                if let Some(deployment) = process_contract(token, clk.clone()) {
-                    erc20_contracts.push(deployment);
+        if call.call_type == eth::CallType::Create as i32 {
+            if let Some(last_code_change) = call.code_changes.iter().last() {
+                let code = &last_code_change.new_code;
+                let address = call.address;
+                let storage_changes: HashMap<H256, Vec<u8>> = call
+                    .storage_changes
+                    .into_iter()
+                    .map(|s| (H256::from_slice(s.key.as_ref()), s.new_value))
+                    .collect();
+                if let Some(token) =
+                    ERC20Creation::from_call(&address, code.to_vec(), storage_changes.clone())
+                {
+                    if let Some(deployment) = process_contract(token, clk.clone()) {
+                        erc20_contracts.push(deployment);
+                    }
+                } else if let Some(token) =
+                    ERC721Creation::from_call(&address, code.to_vec(), storage_changes.clone())
+                {
+                    let deployment = erc721_test_data(token);
+                    erc721_contracts.push(deployment);
                 }
-            } else if let Some(token) =
-                ERC721Creation::from_call(&address, code.to_vec(), storage_changes.clone())
-            {
-                let deployment = erc721_test_data(token);
-                erc721_contracts.push(deployment);
+            }
+        }
+        let block_num = clk.number.to_string();
+        for log in &call.logs {
+            if log.address == Hex::decode("dac17f958d2ee523a2206206994597c13d831ec7").unwrap() {
+
+                if let Some(erc20Transfer) = Erc20TransferEvent::match_and_decode(log) {
+                    erc20_transfers.push(Erc20Transfer {
+                        address: Hex::encode(&log.address),
+                        from: Hex::encode(erc20Transfer.from),
+                        to: Hex::encode(erc20Transfer.to),
+                        amount: erc20Transfer.value.to_string(),
+                        count: String::from("1"),
+                        volume: String::new(),
+                        // blocknumber: clk.number.to_string(),
+                    });
+                } else if let Some(erc721Transfer) = Erc721TransferEvent::match_and_decode(log) {
+                    erc721_transfers.push(Erc721Transfer {
+                        address: Hex::encode(&log.address),
+                        from: Hex::encode(erc721Transfer.from),
+                        to: Hex::encode(erc721Transfer.to),
+                        token_id: erc721Transfer.token_id.to_string(),
+                        volume: String::new(),
+                        blocknumber: String::from(&block_num), // blocknumber: String::from(clk.number),
+                    });
+                }
             }
         }
     }
+
     // Erc20Deployments {contracts: erc20_contracts};
     // Erc721Deployments {contracts: erc721_contracts};
     Ok(MasterProto {

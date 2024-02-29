@@ -18,7 +18,7 @@ binaries:
     file: ./target/wasm32-unknown-unknown/release/substreams.wasm
 
 modules:
-  - name: map_erc20_deployments
+  - name: map_blocks
     kind: map
     initialBlock: 8928157
     inputs:
@@ -33,6 +33,25 @@ modules:
     inputs:
       - source: sf.ethereum.type.v2.Block
     output:
-      type: proto:debbie.ERC20Deployment   
+      type: proto:debbie.ERC20Deployment 
+
+  - name: store_erc20_transfer_vol
+    kind: store
+    initialBlock: 8928157
+    updatePolicy: add
+    valueType: bigint
+    inputs:
+      - map: map_blocks
+
+  - name: map_erc20_transfer_vol
+    kind: map
+    initialBlock: 8928157
+    inputs:
+      - map: map_blocks
+      - store: store_erc20_transfer_vol
+        mode: get
+    output:
+      type: proto:debbie.ERC20Transfers
+  
 
 network: mainnet

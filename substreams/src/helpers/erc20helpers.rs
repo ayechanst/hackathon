@@ -164,10 +164,10 @@ fn execute_on(
     loop {
         let mut active_opcode: Option<Opcode> = None;
         if let Some((opcode, stack)) = machine.inspect() {
-            log::info!(
-                "Machine active opcode is {}",
-                display_opcode_input(opcode, stack),
-            );
+            // log::info!(
+            //     "Machine active opcode is {}",
+            //     display_opcode_input(opcode, stack),
+            // );
 
             active_opcode = Some(opcode)
         }
@@ -176,7 +176,7 @@ fn execute_on(
             Ok(()) => {
                 if let Some(opcode) = active_opcode {
                     if let Some(output) = display_opcode_output(opcode, machine.stack()) {
-                        log::info!("Machine executed opcode {}", output);
+                        // log::info!("Machine executed opcode {}", output);
                     }
                 }
             }
