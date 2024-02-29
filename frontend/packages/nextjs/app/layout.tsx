@@ -1,3 +1,4 @@
+import { ApolloClient, ApolloProvider, InMemoryCache, gql } from "@apollo/client";
 import "@rainbow-me/rainbowkit/styles.css";
 import { Metadata } from "next";
 import { ScaffoldEthAppWithProviders } from "~~/components/ScaffoldEthAppWithProviders";
