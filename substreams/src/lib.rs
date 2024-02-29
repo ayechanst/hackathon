@@ -9,7 +9,7 @@ use abi::erc721::events as erc721;
 use abi::erc721::events::Transfer as Erc721TransferEvent;
 use helpers::erc20helpers::*;
 use helpers::erc721helpers::*;
-use pb::debbie::{Erc20Deployment, Erc20Transfer, MasterProto};
+use pb::debbie::{Erc20Deployment, Erc20Transfer, MasterProto, Erc721Deployments};
 use pb::debbie::{Erc721Deployment, Erc721Transfer};
 use primitive_types::H256;
 use std::collections::HashMap;
@@ -115,41 +115,39 @@ fn map_blocks(blk: Block, clk: Clock) -> Result<MasterProto, substreams::errors:
                 if let Some(token) =
                     ERC20Creation::from_call(&address, code.to_vec(), storage_changes.clone())
                 {
-                    if let Some(deployment) = process_contract(token, clk.clone()) {
+                    if let Some(deployment) = process_erc20_contract(token, clk.clone()) {
                         erc20_contracts.push(deployment);
                     }
                 } else if let Some(token) =
                     ERC721Creation::from_call(&address, code.to_vec(), storage_changes.clone())
                 {
-                    let deployment = erc721_test_data(token);
-                    erc721_contracts.push(deployment);
+                    if let Some(deployment) = process_erc721_contract(token, clk.clone()) {
+                        erc721_contracts.push(deployment);
+                    }
                 }
             }
         }
         let block_num = clk.number.to_string();
         for log in &call.logs {
-            if log.address == Hex::decode("dac17f958d2ee523a2206206994597c13d831ec7").unwrap() {
-
-                if let Some(erc20Transfer) = Erc20TransferEvent::match_and_decode(log) {
-                    erc20_transfers.push(Erc20Transfer {
-                        address: Hex::encode(&log.address),
-                        from: Hex::encode(erc20Transfer.from),
-                        to: Hex::encode(erc20Transfer.to),
-                        amount: erc20Transfer.value.to_string(),
-                        count: String::from("1"),
-                        volume: String::new(),
-                        // blocknumber: clk.number.to_string(),
-                    });
-                } else if let Some(erc721Transfer) = Erc721TransferEvent::match_and_decode(log) {
-                    erc721_transfers.push(Erc721Transfer {
-                        address: Hex::encode(&log.address),
-                        from: Hex::encode(erc721Transfer.from),
-                        to: Hex::encode(erc721Transfer.to),
-                        token_id: erc721Transfer.token_id.to_string(),
-                        volume: String::new(),
-                        blocknumber: String::from(&block_num), // blocknumber: String::from(clk.number),
-                    });
-                }
+            if let Some(erc20Transfer) = Erc20TransferEvent::match_and_decode(log) {
+                erc20_transfers.push(Erc20Transfer {
+                    address: Hex::encode(&log.address),
+                    from: Hex::encode(erc20Transfer.from),
+                    to: Hex::encode(erc20Transfer.to),
+                    amount: erc20Transfer.value.to_string(),
+                    count: String::from("1"),
+                    volume: String::new(),
+                    // blocknumber: clk.number.to_string(),
+                });
+            } else if let Some(erc721Transfer) = Erc721TransferEvent::match_and_decode(log) {
+                erc721_transfers.push(Erc721Transfer {
+                    address: Hex::encode(&log.address),
+                    from: Hex::encode(erc721Transfer.from),
+                    to: Hex::encode(erc721Transfer.to),
+                    token_id: erc721Transfer.token_id.to_string(),
+                    volume: String::new(),
+                    blocknumber: String::from(&block_num), // blocknumber: String::from(clk.number),
+                });
             }
         }
     }
@@ -211,4 +209,13 @@ fn map_delegates(blk: Block) -> Erc20Deployment {
         decimals: "".to_string(),
         blocknumber: "".to_string(),
     }
+}
+
+#[substreams::handlers::map]
+fn map_erc721_test(master: MasterProto) -> Erc721Deployments {
+    let mut deployments = Vec::new();
+    for deployment in master.erc721contracts {
+        deployments.push(deployment);
+    }
+    Erc721Deployments {contracts: deployments}
 }

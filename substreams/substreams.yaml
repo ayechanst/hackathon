@@ -20,7 +20,7 @@ binaries:
 modules:
   - name: map_blocks
     kind: map
-    initialBlock: 8928157
+    initialBlock: 14158321
     inputs:
       - source: sf.ethereum.type.v2.Block
       - source: sf.substreams.v1.Clock
@@ -52,6 +52,14 @@ modules:
         mode: get
     output:
       type: proto:debbie.ERC20Transfers
+
+  - name: map_erc721_test
+    kind: map
+    initialBlock: 14158321
+    inputs:
+      - map: map_blocks
+    output:
+      type: proto:debbie.ERC721Deployments
   
 
 network: mainnet

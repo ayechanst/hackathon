@@ -38,7 +38,7 @@ impl ERC20Creation {
     }
 }
 
-pub fn process_contract(contract_creation: ERC20Creation, clock: Clock) -> Option<Erc20Deployment> {
+pub fn process_erc20_contract(contract_creation: ERC20Creation, clock: Clock) -> Option<Erc20Deployment> {
     let mut contract = Erc20Deployment {
         address: Hex::encode(&contract_creation.address),
         name: String::new(),
