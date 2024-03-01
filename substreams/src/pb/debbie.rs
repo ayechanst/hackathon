@@ -32,6 +32,8 @@ pub struct Erc721Deployment {
     pub symbol: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
     pub blocknumber: ::prost::alloc::string::String,
+    #[prost(string, tag="5")]
+    pub token_uri: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -118,5 +120,27 @@ pub struct TokenHolder {
     pub transfer_amount: ::prost::alloc::string::String,
     #[prost(bool, tag="7")]
     pub transfer_from: bool,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Erc721Token {
+    #[prost(string, tag="1")]
+    pub token_id: ::prost::alloc::string::String,
+    #[prost(string, tag="2")]
+    pub token_address: ::prost::alloc::string::String,
+    #[prost(string, tag="3")]
+    pub transfer_volume: ::prost::alloc::string::String,
+    #[prost(string, tag="4")]
+    pub token_uri: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct NftHolder {
+    #[prost(string, tag="1")]
+    pub holder_address: ::prost::alloc::string::String,
+    #[prost(string, tag="2")]
+    pub token_address: ::prost::alloc::string::String,
+    #[prost(string, tag="3")]
+    pub token_balance: ::prost::alloc::string::String,
 }
 // @@protoc_insertion_point(module)

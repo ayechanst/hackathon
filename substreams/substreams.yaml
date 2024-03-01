@@ -1,10 +1,10 @@
 specVersion: v0.1.0
 package:
-  name: "substreams_template"
-  version: v0.1.0
+  name: "debbie_hack"
+  version: v0.0.1
 
 imports:
-  database_change: https://github.com/streamingfast/substreams-sink-database-changes/releases/download/v1.2.1/substreams-database-change-v1.2.1.spkg
+  entities: https://github.com/streamingfast/substreams-sink-entity-changes/releases/download/v1.3.0/substreams-sink-entity-changes-v1.3.0.spkg
 
 protobuf:
   files:
@@ -43,6 +43,14 @@ modules:
     inputs:
       - map: map_blocks
 
+  - name: store_erc20_transfer_count
+    kind: store
+    initialBlock: 8928157
+    updatePolicy: add
+    valueType: int64 
+    inputs:
+      - map: map_blocks
+
   - name: map_erc20_transfer_vol
     kind: map
     initialBlock: 8928157
@@ -53,6 +61,73 @@ modules:
     output:
       type: proto:debbie.ERC20Transfers
 
+  - name: map_erc20_transfer_count
+    kind: map
+    initialBlock: 8928157
+    inputs:
+      - map: map_blocks
+      - store: store_erc20_transfer_count
+        mode: get
+    output:
+      type: proto:debbie.ERC20Transfers
+
+  - name: map_erc20_token_holders
+    kind: map
+    initialBlock: 8928157
+    inputs:
+      - map: map_blocks
+    output:
+      type: proto:debbie.TokenHolders
+
+  - name: store_user_erc20_vol
+    kind: store
+    initialBlock: 8928157
+    updatePolicy: add
+    valueType: bigint 
+    inputs:
+      - map: map_erc20_token_holders 
+
+  - name: store_user_erc20_balance
+    kind: store
+    initialBlock: 8928157
+    updatePolicy: add
+    valueType: bigint 
+    inputs:
+      - map: map_erc20_token_holders
+
+  - name: store_user_erc20_count
+    kind: store
+    initialBlock: 8928157
+    updatePolicy: add
+    valueType: int64 
+    inputs:
+      - map: map_erc20_token_holders
+
+  - name: map_user_erc20_data
+    kind: map
+    initialBlock: 8928157
+    inputs:
+      - map: map_erc20_token_holders
+      - store: store_user_erc20_vol
+        mode: get
+      - store: store_user_erc20_balance
+        mode: get
+      - store: store_user_erc20_count
+        mode: get
+    output:
+      type: proto:debbie.TokenHolders
+
+  - name: graph_out
+    kind: map
+    initialBlock: 8928157
+    inputs:
+      - map: map_blocks
+      - map: map_erc20_transfer_vol
+      - map: map_erc20_transfer_count
+      - map: map_user_erc20_data
+    output:
+      type: proto:sf.substreams.sink.entity.v1.EntityChanges
+
   - name: map_erc721_test
     kind: map
     initialBlock: 12876179
@@ -61,5 +136,4 @@ modules:
     output:
       type: proto:debbie.ERC721Deployments
   
-
 network: mainnet

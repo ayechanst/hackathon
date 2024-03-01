@@ -1,8 +1,10 @@
+extern crate regex;
 use crate::abi::erc721::functions;
 use crate::pb::debbie::{Erc721Deployment, Erc721Transfer, MasterProto};
 use core::panic;
 use evm_core::{ExitReason, Opcode};
 use primitive_types::H256;
+use regex::Regex;
 use std::collections::HashMap;
 use std::rc::Rc;
 use substreams::log;
@@ -15,6 +17,7 @@ pub struct ERC721Creation {
     pub address: Vec<u8>,
     pub code: Vec<u8>,
     pub storage_changes: HashMap<H256, Vec<u8>>,
+    pub token_uri: String,
 }
 
 const ERC721_FN_1: &str = "b88d4fde";
@@ -68,8 +71,21 @@ impl StorageChanges {
     }
 }
 
+pub fn get_token_uri(call: &Call) -> String {
+    for change in &call.storage_changes {
+        if let Ok(change_value) = String::from_utf8(change.new_value.clone()) {
+            if change_value.starts_with("ipfs://")
+                || change_value.starts_with("https://")
+                || change_value.starts_with("http://")
+            {
+                return change_value.to_string();
+            }
+        }
+    } "poop butt".to_string()
+}
+
 impl ERC721Creation {
-    pub fn from_call(calls: Vec<&Call>) -> Option<Self> {
+    pub fn from_call(calls: Vec<&Call>, token_uri: String) -> Option<Self> {
         for call in calls.iter() {
             if let Some(last_code_change) = call.code_changes.iter().last() {
                 let code = &last_code_change.new_code;
@@ -84,16 +100,18 @@ impl ERC721Creation {
                             match parent_call.code_changes.last() {
                                 Some(parent_code_changes) => {
                                     // check if the parent code contains a delegate call
-                                    let parent_code_string = Hex::encode(&parent_code_changes.new_code);
+                                    let parent_code_string =
+                                        Hex::encode(&parent_code_changes.new_code);
                                     let creation_address = address.to_vec();
                                     let creation_code = code.to_vec();
-                                    
+
                                     let mut contract_creation = Self {
                                         address: creation_address,
                                         code: creation_code,
                                         storage_changes: Default::default(),
+                                        token_uri,
                                     };
-                                    
+
                                     if contains_delegate_call(&parent_code_string) {
                                         log::info!(
                                             "found delegatecall in bytecode on normal calltype"
@@ -123,6 +141,7 @@ impl ERC721Creation {
                                 address: address.to_vec(),
                                 code: code.to_vec(),
                                 storage_changes,
+                                token_uri,
                             });
                         }
 
@@ -133,6 +152,7 @@ impl ERC721Creation {
                                 address: address.to_vec(),
                                 code: code.to_vec(),
                                 storage_changes,
+                                token_uri,
                             });
                         }
                     };
@@ -205,6 +225,7 @@ pub fn process_erc721_contract(
         name: String::new(),
         symbol: String::new(),
         blocknumber: clock.number.to_string(),
+        token_uri: contract_creation.token_uri,
     };
     let code = Rc::new(contract_creation.code);
 

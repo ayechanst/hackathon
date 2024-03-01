@@ -877,6 +877,7 @@ dependencies = [
  "num-bigint",
  "primitive-types 0.12.2",
  "prost",
+ "regex",
  "substreams",
  "substreams-database-change",
  "substreams-ethereum",
