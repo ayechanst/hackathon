@@ -1,8 +1,6 @@
 import { selector } from "recoil";
 import { selectedTabState } from "./atoms";
 
-
-
 export const filterButtonsState = selector({
   key: 'charCountState', // unique ID (with respect to other atoms/selectors)
   get: ({get}) => {

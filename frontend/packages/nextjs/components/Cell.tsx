@@ -10,12 +10,12 @@ interface CellProps {
 }
 
 const Cell: React.FC<CellProps> = ({ data, id, keyType }) => {
-  const isEven = id % 2 === 0;
+  // const isEven = id % 2 === 0;
 
   return (
-    // <motion.div initial={{ x: initialValue }} animate={{ x: 0 }} transition={{ duration: 0.4, delay: delayValue }}>
+    // <motion.div animate={{ x: 0 }} }}>
     <>
-      <div className="shrink">
+      <div className="">
         {keyType === "address" ? (
           <div className={`border-b border-accent m-4 text-yellow-100`}>
             <AnyAddress address={data.toString()} />

@@ -1,8 +1,6 @@
 import Menu from "./Menu";
 import Tabs from "./Tabs";
 import TimeMenu from "./TimeMenu";
-import { useRecoilState } from "recoil";
-import { filterButtonsArrayState } from "~~/recoil/atoms";
 
 const Data = () => {
   return (

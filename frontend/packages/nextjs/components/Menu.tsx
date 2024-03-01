@@ -3,7 +3,7 @@ import Button from "./Button";
 import SearchInput from "./SearchInput";
 import { motion } from "framer-motion";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { filterButtonsArrayState, subgraphQueryState } from "~~/recoil/atoms";
+import { subgraphQueryState } from "~~/recoil/atoms";
 import { filterButtonsState } from "~~/recoil/selectors";
 
 const Menu = () => {

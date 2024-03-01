@@ -42,7 +42,7 @@ const Tabs = () => {
                   aria-label={tab}
                   onClick={() => setSelectedTab(tab)}
                 />
-                <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
+                <div role="tabpanel" className="tab-content bg-base-100 rounded-box p-6">
                   <Chart data={data} />
                 </div>
               </>
