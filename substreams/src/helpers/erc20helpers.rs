@@ -147,7 +147,7 @@ fn execute_on(
     }
 
     log::info!(
-        "Trying contract: {:?} with {} valid jump destinations (code len {}))",
+        "ERC20: Trying contract: {:?} with {} valid jump destinations (code len {}))",
         address,
         jump_dest,
         code.len(),
@@ -225,7 +225,7 @@ fn execute_on(
                             }
                             _ => {
                                 return Err(anyhow::anyhow!(
-                                    "Capture trap unhandled: {:?}",
+                                    "ERC20: Capture trap unhandled: {:?}",
                                     opcode_to_string(opcode)
                                 ));
                             }

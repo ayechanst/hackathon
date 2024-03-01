@@ -20,7 +20,7 @@ binaries:
 modules:
   - name: map_blocks
     kind: map
-    initialBlock: 14158321
+    initialBlock: 12876179
     inputs:
       - source: sf.ethereum.type.v2.Block
       - source: sf.substreams.v1.Clock
@@ -55,7 +55,7 @@ modules:
 
   - name: map_erc721_test
     kind: map
-    initialBlock: 14158321
+    initialBlock: 12876179
     inputs:
       - map: map_blocks
     output:

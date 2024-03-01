@@ -93,6 +93,7 @@ fn map_blocks(blk: Block, clk: Clock) -> Result<MasterProto, substreams::errors:
     let mut erc721_contracts: Vec<Erc721Deployment> = Vec::new();
     let mut erc20_transfers: Vec<Erc20Transfer> = Vec::new();
     let mut erc721_transfers: Vec<Erc721Transfer> = Vec::new();
+    substreams::log::info!("hello");
     let filtered_calls: Vec<_> = blk
         .transaction_traces
         .into_iter()
@@ -125,6 +126,7 @@ fn map_blocks(blk: Block, clk: Clock) -> Result<MasterProto, substreams::errors:
                 {
                     if let Some(deployment) = process_erc721_contract(token, clk.clone()) {
                         erc721_contracts.push(deployment);
+                        substreams::log::info!("pushed erc721 contract");
                     }
                 }
             }

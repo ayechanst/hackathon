@@ -1,5 +1,6 @@
 use crate::abi::erc721::functions;
 use crate::pb::debbie::{Erc721Deployment, Erc721Transfer, MasterProto};
+use core::panic;
 use evm_core::{ExitReason, Opcode};
 use primitive_types::H256;
 use std::collections::HashMap;
@@ -7,7 +8,8 @@ use std::rc::Rc;
 use substreams::log;
 use substreams::pb::substreams::Clock;
 use substreams::Hex;
-use substreams_ethereum::pb::eth::v2::Call;
+use substreams_ethereum::pb::eth::v2::{Call, CallType, StorageChange};
+//use substreams_ethereum::pb::eth::v2::CallType;
 
 pub struct ERC721Creation {
     pub address: Vec<u8>,
@@ -15,36 +17,183 @@ pub struct ERC721Creation {
     pub storage_changes: HashMap<H256, Vec<u8>>,
 }
 
+const ERC721_FN_1: &str = "b88d4fde";
+const ERC721_FN_2: &str = "06fdde03";
+const ERC721_FN_3: &str = "95d89b41";
+const ERC721_FN_4: &str = "c87b56dd";
+// to check for gas and delegatecall opcodes in sequence
+const GASDELEGATECALL: &str = "5af4";
+
+fn contains_erc721_fns(code_string: &str) -> bool {
+    code_string.contains(ERC721_FN_1)
+        && code_string.contains(ERC721_FN_2)
+        && code_string.contains(ERC721_FN_3)
+        && code_string.contains(ERC721_FN_4)
+}
+
+fn contains_delegate_call(code_str: &str) -> bool {
+    code_str.contains(GASDELEGATECALL)
+}
+
+enum ParentCallType<'a> {
+    Normal(&'a Call),
+    Delegate(&'a Call),
+    None,
+}
+
+impl ParentCallType<'_> {
+    pub fn new<'a>(calls: &'a Vec<&'a Call>, current_call: &Call) -> ParentCallType<'a> {
+        let parent_call_index = current_call.parent_index as usize;
+        let parent_call = calls.get(parent_call_index);
+        if let Some(parent_call) = parent_call {
+            if parent_call.call_type() == CallType::Delegate {
+                ParentCallType::Delegate(parent_call)
+            } else {
+                ParentCallType::Normal(parent_call)
+            }
+        } else {
+            ParentCallType::None
+        }
+    }
+}
+
+struct StorageChanges(HashMap<H256, Vec<u8>>);
+impl StorageChanges {
+    pub fn new(changes: &Vec<StorageChange>) -> Self {
+        let storage_changes = changes
+            .iter()
+            .map(|s| (H256::from_slice(s.key.as_ref()), s.new_value.to_vec()))
+            .collect();
+        Self(storage_changes)
+    }
+}
+
 impl ERC721Creation {
     pub fn from_call(calls: Vec<&Call>) -> Option<Self> {
-        for call in calls {
+        for call in calls.iter() {
             if let Some(last_code_change) = call.code_changes.iter().last() {
                 let code = &last_code_change.new_code;
                 let address = &call.address;
                 let code_string = Hex::encode(&code);
-                if code_string.contains("b88d4fde") {
-                    if code_string.contains("06fdde03")
-                        && code_string.contains("95d89b41")
-                        && code_string.contains("c87b56dd")
-                    {
-                        let storage_changes: HashMap<H256, Vec<u8>> = call
-                            .storage_changes
-                            .iter()
-                            .map(|s| (H256::from_slice(s.key.as_ref()), s.new_value.to_vec()))
-                            .collect();
-                        return Some(Self {
-                            address: address.to_vec(),
-                            code: code.to_vec(),
-                            storage_changes,
-                        });
-                    } else {
-                        
-                    }
+
+                if contains_erc721_fns(&code_string) {
+                    substreams::log::info!("found functions");
+
+                    match ParentCallType::new(&calls, call) {
+                        ParentCallType::Normal(parent_call) => {
+                            match parent_call.code_changes.last() {
+                                Some(parent_code_changes) => {
+                                    // check if the parent code contains a delegate call
+                                    let parent_code_string = Hex::encode(&parent_code_changes.new_code);
+                                    let creation_address = address.to_vec();
+                                    let creation_code = code.to_vec();
+                                    
+                                    let mut contract_creation = Self {
+                                        address: creation_address,
+                                        code: creation_code,
+                                        storage_changes: Default::default(),
+                                    };
+                                    
+                                    if contains_delegate_call(&parent_code_string) {
+                                        log::info!(
+                                            "found delegatecall in bytecode on normal calltype"
+                                        );
+                                        let storage_changes =
+                                            StorageChanges::new(&parent_call.storage_changes).0;
+                                        contract_creation.storage_changes = storage_changes;
+                                    } else {
+                                        log::info!("did not find delegatecall in parent bytecode");
+                                        let storage_changes =
+                                            StorageChanges::new(&call.storage_changes).0;
+                                        contract_creation.storage_changes = storage_changes;
+                                    }
+
+                                    return Some(contract_creation);
+                                }
+                                None => {
+                                    substreams::log::info!("ERC721: No code changes found");
+                                }
+                            };
+                        }
+
+                        ParentCallType::Delegate(parent_call) => {
+                            let storage_changes =
+                                StorageChanges::new(&parent_call.storage_changes).0;
+                            return Some(Self {
+                                address: address.to_vec(),
+                                code: code.to_vec(),
+                                storage_changes,
+                            });
+                        }
+
+                        ParentCallType::None => {
+                            log::info!("no proxy found{:?}", address);
+                            let storage_changes = StorageChanges::new(&call.storage_changes).0;
+                            return Some(Self {
+                                address: address.to_vec(),
+                                code: code.to_vec(),
+                                storage_changes,
+                            });
+                        }
+                    };
                 }
             }
-        };
+        }
         None
     }
+    // pub fn from_call(calls: Vec<&Call>) -> Option<Self> {
+    //     for call in calls.iter() {
+    //         let proxy_call_index = call.parent_index;
+    //         let proxy_call_index_usize = proxy_call_index as usize;
+    //         let proxy_call: Option<&Call>;
+    //         if let Some(value) = calls.get(proxy_call_index_usize) {
+    //             proxy_call = Some(value);
+    //         } else {
+    //             proxy_call = None
+    //         }
+
+    //         if let Some(last_code_change) = call.code_changes.iter().last() {
+    //             let code = &last_code_change.new_code;
+    //             let address = &call.address;
+    //             let code_string = Hex::encode(&code);
+    //             if code_string.contains("b88d4fde")
+    //                 && code_string.contains("06fdde03")
+    //                 && code_string.contains("95d89b41")
+    //                 && code_string.contains("c87b56dd")
+    //             {
+    //                 substreams::log::info!("found functions");
+    //                 if proxy_call.map_or(true, |call| call.call_type != CallType::Delegate as i32) {
+    //                     log::info!("no proxy found{:?}", address);
+    //                     let storage_changes: HashMap<H256, Vec<u8>> = call
+    //                         .storage_changes
+    //                         .iter()
+    //                         .map(|s| (H256::from_slice(s.key.as_ref()), s.new_value.to_vec()))
+    //                         .collect();
+    //                     return Some(Self {
+    //                         address: address.to_vec(),
+    //                         code: code.to_vec(),
+    //                         storage_changes,
+    //                     });
+    //                 } else {
+    //                     log::info!("proxy found {:?}", address);
+    //                     if let Some(proxy) = proxy_call {
+    //                         let proxy_storage_changes: HashMap<H256, Vec<u8>> = proxy
+    //                             .storage_changes
+    //                             .iter()
+    //                             .map(|s| (H256::from_slice(s.key.as_ref()), s.new_value.to_vec()))
+    //                             .collect();
+    //                         return Some(Self {
+    //                             address: address.to_vec(),
+    //                             code: code.to_vec(),
+    //                             storage_changes: proxy_storage_changes,
+    //                         });
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     None
+    // }
 }
 
 pub fn process_erc721_contract(
@@ -117,7 +266,7 @@ fn execute_on(
     }
 
     log::info!(
-        "Trying contract: {:?} with {} valid jump destinations (code len {}))",
+        "ERC721: Trying contract: {:?} with {} valid jump destinations (code len {}))",
         address,
         jump_dest,
         code.len(),
@@ -183,6 +332,7 @@ fn execute_on(
                             // SLOAD
                             0x54 => {
                                 let key = machine.stack_mut().pop().unwrap();
+                                log::info!("storage key {:?}", key);
 
                                 if let Some(value) = storage_changes.get(&key) {
                                     machine.stack_mut().push(H256::from_slice(value)).unwrap();
@@ -193,9 +343,14 @@ fn execute_on(
                                     ));
                                 }
                             }
+
+                            // // SHA3
+                            // 0x20 => {
+                            //     panic!("asdlfkjasdlkfjasdlkfj")
+                            // }
                             _ => {
                                 return Err(anyhow::anyhow!(
-                                    "Capture trap unhandled: {:?}",
+                                    "ERC721: Capture trap unhandled: {:?}",
                                     opcode_to_string(opcode)
                                 ));
                             }
