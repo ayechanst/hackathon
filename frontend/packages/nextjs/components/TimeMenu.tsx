@@ -28,7 +28,7 @@ const TimeMenu: React.FC<TimeMenuProps> = ({ sendTimeButtonNameToData }) => {
 
   return (
     <>
-      <div className="mr-5 w-full bg-secondary shadow-xl rounded-lg">
+      <div className="mr-5 h-full w-full bg-secondary shadow-xl rounded-lg">
         <div className="flex justify-center pt-5 font-bold text-lg">Time Line</div>
         <div className="divider"></div>
         <div className="px-3">
