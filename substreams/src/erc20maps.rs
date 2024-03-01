@@ -20,7 +20,7 @@ pub fn map_erc20_transfer_vol(
 }
 
 #[substreams::handlers::map]
-pub fn map_erc20_count(
+pub fn map_erc20_transfer_count(
     transfers: MasterProto,
     store: StoreGetInt64,
 ) -> Result<Erc20Transfers, substreams::errors::Error> {
