@@ -34,6 +34,8 @@ message ERC20Transfer {
   string amount = 4;
   string count = 5;
   string volume = 6;
+  string blocknumber = 7;
+  
 }
 
 message ERC20Transfers {
@@ -45,8 +47,8 @@ message ERC721Transfer {
   string to = 2;
   string from = 3;
   string token_id = 4;
-  string blocknumber = 5;
   string volume = 6;
+  string blocknumber = 5;
 }
 
 message ERC721Transfers {
@@ -81,8 +83,14 @@ message ERC721Token {
   string token_uri = 4;
 }
 
+message NFTHolders {
+  repeated NFTHolder erc721_token_holders = 1;
+}
+
 message NFTHolder {
   string holder_address = 1;
   string token_address = 2;
   string token_balance = 3;
+  bool transfer_from = 4;
 }
+

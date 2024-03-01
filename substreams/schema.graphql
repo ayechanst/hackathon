@@ -1,0 +1,26 @@
+type TokenDeployment @entity(immutable: false) {
+    id: ID!
+    name: String!
+    symbol: String!
+    decimals: BigInt!
+    totalSupply: BigInt!
+    blocknumber: BigInt!
+}
+
+type TokenTransfer @entity(immutable: false) {
+    id: ID!
+    from: String!
+    to: String!
+    amount: BigInt!
+    count: BigInt!
+    volume: BigInt!
+}
+
+type TokenHolder @entity(immutable: false) {
+    id: ID!
+    holderAddress: String!
+    tokenAddress: String!
+    balance: BigInt!
+    transferVolume: BigInt!
+    transferCount: BigInt!
+}

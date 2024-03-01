@@ -16,7 +16,7 @@ pub fn store_erc20_transfer_vol(transfers: MasterProto, store: StoreAddBigInt) {
 }
 
 #[substreams::handlers::store]
-pub fn store_erc20_count(transfers: MasterProto, store: StoreAddInt64) {
+pub fn store_erc20_transfer_count(transfers: MasterProto, store: StoreAddInt64) {
     for transfer in transfers.erc20transfers {
         store.add(0, transfer.address, 1)
     }
@@ -40,7 +40,7 @@ pub fn store_user_erc20_vol(transfers: TokenHolders, store: StoreAddBigInt) {
 #[substreams::handlers::store]
 pub fn store_user_erc20_balance(transfer: TokenHolders, store: StoreAddBigInt) {
     for transfer in transfer.token_holders {
-        if let Some(amount) = BigInt::from_str(&transfer.balance).ok() {
+        if let Some(amount) = BigInt::from_str(&transfer.transfer_amount).ok() {
             if transfer.transfer_from {
                 store.add(
                     0,
