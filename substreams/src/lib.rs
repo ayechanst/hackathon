@@ -10,6 +10,8 @@ use abi::erc721::events::Transfer as Erc721TransferEvent;
 use helpers::erc20helpers::*;
 use helpers::erc721helpers::*;
 
+use pb::debbie::Erc20HoldersTransfers;
+use pb::debbie::Erc721TransfersHoldersTokens;
 use pb::debbie::{
     Erc20Deployment, Erc20Transfer, Erc20Transfers, Erc721Deployments, MasterProto, TokenHolders,
 };
@@ -167,11 +169,8 @@ fn map_erc721_test(master: MasterProto) -> Erc721Deployments {
 #[substreams::handlers::map]
 fn graph_out(
     master: MasterProto,
-    erc20_transfers: Erc20Transfers,
-    user_erc20_data: TokenHolders,
-    erc721_transfers: Erc721Transfers,
-    user_erc721_data: NftHolders,
-    erc721_token_vol: Erc721Tokens,
+    transfers_and_holders: Erc20HoldersTransfers,
+    erc721_transfers_holders_tokens: Erc721TransfersHoldersTokens,
 ) -> Result<EntityChanges, substreams::errors::Error> {
     let mut tables = Tables::new();
 
@@ -221,7 +220,7 @@ fn graph_out(
             .set("tokenUri", erc721_deployment.token_uri);
     }
 
-    for (index, erc20_transfer) in erc20_transfers.transfers.iter().enumerate() {
+    for (index, erc20_transfer) in transfers_and_holders.erc20transfers.iter().enumerate() {
         let amount: BigInt;
         if let Some(amt) = BigInt::from_str(&erc20_transfer.amount).ok() {
             amount = amt;
@@ -271,7 +270,7 @@ fn graph_out(
             .set("blocknumber", blocknumber);
     }
 
-    for (index, erc721_transfer) in erc721_transfers.transfers.iter().enumerate() {
+    for (index, erc721_transfer) in erc721_transfers_holders_tokens.transfers.iter().enumerate() {
         let volume: BigInt;
         if let Some(vol) = BigInt::from_str(&erc721_transfer.volume).ok() {
             volume = vol;
@@ -306,7 +305,7 @@ fn graph_out(
             .set("blocknumber", blocknumber);
     }
 
-    for token_holder in user_erc20_data.token_holders {
+    for token_holder in transfers_and_holders.token_holders {
         let token_balance: BigInt;
         if let Some(balance) = BigInt::from_str(&token_holder.balance).ok() {
             token_balance = balance;
@@ -343,7 +342,7 @@ fn graph_out(
             .set("transferCount", transfer_count);
     }
 
-    for token_holder in user_erc721_data.erc721_token_holders {
+    for token_holder in erc721_transfers_holders_tokens.erc721_token_holders {
         let token_balance: BigInt;
         if let Some(balance) = BigInt::from_str(&token_holder.token_balance).ok() {
             token_balance = balance;
@@ -364,7 +363,7 @@ fn graph_out(
             .set("tokenBalance", token_balance);
     }
 
-    for token in erc721_token_vol.erc721_tokens {
+    for token in erc721_transfers_holders_tokens.erc721_tokens {
         let volume: BigInt;
         if let Some(vol) = BigInt::from_str(&token.transfer_volume).ok() {
             volume = vol;

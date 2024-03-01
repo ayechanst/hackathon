@@ -43,6 +43,14 @@ pub struct Erc721Deployments {
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Erc20HoldersTransfers {
+    #[prost(message, repeated, tag="1")]
+    pub erc20transfers: ::prost::alloc::vec::Vec<Erc20Transfer>,
+    #[prost(message, repeated, tag="2")]
+    pub token_holders: ::prost::alloc::vec::Vec<TokenHolder>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Erc20Transfer {
     #[prost(string, tag="1")]
     pub address: ::prost::alloc::string::String,
@@ -122,6 +130,16 @@ pub struct TokenHolder {
     pub transfer_amount: ::prost::alloc::string::String,
     #[prost(bool, tag="7")]
     pub transfer_from: bool,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Erc721TransfersHoldersTokens {
+    #[prost(message, repeated, tag="1")]
+    pub transfers: ::prost::alloc::vec::Vec<Erc721Transfer>,
+    #[prost(message, repeated, tag="2")]
+    pub erc721_token_holders: ::prost::alloc::vec::Vec<NftHolder>,
+    #[prost(message, repeated, tag="3")]
+    pub erc721_tokens: ::prost::alloc::vec::Vec<Erc721Token>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]

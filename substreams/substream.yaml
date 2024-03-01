@@ -141,3 +141,4 @@ modules:
       type: proto:sf.substreams.sink.entity.v1.EntityChanges
 
 network: mainnet
+
