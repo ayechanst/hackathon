@@ -65,6 +65,7 @@ modules:
     updatePolicy: add
     valueType: bigint 
     inputs:
+      - source: sf.substreams.v1.Clock
       - map: map_blocks
 
   - name: store_erc721_token_vol
@@ -73,6 +74,7 @@ modules:
     updatePolicy: add
     valueType: bigint 
     inputs:
+      - source: sf.substreams.v1.Clock
       - map: map_blocks
 
   - name: map_erc20_transfers
@@ -117,6 +119,7 @@ modules:
     kind: map
     initialBlock: 1 
     inputs:
+      - source: sf.substreams.v1.Clock
       - map: map_erc721_token_holders
       - store: store_user_erc721_balance
         mode: get
@@ -127,6 +130,7 @@ modules:
     kind: map
     initialBlock: 1 
     inputs:
+      - source: sf.substreams.v1.Clock
       - map: map_erc721_transfers
       - store: store_erc721_token_vol
         mode: get
@@ -139,6 +143,7 @@ modules:
     updatePolicy: add
     valueType: bigint 
     inputs:
+      - source: sf.substreams.v1.Clock
       - map: map_erc20_token_holders 
 
   - name: store_user_erc20_balance
@@ -147,6 +152,7 @@ modules:
     updatePolicy: add
     valueType: bigint 
     inputs:
+      - source: sf.substreams.v1.Clock
       - map: map_erc20_token_holders
 
   - name: store_user_erc20_count
@@ -155,12 +161,14 @@ modules:
     updatePolicy: add
     valueType: int64 
     inputs:
+      - source: sf.substreams.v1.Clock
       - map: map_erc20_token_holders
 
   - name: map_user_erc20_data
     kind: map
     initialBlock: 1 
     inputs:
+      - source: sf.substreams.v1.Clock
       - map: map_erc20_token_holders
       - store: store_user_erc20_vol
         mode: get

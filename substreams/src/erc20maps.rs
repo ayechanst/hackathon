@@ -1,4 +1,8 @@
-use crate::pb::debbie::{Erc20Transfer, Erc20Transfers, MasterProto, TokenHolder, TokenHolders};
+use substreams::pb::substreams::Clock;
+
+use crate::pb::debbie::{
+    Erc20Transfer, Erc20Transfer, Erc20Transfers, MasterProto, TokenHolder, TokenHolders,
+};
 use substreams::store::{StoreGet, StoreGetBigInt, StoreGetInt64};
 
 #[substreams::handlers::map]
@@ -21,6 +25,16 @@ pub fn map_erc20_transfers(
         transfers: erc20_transfers,
     })
 }
+
+// #[substreams::handlers::map]
+// pub fn map_transfers_and_holders(
+//     transfers: MasterProto,
+//     store_vol: StoreGetBigInt,
+//     store_count: StoreGetInt64,
+//     store_user_balance: StoreGetBigInt,
+//     store_user_vol: StoreGetBigInt,
+//     store_user_count: StoreGetInt64,
+// ) -> Result<Erc20Trans
 
 #[substreams::handlers::map]
 pub fn map_erc20_token_holders(
@@ -56,28 +70,41 @@ pub fn map_erc20_token_holders(
 
 #[substreams::handlers::map]
 pub fn map_user_erc20_data(
+    clock: Clock,
     token_holders: TokenHolders,
     store_user_vol: StoreGetBigInt,
     store_user_balance: StoreGetBigInt,
     store_user_count: StoreGetInt64,
 ) -> TokenHolders {
     let mut token_holders = token_holders;
+    let timestamp_seconds = clock.timestamp.unwrap().seconds;
+    let month_id = timestamp_seconds / 2592000;
+
     for mut holder in &mut token_holders.token_holders {
         if let Some(volume) = store_user_vol.get_at(
             0,
-            &format!("{}:{}", holder.holder_address, holder.token_address),
+            &format!(
+                "UserErc20VolMonth:{}:{}:{}",
+                month_id, holder.holder_address, holder.token_address
+            ),
         ) {
             holder.transfer_volume = volume.to_string();
         }
         if let Some(balance) = store_user_balance.get_at(
             0,
-            &format!("{}:{}", holder.holder_address, holder.token_address),
+            &format!(
+                "UserErc20BalanceMonth:{}:{}:{}",
+                month_id, holder.holder_address, holder.token_address
+            ),
         ) {
             holder.balance = balance.to_string();
         }
         if let Some(count) = store_user_count.get_at(
             0,
-            &format!("{}:{}", holder.holder_address, holder.token_address),
+            &format!(
+                "UserErc20CountMonth:{}:{}:{}",
+                month_id, holder.holder_address, holder.token_address
+            ),
         ) {
             holder.transfer_count = count.to_string();
         }

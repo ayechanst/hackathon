@@ -27,6 +27,11 @@ message ERC721Deployments {
   repeated ERC721Deployment contracts = 1;
 }
 
+message ERC20HoldersTransfers {
+  repeated ERC20Transfer erc20transfers = 1;
+  repeated TokenHolder token_holders = 2;
+}
+
 message ERC20Transfer {
   string address = 1;
   string to = 2;
