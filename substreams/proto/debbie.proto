@@ -76,11 +76,14 @@ message TokenHolder {
   bool transfer_from = 7;
 }
 
+message ERC721Tokens {
+  repeated ERC721Token erc721_tokens = 1;
+}
+
 message ERC721Token {
   string token_id = 1;
   string token_address = 2;
   string transfer_volume = 3;
-  string token_uri = 4;
 }
 
 message NFTHolders {

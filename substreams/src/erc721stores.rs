@@ -28,3 +28,14 @@ pub fn store_user_erc721_balance(transfers: MasterProto, store: StoreAddBigInt) 
         }
     }
 }
+
+#[substreams::handlers::store]
+pub fn store_erc721_token_vol(transfers: MasterProto, store: StoreAddBigInt) {
+    for transfer in transfers.erc721transfers {
+        store.add(
+            0,
+            format!("{}:{}", transfer.address, transfer.token_id),
+            BigInt::from(1),
+        )
+    }
+}

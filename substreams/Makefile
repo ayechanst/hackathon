@@ -11,7 +11,7 @@ build:
 
 .PHONY: run
 run: build
-	substreams run -e $(ENDPOINT) substreams.yaml map_erc721_test -s $(START_BLOCK) -t $(STOP_BLOCK)
+	substreams run -e $(ENDPOINT) substreams.yaml graph_out -s $(START_BLOCK) -t $(STOP_BLOCK)
 
 .PHONY: gui
 gui: build

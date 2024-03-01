@@ -20,7 +20,7 @@ binaries:
 modules:
   - name: map_blocks
     kind: map
-    initialBlock: 1 
+    initialBlock: 1
     inputs:
       - source: sf.ethereum.type.v2.Block
       - source: sf.substreams.v1.Clock
@@ -45,12 +45,35 @@ modules:
 
   - name: store_erc20_transfer_count
     kind: store
-    initialBlock: 8928157
+    initialBlock: 1
     updatePolicy: add
     valueType: int64 
     inputs:
       - map: map_blocks
 
+  - name: store_erc721_transfer_vol
+    kind: store
+    initialBlock: 1
+    updatePolicy: add
+    valueType: bigint 
+    inputs:
+      - map: map_blocks
+
+  - name: store_user_erc721_balance
+    kind: store
+    initialBlock: 1
+    updatePolicy: add
+    valueType: bigint 
+    inputs:
+      - map: map_blocks
+
+  - name: store_erc721_token_vol
+    kind: store
+    initialBlock: 1
+    updatePolicy: add
+    valueType: bigint 
+    inputs:
+      - map: map_blocks
 
   - name: map_erc20_transfers
     kind: map
@@ -64,6 +87,16 @@ modules:
     output:
       type: proto:debbie.ERC20Transfers
 
+  - name: map_erc721_transfers
+    kind: map
+    initialBlock: 1 
+    inputs:
+      - map: map_blocks
+      - store: store_erc721_transfer_vol
+        mode: get
+    output:
+      type: proto:debbie.ERC721Transfers
+
   - name: map_erc20_token_holders
     kind: map
     initialBlock: 1 
@@ -71,6 +104,34 @@ modules:
       - map: map_blocks
     output:
       type: proto:debbie.TokenHolders
+  
+  - name: map_erc721_token_holders
+    kind: map
+    initialBlock: 1 
+    inputs:
+      - map: map_erc721_transfers 
+    output:
+      type: proto:debbie.NftHolders
+  
+  - name: map_user_erc721_data
+    kind: map
+    initialBlock: 1 
+    inputs:
+      - map: map_erc721_token_holders
+      - store: store_user_erc721_balance
+        mode: get
+    output:
+      type: proto:debbie.NftHolders
+
+  - name: map_erc721_token_vol
+    kind: map
+    initialBlock: 1 
+    inputs:
+      - map: map_erc721_transfers
+      - store: store_erc721_token_vol
+        mode: get
+    output:
+      type: proto:debbie.Erc721Tokens
 
   - name: store_user_erc20_vol
     kind: store
@@ -116,14 +177,16 @@ modules:
     inputs:
       - map: map_blocks
       - map: map_erc20_transfers 
-
       - map: map_user_erc20_data
+      - map: map_erc721_transfers
+      - map: map_user_erc721_data
+      - map: map_erc721_token_vol 
     output:
       type: proto:sf.substreams.sink.entity.v1.EntityChanges
 
   - name: map_erc721_test
     kind: map
-    initialBlock: 12876179
+    initialBlock: 1
     inputs:
       - map: map_blocks
     output:

@@ -1,5 +1,4 @@
-use crate::abi::erc721;
-use crate::pb::debbie::MasterProto;
+use crate::pb::debbie::{Erc721Token, Erc721Tokens, MasterProto};
 use crate::pb::debbie::{Erc721Transfer, Erc721Transfers, NftHolder, NftHolders};
 use substreams::store::{StoreGet, StoreGetBigInt};
 
@@ -25,7 +24,7 @@ pub fn map_erc721_token_holders(
     transfers: Erc721Transfers,
 ) -> Result<NftHolders, substreams::errors::Error> {
     let mut erc721_holders: Vec<NftHolder> = Vec::new();
-    for mut transfer in transfers.transfers {
+    for transfer in transfers.transfers {
         if transfer.to != "00000000000000000000".to_string() {
             erc721_holders.push(NftHolder {
                 holder_address: transfer.to,
@@ -60,3 +59,24 @@ pub fn map_user_erc721_data(erc721_holders: NftHolders, store: StoreGetBigInt) -
     nft_holders
 }
 
+#[substreams::handlers::map]
+pub fn map_erc721_token_vol(
+    transfers: Erc721Transfers,
+    store: StoreGetBigInt,
+) -> Result<Erc721Tokens, substreams::errors::Error> {
+    let mut erc721_tokens: Vec<Erc721Token> = Vec::new();
+    for transfer in transfers.transfers {
+        if let Some(volume) =
+            store.get_at(0, &format!("{}:{}", transfer.address, transfer.token_id))
+        {
+            erc721_tokens.push(Erc721Token {
+                token_address: transfer.address,
+                token_id: transfer.token_id,
+                transfer_volume: volume.to_string(),
+            });
+        }
+    }
+    Ok(Erc721Tokens {
+        erc721_tokens: erc721_tokens,
+    })
+}

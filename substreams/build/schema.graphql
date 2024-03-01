@@ -24,3 +24,34 @@ type TokenHolder @entity(immutable: false) {
     transferVolume: BigInt!
     transferCount: BigInt!
 }
+
+type NftDeployment @entity(immutable: false) {
+    id: ID!
+    name: String!
+    symbol: String!
+    blocknumber: BigInt!
+    tokenUri: String!
+}
+
+type NftTransfer @entity(immutable: false) {
+    id: ID!
+    from: String!
+    to: String!
+    tokenId: String!
+    volume: BigInt!
+    blocknumber: BigInt!
+}
+
+type NftHolder @entity(immutable: false) {
+    id: ID!
+    holderAddress: String!
+    nftAddress: String!
+    tokenBalance: BigInt!
+}
+
+type NftToken @entity(immutable: false) {
+    id: ID!
+    address: String!
+    tokenId: String!
+    volume: BigInt!
+}

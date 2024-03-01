@@ -1,17 +1,14 @@
 extern crate regex;
 use crate::abi::erc721::functions;
-use crate::pb::debbie::{Erc721Deployment, Erc721Transfer, MasterProto};
-use core::panic;
+use crate::pb::debbie::Erc721Deployment;
 use evm_core::{ExitReason, Opcode};
 use primitive_types::H256;
-use regex::Regex;
 use std::collections::HashMap;
 use std::rc::Rc;
 use substreams::log;
 use substreams::pb::substreams::Clock;
 use substreams::Hex;
 use substreams_ethereum::pb::eth::v2::{Call, CallType, StorageChange};
-//use substreams_ethereum::pb::eth::v2::CallType;
 
 pub struct ERC721Creation {
     pub address: Vec<u8>,
@@ -81,7 +78,8 @@ pub fn get_token_uri(call: &Call) -> String {
                 return change_value.to_string();
             }
         }
-    } "poop butt".to_string()
+    }
+    "".to_string()
 }
 
 impl ERC721Creation {
@@ -161,59 +159,6 @@ impl ERC721Creation {
         }
         None
     }
-    // pub fn from_call(calls: Vec<&Call>) -> Option<Self> {
-    //     for call in calls.iter() {
-    //         let proxy_call_index = call.parent_index;
-    //         let proxy_call_index_usize = proxy_call_index as usize;
-    //         let proxy_call: Option<&Call>;
-    //         if let Some(value) = calls.get(proxy_call_index_usize) {
-    //             proxy_call = Some(value);
-    //         } else {
-    //             proxy_call = None
-    //         }
-
-    //         if let Some(last_code_change) = call.code_changes.iter().last() {
-    //             let code = &last_code_change.new_code;
-    //             let address = &call.address;
-    //             let code_string = Hex::encode(&code);
-    //             if code_string.contains("b88d4fde")
-    //                 && code_string.contains("06fdde03")
-    //                 && code_string.contains("95d89b41")
-    //                 && code_string.contains("c87b56dd")
-    //             {
-    //                 substreams::log::info!("found functions");
-    //                 if proxy_call.map_or(true, |call| call.call_type != CallType::Delegate as i32) {
-    //                     log::info!("no proxy found{:?}", address);
-    //                     let storage_changes: HashMap<H256, Vec<u8>> = call
-    //                         .storage_changes
-    //                         .iter()
-    //                         .map(|s| (H256::from_slice(s.key.as_ref()), s.new_value.to_vec()))
-    //                         .collect();
-    //                     return Some(Self {
-    //                         address: address.to_vec(),
-    //                         code: code.to_vec(),
-    //                         storage_changes,
-    //                     });
-    //                 } else {
-    //                     log::info!("proxy found {:?}", address);
-    //                     if let Some(proxy) = proxy_call {
-    //                         let proxy_storage_changes: HashMap<H256, Vec<u8>> = proxy
-    //                             .storage_changes
-    //                             .iter()
-    //                             .map(|s| (H256::from_slice(s.key.as_ref()), s.new_value.to_vec()))
-    //                             .collect();
-    //                         return Some(Self {
-    //                             address: address.to_vec(),
-    //                             code: code.to_vec(),
-    //                             storage_changes: proxy_storage_changes,
-    //                         });
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     None
-    // }
 }
 
 pub fn process_erc721_contract(
@@ -315,7 +260,7 @@ fn execute_on(
         match machine.step() {
             Ok(()) => {
                 if let Some(opcode) = active_opcode {
-                    if let Some(output) = display_opcode_output(opcode, machine.stack()) {
+                    if let Some(_output) = display_opcode_output(opcode, machine.stack()) {
                         // log::info!("Machine executed opcode {}", output);
                     }
                 }
@@ -383,7 +328,7 @@ fn execute_on(
     }
 }
 
-fn display_opcode_input(opcode: evm_core::Opcode, stack: &evm_core::Stack) -> String {
+fn _display_opcode_input(opcode: evm_core::Opcode, stack: &evm_core::Stack) -> String {
     match opcode.0 {
         0x10 => display_opcode_with_stack("LT", stack, 2),
         0x11 => display_opcode_with_stack("GT", stack, 2),

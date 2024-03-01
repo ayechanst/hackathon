@@ -6,7 +6,6 @@ mod erc721stores;
 mod helpers;
 mod pb;
 use abi::erc20::events::Transfer as Erc20TransferEvent;
-use abi::erc20::functions::TotalSupply;
 use abi::erc721::events::Transfer as Erc721TransferEvent;
 use helpers::erc20helpers::*;
 use helpers::erc721helpers::*;
@@ -14,7 +13,7 @@ use helpers::erc721helpers::*;
 use pb::debbie::{
     Erc20Deployment, Erc20Transfer, Erc20Transfers, Erc721Deployments, MasterProto, TokenHolders,
 };
-use pb::debbie::{Erc721Deployment, Erc721Transfer};
+use pb::debbie::{Erc721Deployment, Erc721Tokens, Erc721Transfer, Erc721Transfers, NftHolders};
 
 use primitive_types::H256;
 use std::collections::HashMap;
@@ -74,10 +73,7 @@ fn map_blocks(blk: Block, clk: Clock) -> Result<MasterProto, substreams::errors:
                     if let Some(deployment) = process_erc20_contract(token, clk.clone()) {
                         erc20_contracts.push(deployment);
                     }
-
-                } else if let Some(token) =
-                    ERC721Creation::from_call(all_calls, token_uri)
-                {
+                } else if let Some(token) = ERC721Creation::from_call(all_calls, token_uri) {
                     if let Some(deployment) = process_erc721_contract(token, clk.clone()) {
                         erc721_contracts.push(deployment);
                     }
@@ -86,22 +82,22 @@ fn map_blocks(blk: Block, clk: Clock) -> Result<MasterProto, substreams::errors:
         }
         let block_num = clk.number.to_string();
         for log in &call.logs {
-            if let Some(erc20Transfer) = Erc20TransferEvent::match_and_decode(log) {
+            if let Some(erc20_transfer) = Erc20TransferEvent::match_and_decode(log) {
                 erc20_transfers.push(Erc20Transfer {
                     address: Hex::encode(&log.address),
-                    from: Hex::encode(erc20Transfer.from),
-                    to: Hex::encode(erc20Transfer.to),
-                    amount: erc20Transfer.value.to_string(),
+                    from: Hex::encode(erc20_transfer.from),
+                    to: Hex::encode(erc20_transfer.to),
+                    amount: erc20_transfer.value.to_string(),
                     count: String::from("1"),
                     volume: String::new(),
                     blocknumber: String::from(&block_num),
                 });
-            } else if let Some(erc721Transfer) = Erc721TransferEvent::match_and_decode(log) {
+            } else if let Some(erc721_transfer) = Erc721TransferEvent::match_and_decode(log) {
                 erc721_transfers.push(Erc721Transfer {
                     address: Hex::encode(&log.address),
-                    from: Hex::encode(erc721Transfer.from),
-                    to: Hex::encode(erc721Transfer.to),
-                    token_id: erc721Transfer.token_id.to_string(),
+                    from: Hex::encode(erc721_transfer.from),
+                    to: Hex::encode(erc721_transfer.to),
+                    token_id: erc721_transfer.token_id.to_string(),
                     volume: String::new(),
                     blocknumber: String::from(&block_num),
                 });
@@ -127,8 +123,6 @@ pub fn erc20_test_data(contract: ERC20Creation, blocknumber: String) -> Erc20Dep
         blocknumber,
     }
 }
-
-
 
 #[substreams::handlers::map]
 fn map_delegates(blk: Block) -> Erc20Deployment {
@@ -175,6 +169,9 @@ fn graph_out(
     master: MasterProto,
     erc20_transfers: Erc20Transfers,
     user_erc20_data: TokenHolders,
+    erc721_transfers: Erc721Transfers,
+    user_erc721_data: NftHolders,
+    erc721_token_vol: Erc721Tokens,
 ) -> Result<EntityChanges, substreams::errors::Error> {
     let mut tables = Tables::new();
 
@@ -207,6 +204,21 @@ fn graph_out(
             .set("totalSupply", total_supply)
             .set("decimals", decimals)
             .set("blocknumber", blocknumber);
+    }
+
+    for erc721_deployment in master.erc721contracts {
+        let blocknumber: BigInt;
+        if let Some(block) = BigInt::from_str(&erc721_deployment.blocknumber).ok() {
+            blocknumber = block;
+        } else {
+            blocknumber = BigInt::from(0);
+        }
+        tables
+            .create_row("NftDeployment", erc721_deployment.address)
+            .set("name", erc721_deployment.name)
+            .set("symbol", erc721_deployment.symbol)
+            .set("blocknumber", blocknumber)
+            .set("tokenUri", erc721_deployment.token_uri);
     }
 
     for (index, erc20_transfer) in erc20_transfers.transfers.iter().enumerate() {
@@ -259,6 +271,41 @@ fn graph_out(
             .set("blocknumber", blocknumber);
     }
 
+    for (index, erc721_transfer) in erc721_transfers.transfers.iter().enumerate() {
+        let volume: BigInt;
+        if let Some(vol) = BigInt::from_str(&erc721_transfer.volume).ok() {
+            volume = vol;
+        } else {
+            volume = BigInt::from(0);
+        }
+
+        let blocknumber: BigInt;
+        if let Some(block) = BigInt::from_str(&erc721_transfer.blocknumber).ok() {
+            blocknumber = block;
+        } else {
+            blocknumber = BigInt::from(0);
+        }
+
+        tables
+            .create_row(
+                "NftTransfer",
+                format!(
+                    "{}:{}:{}:{}:{}:{}",
+                    erc721_transfer.from,
+                    erc721_transfer.to,
+                    erc721_transfer.token_id,
+                    erc721_transfer.volume,
+                    erc721_transfer.blocknumber,
+                    index
+                ),
+            )
+            .set("from", erc721_transfer.from.clone())
+            .set("to", erc721_transfer.to.clone())
+            .set("tokenId", erc721_transfer.token_id.clone())
+            .set("volume", volume)
+            .set("blocknumber", blocknumber);
+    }
+
     for token_holder in user_erc20_data.token_holders {
         let token_balance: BigInt;
         if let Some(balance) = BigInt::from_str(&token_holder.balance).ok() {
@@ -294,6 +341,45 @@ fn graph_out(
             .set("balance", token_balance)
             .set("transferVolume", transfer_volume)
             .set("transferCount", transfer_count);
+    }
+
+    for token_holder in user_erc721_data.erc721_token_holders {
+        let token_balance: BigInt;
+        if let Some(balance) = BigInt::from_str(&token_holder.token_balance).ok() {
+            token_balance = balance;
+        } else {
+            token_balance = BigInt::from(0);
+        }
+
+        tables
+            .update_row(
+                "NftHolder",
+                format!(
+                    "{}:{}",
+                    token_holder.holder_address, token_holder.token_address
+                ),
+            )
+            .set("holderAddress", token_holder.holder_address)
+            .set("nftAddress", token_holder.token_address)
+            .set("tokenBalance", token_balance);
+    }
+
+    for token in erc721_token_vol.erc721_tokens {
+        let volume: BigInt;
+        if let Some(vol) = BigInt::from_str(&token.transfer_volume).ok() {
+            volume = vol;
+        } else {
+            volume = BigInt::from(0);
+        }
+
+        tables
+            .create_row(
+                "NftToken",
+                format!("{}:{}", token.token_address, token.token_id),
+            )
+            .set("address", token.token_address)
+            .set("tokenId", token.token_id)
+            .set("volume", volume);
     }
 
     Ok(tables.to_entity_changes())
