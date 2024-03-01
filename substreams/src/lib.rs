@@ -10,10 +10,12 @@ use abi::erc20::functions::TotalSupply;
 use abi::erc721::events::Transfer as Erc721TransferEvent;
 use helpers::erc20helpers::*;
 use helpers::erc721helpers::*;
+
 use pb::debbie::{
     Erc20Deployment, Erc20Transfer, Erc20Transfers, Erc721Deployments, MasterProto, TokenHolders,
 };
 use pb::debbie::{Erc721Deployment, Erc721Transfer};
+
 use primitive_types::H256;
 use std::collections::HashMap;
 use std::str::FromStr;
@@ -60,6 +62,7 @@ fn map_blocks(blk: Block, clk: Clock) -> Result<MasterProto, substreams::errors:
             if let Some(last_code_change) = call.code_changes.iter().last() {
                 let code = &last_code_change.new_code;
                 let address = &call.address.to_vec();
+                let token_uri = get_token_uri(&call);
                 let storage_changes: HashMap<H256, Vec<u8>> = call
                     .storage_changes
                     .iter()
@@ -71,7 +74,10 @@ fn map_blocks(blk: Block, clk: Clock) -> Result<MasterProto, substreams::errors:
                     if let Some(deployment) = process_erc20_contract(token, clk.clone()) {
                         erc20_contracts.push(deployment);
                     }
-                } else if let Some(token) = ERC721Creation::from_call(all_calls) {
+
+                } else if let Some(token) =
+                    ERC721Creation::from_call(all_calls, token_uri)
+                {
                     if let Some(deployment) = process_erc721_contract(token, clk.clone()) {
                         erc721_contracts.push(deployment);
                     }
@@ -122,14 +128,7 @@ pub fn erc20_test_data(contract: ERC20Creation, blocknumber: String) -> Erc20Dep
     }
 }
 
-pub fn erc721_test_data(contract: ERC721Creation) -> Erc721Deployment {
-    Erc721Deployment {
-        address: Hex::encode(contract.address),
-        name: String::from("debbie road surf club"),
-        symbol: String::from("DRSC"),
-        blocknumber: String::new(),
-    }
-}
+
 
 #[substreams::handlers::map]
 fn map_delegates(blk: Block) -> Erc20Deployment {

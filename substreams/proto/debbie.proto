@@ -20,6 +20,7 @@ message ERC721Deployment {
   string name = 2;
   string symbol = 3;
   string blocknumber = 4;
+  string token_uri = 5;
 }
 
 message ERC721Deployments {
@@ -92,3 +93,4 @@ message NFTHolder {
   string token_balance = 3;
   bool transfer_from = 4;
 }
+

@@ -59,3 +59,4 @@ pub fn map_user_erc721_data(erc721_holders: NftHolders, store: StoreGetBigInt) -
     }
     nft_holders
 }
+

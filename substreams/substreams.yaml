@@ -45,11 +45,12 @@ modules:
 
   - name: store_erc20_transfer_count
     kind: store
-    initialBlock: 1 
+    initialBlock: 8928157
     updatePolicy: add
     valueType: int64 
     inputs:
       - map: map_blocks
+
 
   - name: map_erc20_transfers
     kind: map
@@ -115,6 +116,7 @@ modules:
     inputs:
       - map: map_blocks
       - map: map_erc20_transfers 
+
       - map: map_user_erc20_data
     output:
       type: proto:sf.substreams.sink.entity.v1.EntityChanges
@@ -126,5 +128,6 @@ modules:
       - map: map_blocks
     output:
       type: proto:debbie.ERC721Deployments
-  
+
 network: mainnet
+
