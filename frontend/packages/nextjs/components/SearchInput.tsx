@@ -1,12 +1,12 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 
-const SearchInput = () => {
+const SearchInput = ({}) => {
+  const [searchInputQuery, setSearchInputQuery] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const [isActive, setIsActive] = useState(false);
   return (
     <motion.div
-      // className={`rounded-lg w-full mr-3 ${isFocused ? "ring ring-sky-500 shadow-md" : ""}`}
       className={`rounded-lg w-full m-2`}
       animate={{
         backgroundColor: isActive ? "#27272a" : "#eab308",
@@ -19,14 +19,15 @@ const SearchInput = () => {
       transition={{ duration: 0.3 }}
       onBlur={() => setIsActive(false)}
     >
-      {/* removed "input" from label's class name */}
       <label className="flex items-center text-primary m-1">
         <input
           type="text"
-          className={`bg-accent text-primary m-1 placeholder-primary w-full outline-none ${
-            isFocused ? "bg-transparent text-yellow-500" : ""
+          className={`bg-transparent text-primary m-1 placeholder-primary w-full outline-none ${
+            isFocused ? "text-yellow-500" : ""
           }`}
           placeholder="Search"
+          // onChange{(e) => setSearchInputQuery(e.target.value)}
+          value={searchInputQuery}
           onFocus={() => {
             setIsFocused(true);
             setIsActive(true);
@@ -35,8 +36,6 @@ const SearchInput = () => {
             setIsFocused(false);
             setIsActive(false);
           }}
-          // transition={{ duration: 0.3 }}
-          // onClick={() => setIsActive(true)}
         />
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4 opacity-100">
           <path

@@ -1,16 +1,15 @@
 import { useState } from "react";
 import Button from "./Button";
+import { useRecoilState } from "recoil";
+import { subgraphTimeQueryState } from "~~/recoil/atoms";
 
-interface TimeMenuProps {
-  sendTimeButtonNameToData: any;
-}
-
-const TimeMenu: React.FC<TimeMenuProps> = ({ sendTimeButtonNameToData }) => {
+const TimeMenu = () => {
   const [activeButton, setActiveButton] = useState<string | null>(null);
+  const [subgraphTimeQuery, setSubgraphTimeQuery] = useRecoilState(subgraphTimeQueryState);
 
-  const sendButtonNameToMenuOnClick = (buttonName: string) => {
+  const handleClick = (buttonName: string) => {
     setActiveButton(buttonName);
-    sendTimeButtonNameToData(buttonName);
+    setSubgraphTimeQuery(buttonName);
   };
 
   const timeButtonArray = [
@@ -37,7 +36,7 @@ const TimeMenu: React.FC<TimeMenuProps> = ({ sendTimeButtonNameToData }) => {
               return (
                 <Button
                   key={time}
-                  onClick={() => sendButtonNameToMenuOnClick(time)}
+                  onClick={() => handleClick(time)}
                   isActive={activeButton === time}
                   buttonName={time}
                 />

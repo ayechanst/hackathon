@@ -2,15 +2,16 @@ import React, { useEffect, useState } from "react";
 import Button from "./Button";
 import SearchInput from "./SearchInput";
 import { motion } from "framer-motion";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { filterButtonsArrayState, subgraphQueryState } from "~~/recoil/atoms";
+import { filterButtonsState } from "~~/recoil/selectors";
 
-interface MenuProps {
-  setSubgraphQueryName: any;
-  filterButtons: any;
-}
-
-const Menu: React.FC<MenuProps> = ({ setSubgraphQueryName, filterButtons }) => {
+const Menu = () => {
   const [address, setAddress] = useState("");
   const [activeButton, setActiveButton] = useState<string | null>(null);
+  // atom
+  const [subgraphQuery, setSubgraphQuery] = useRecoilState(subgraphQueryState);
+  const filterButtons = useRecoilValue(filterButtonsState);
 
   return (
     <>
@@ -26,12 +27,12 @@ const Menu: React.FC<MenuProps> = ({ setSubgraphQueryName, filterButtons }) => {
           <div className="divider divider-start divider-warning">NFTs</div>
           <div className="flex flex-col items-center">
             <Button
-              onClick={() => setSubgraphQueryName("erc721Transfers")}
+              onClick={() => setSubgraphQuery("erc721Transfers")}
               isActive={activeButton === "erc721Transfers"}
               buttonName="erc721Transfers"
             />
             <Button
-              onClick={() => setSubgraphQueryName("erc721Deployments")}
+              onClick={() => setSubgraphQuery("erc721Deployments")}
               isActive={activeButton === "erc721Deployments"}
               buttonName="erc721Deployments"
             />
@@ -48,7 +49,7 @@ const Menu: React.FC<MenuProps> = ({ setSubgraphQueryName, filterButtons }) => {
                 return (
                   <Button
                     key={filter}
-                    onClick={() => setSubgraphQueryName(filter)}
+                    onClick={() => setSubgraphQuery(filter)}
                     isActive={activeButton === filter}
                     buttonName={filter}
                   />

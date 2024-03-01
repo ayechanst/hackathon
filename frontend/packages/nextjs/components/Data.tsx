@@ -1,28 +1,21 @@
-import { useState } from "react";
 import Menu from "./Menu";
 import Tabs from "./Tabs";
 import TimeMenu from "./TimeMenu";
+import { useRecoilState } from "recoil";
+import { filterButtonsArrayState } from "~~/recoil/atoms";
 
 const Data = () => {
-  const [subgraphQueryName, setSubgraphQueryName] = useState<string>("erc20Transfers");
-  const [filterButtons, setFilterButtons] = useState<string[]>([""]);
-  const [subgraphTimeQuery, setSubgraphTimeQuery] = useState<string>("1 Hour");
-
-  function handleTimeButtonNameFromTimeMenu(buttonName: string) {
-    setSubgraphTimeQuery(buttonName);
-  }
-
   return (
     <>
       <div className="grid grid-cols-10">
         <div className="mt-2 mx-5 col-span-2">
-          <Menu setSubgraphQueryName={setSubgraphQueryName} filterButtons={filterButtons} />
+          <Menu />
         </div>
         <div className="mr-5 mt-2 col-span-7">
-          <Tabs subgraphQuery={subgraphQueryName} setFilterButtons={setFilterButtons} />
+          <Tabs />
         </div>
         <div className="mr-5 mt-2 col-span-1">
-          <TimeMenu sendTimeButtonNameToData={handleTimeButtonNameFromTimeMenu} />
+          <TimeMenu />
         </div>
       </div>
     </>

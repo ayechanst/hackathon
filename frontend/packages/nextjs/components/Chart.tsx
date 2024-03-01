@@ -5,7 +5,7 @@ const Chart: React.FC<any> = ({ data }) => {
   return (
     <>
       <div className="flex bg-secondary p-3 rounded-2xl place-items-center justify-between">
-        <button className="rounded-full h-20 p-1 bg-primary item-center">«</button>
+        <button className="rounded-full p-1 bg-primary justify-items-end">«</button>
         <div className="place-items-center flex">
           {data ? (
             Object.keys(data[0]).map((dataKey: any, keyIndex: any) => {
@@ -61,7 +61,7 @@ const Chart: React.FC<any> = ({ data }) => {
             <div>no data</div>
           )}
         </div>
-        <button className="place-self-end place-self-center rounded-full h-20 p-1 bg-primary item-center">»</button>
+        <button className="place-self-end place-self-center rounded-full p-1 bg-primary item-center">»</button>
       </div>
     </>
   );
