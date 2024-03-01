@@ -38,7 +38,7 @@ const Tabs: React.FC<TabsProps> = ({ subgraphQuery, setFilterButtons }) => {
   }, [clickedTab]);
 
   return (
-    <div className="flex w-full">
+    <div className="grid col-span-full">
       <div role="tablist" className="tabs tabs-lifted">
         {data ? (
           tabNames.map(tab => {
@@ -53,7 +53,7 @@ const Tabs: React.FC<TabsProps> = ({ subgraphQuery, setFilterButtons }) => {
                   aria-label={tab}
                   onClick={() => setClickedTab(tab)}
                 />
-                <div role="tabpanel" className="tab-content bg-base-100 border-base-300 w-full rounded-box p-6 ">
+                <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
                   <Chart data={data} />
                 </div>
               </>

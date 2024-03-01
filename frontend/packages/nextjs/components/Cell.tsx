@@ -12,14 +12,6 @@ interface CellProps {
 const Cell: React.FC<CellProps> = ({ data, id, keyType }) => {
   const isEven = id % 2 === 0;
 
-  let initialValue;
-  initialValue = isEven ? -1200 : 1200;
-
-  let delayValue: number = 0;
-  for (let i = 0; i <= id; i++) {
-    delayValue ? (delayValue += 0.05) : (delayValue += 0.05);
-  }
-
   return (
     // <motion.div initial={{ x: initialValue }} animate={{ x: 0 }} transition={{ duration: 0.4, delay: delayValue }}>
     <>
