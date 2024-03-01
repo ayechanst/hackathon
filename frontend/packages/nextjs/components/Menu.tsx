@@ -4,18 +4,13 @@ import SearchInput from "./SearchInput";
 import { motion } from "framer-motion";
 
 interface MenuProps {
-  sendButtonNameToData: any;
+  setSubgraphQueryName: any;
   filterButtons: any;
 }
 
-const Menu: React.FC<MenuProps> = ({ sendButtonNameToData, filterButtons }) => {
+const Menu: React.FC<MenuProps> = ({ setSubgraphQueryName, filterButtons }) => {
   const [address, setAddress] = useState("");
   const [activeButton, setActiveButton] = useState<string | null>(null);
-
-  const sendButtonNameToMenuOnClick = (buttonName: string) => {
-    setActiveButton(buttonName);
-    sendButtonNameToData(buttonName);
-  };
 
   return (
     <>
@@ -31,12 +26,12 @@ const Menu: React.FC<MenuProps> = ({ sendButtonNameToData, filterButtons }) => {
           <div className="divider divider-start divider-warning">NFTs</div>
           <div className="flex flex-col items-center">
             <Button
-              onClick={() => sendButtonNameToMenuOnClick("erc721Transfers")}
+              onClick={() => setSubgraphQueryName("erc721Transfers")}
               isActive={activeButton === "erc721Transfers"}
               buttonName="erc721Transfers"
             />
             <Button
-              onClick={() => sendButtonNameToMenuOnClick("erc721Deployments")}
+              onClick={() => setSubgraphQueryName("erc721Deployments")}
               isActive={activeButton === "erc721Deployments"}
               buttonName="erc721Deployments"
             />
@@ -53,7 +48,7 @@ const Menu: React.FC<MenuProps> = ({ sendButtonNameToData, filterButtons }) => {
                 return (
                   <Button
                     key={filter}
-                    onClick={() => sendButtonNameToMenuOnClick(filter)}
+                    onClick={() => setSubgraphQueryName(filter)}
                     isActive={activeButton === filter}
                     buttonName={filter}
                   />

@@ -8,11 +8,6 @@ const Data = () => {
   const [filterButtons, setFilterButtons] = useState<string[]>([""]);
   const [subgraphTimeQuery, setSubgraphTimeQuery] = useState<string>("1 Hour");
 
-  function handleButtonNameFromMenu(buttonName: string) {
-    console.log("buttonName being sent to subgraphQuery from Data.tsx: ", buttonName);
-    setSubgraphQueryName(buttonName);
-  }
-
   function handleTimeButtonNameFromTimeMenu(buttonName: string) {
     setSubgraphTimeQuery(buttonName);
   }
@@ -21,7 +16,7 @@ const Data = () => {
     <>
       <div className="grid grid-cols-10">
         <div className="mt-2 mx-5 col-span-2">
-          <Menu sendButtonNameToData={handleButtonNameFromMenu} filterButtons={filterButtons} />
+          <Menu setSubgraphQueryName={setSubgraphQueryName} filterButtons={filterButtons} />
         </div>
         <div className="mr-5 mt-2 col-span-7">
           <Tabs subgraphQuery={subgraphQueryName} setFilterButtons={setFilterButtons} />

@@ -19,33 +19,24 @@ const Tabs: React.FC<TabsProps> = ({ subgraphQuery, setFilterButtons }) => {
     queryProps: { rows: 10 },
   });
 
-  function handleClick(tabName: string) {
-    setClickedTab(tabName);
-    // move the whole component out of here
-    let filters: string[];
+  useEffect(() => {
     // everything here can also be filtered by time
     if (clickedTab === "NFTs") {
-      filters = ["transfer volume"];
-      setFilterButtons(filters);
+      setFilterButtons(["transfer volume"]);
     } else if (clickedTab === "NFT Collection") {
-      filters = ["transfer volume"];
-      setFilterButtons(filters);
+      setFilterButtons(["transfer volume"]);
     } else if (clickedTab === "NFT Holders") {
       // need to specify tokeken collection by UI input, maybe name or symbol, but easiest was will be address
       // by how much of the colletion they own
-      filters = ["input component"];
-      setFilterButtons(filters);
+      setFilterButtons(["input component"]);
     } else if (clickedTab === "Tokens") {
-      // will be sorted by time
-      filters = ["transfer volume", "relative transfer volume"];
-      setFilterButtons(filters);
+      setFilterButtons(["transfer volume", "relative transfer volume"]);
     } else if (clickedTab === "Token Holders") {
-      filters = ["input component", "token balance", "transfer volume"]; // token balance || what percentage of the tokens they hold
-      setFilterButtons(filters);
-    } else {
-      console.log("error from tabs and filters");
+      // token balance || what percentage of the tokens they hold
+      setFilterButtons(["input component", "token balance", "transfer volume"]);
     }
-  }
+  }, [clickedTab]);
+
   return (
     <div className="flex w-full">
       <div role="tablist" className="tabs tabs-lifted">
@@ -60,7 +51,7 @@ const Tabs: React.FC<TabsProps> = ({ subgraphQuery, setFilterButtons }) => {
                   role="tab"
                   className={`tab text-primary ${isActive ? active : "text-yellow-100"}`}
                   aria-label={tab}
-                  onClick={() => handleClick(tab)}
+                  onClick={() => setClickedTab(tab)}
                 />
                 <div role="tabpanel" className="tab-content bg-base-100 border-base-300 w-full rounded-box p-6 ">
                   <Chart data={data} />
