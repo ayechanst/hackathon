@@ -20,7 +20,7 @@ binaries:
 modules:
   - name: map_blocks
     kind: map
-    initialBlock: 12876179
+    initialBlock: 1 
     inputs:
       - source: sf.ethereum.type.v2.Block
       - source: sf.substreams.v1.Clock
@@ -29,7 +29,7 @@ modules:
 
   - name: map_delegates
     kind: map
-    initialBlock: 8928157
+    initialBlock: 1
     inputs:
       - source: sf.ethereum.type.v2.Block
     output:
@@ -37,7 +37,7 @@ modules:
 
   - name: store_erc20_transfer_vol
     kind: store
-    initialBlock: 8928157
+    initialBlock: 1
     updatePolicy: add
     valueType: bigint
     inputs:
@@ -45,27 +45,19 @@ modules:
 
   - name: store_erc20_transfer_count
     kind: store
-    initialBlock: 8928157
+    initialBlock: 1 
     updatePolicy: add
     valueType: int64 
     inputs:
       - map: map_blocks
 
-  - name: map_erc20_transfer_vol
+  - name: map_erc20_transfers
     kind: map
-    initialBlock: 8928157
+    initialBlock: 1 
     inputs:
       - map: map_blocks
       - store: store_erc20_transfer_vol
         mode: get
-    output:
-      type: proto:debbie.ERC20Transfers
-
-  - name: map_erc20_transfer_count
-    kind: map
-    initialBlock: 8928157
-    inputs:
-      - map: map_blocks
       - store: store_erc20_transfer_count
         mode: get
     output:
@@ -73,7 +65,7 @@ modules:
 
   - name: map_erc20_token_holders
     kind: map
-    initialBlock: 8928157
+    initialBlock: 1 
     inputs:
       - map: map_blocks
     output:
@@ -81,7 +73,7 @@ modules:
 
   - name: store_user_erc20_vol
     kind: store
-    initialBlock: 8928157
+    initialBlock: 1 
     updatePolicy: add
     valueType: bigint 
     inputs:
@@ -89,7 +81,7 @@ modules:
 
   - name: store_user_erc20_balance
     kind: store
-    initialBlock: 8928157
+    initialBlock: 1 
     updatePolicy: add
     valueType: bigint 
     inputs:
@@ -97,7 +89,7 @@ modules:
 
   - name: store_user_erc20_count
     kind: store
-    initialBlock: 8928157
+    initialBlock: 1
     updatePolicy: add
     valueType: int64 
     inputs:
@@ -105,7 +97,7 @@ modules:
 
   - name: map_user_erc20_data
     kind: map
-    initialBlock: 8928157
+    initialBlock: 1 
     inputs:
       - map: map_erc20_token_holders
       - store: store_user_erc20_vol
@@ -119,11 +111,10 @@ modules:
 
   - name: graph_out
     kind: map
-    initialBlock: 8928157
+    initialBlock: 1 
     inputs:
       - map: map_blocks
-      - map: map_erc20_transfer_vol
-      - map: map_erc20_transfer_count
+      - map: map_erc20_transfers 
       - map: map_user_erc20_data
     output:
       type: proto:sf.substreams.sink.entity.v1.EntityChanges

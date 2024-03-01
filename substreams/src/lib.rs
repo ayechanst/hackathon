@@ -3,9 +3,7 @@ mod erc20maps;
 mod erc20stores;
 mod helpers;
 mod pb;
-use abi::erc20::events as erc20;
 use abi::erc20::events::Transfer as Erc20TransferEvent;
-use abi::erc721::events as erc721;
 use abi::erc721::events::Transfer as Erc721TransferEvent;
 use helpers::erc20helpers::*;
 use helpers::erc721helpers::*;
@@ -16,17 +14,14 @@ use pb::debbie::{Erc721Deployment, Erc721Transfer};
 use primitive_types::H256;
 use std::collections::HashMap;
 use std::str::FromStr;
-use std::string;
 use substreams::pb::substreams::Clock;
 use substreams::scalar::BigInt;
 use substreams::Hex;
 use substreams_entity_change::pb::entity::EntityChanges;
 use substreams_entity_change::tables::Tables;
-use substreams_ethereum::pb::eth::v2::Call;
-use substreams_ethereum::pb::eth::v2::{Block, StorageChange};
+use substreams_ethereum::pb::eth::v2::Block;
 use substreams_ethereum::pb::sf::ethereum::r#type::v2 as eth;
 use substreams_ethereum::Event;
-use uuid::{uuid, Uuid};
 
 pub use erc20maps::*;
 pub use erc20stores::*;
@@ -43,7 +38,7 @@ fn map_blocks(blk: Block, clk: Clock) -> Result<MasterProto, substreams::errors:
     let mut erc721_contracts: Vec<Erc721Deployment> = Vec::new();
     let mut erc20_transfers: Vec<Erc20Transfer> = Vec::new();
     let mut erc721_transfers: Vec<Erc721Transfer> = Vec::new();
-    substreams::log::info!("hello");
+
     let filtered_calls: Vec<_> = blk
         .transaction_traces
         .into_iter()
@@ -71,12 +66,12 @@ fn map_blocks(blk: Block, clk: Clock) -> Result<MasterProto, substreams::errors:
                     if let Some(deployment) = process_erc20_contract(token, clk.clone()) {
                         erc20_contracts.push(deployment);
                     }
-                } else if let Some(token) = ERC721Creation::from_call(all_calls) {
-                    if let Some(deployment) = process_erc721_contract(token, clk.clone()) {
-                        erc721_contracts.push(deployment);
-                        substreams::log::info!("pushed erc721 contract");
-                    }
                 }
+                //  else if let Some(token) = ERC721Creation::from_call(all_calls) {
+                //     if let Some(deployment) = process_erc721_contract(token, clk.clone()) {
+                //         erc721_contracts.push(deployment);
+                //     }
+                // }
             }
         }
         let block_num = clk.number.to_string();
@@ -89,23 +84,22 @@ fn map_blocks(blk: Block, clk: Clock) -> Result<MasterProto, substreams::errors:
                     amount: erc20Transfer.value.to_string(),
                     count: String::from("1"),
                     volume: String::new(),
-                    // blocknumber: clk.number.to_string(),
-                });
-            } else if let Some(erc721Transfer) = Erc721TransferEvent::match_and_decode(log) {
-                erc721_transfers.push(Erc721Transfer {
-                    address: Hex::encode(&log.address),
-                    from: Hex::encode(erc721Transfer.from),
-                    to: Hex::encode(erc721Transfer.to),
-                    token_id: erc721Transfer.token_id.to_string(),
-                    volume: String::new(),
-                    blocknumber: String::from(&block_num), // blocknumber: String::from(clk.number),
+                    blocknumber: String::from(&block_num),
                 });
             }
+            //  else if let Some(erc721Transfer) = Erc721TransferEvent::match_and_decode(log) {
+            //     erc721_transfers.push(Erc721Transfer {
+            //         address: Hex::encode(&log.address),
+            //         from: Hex::encode(erc721Transfer.from),
+            //         to: Hex::encode(erc721Transfer.to),
+            //         token_id: erc721Transfer.token_id.to_string(),
+            //         volume: String::new(),
+            //         blocknumber: String::from(&block_num),
+            //     });
+            // }
         }
     }
 
-    // Erc20Deployments {contracts: erc20_contracts};
-    // Erc721Deployments {contracts: erc721_contracts};
     Ok(MasterProto {
         erc20contracts: erc20_contracts,
         erc721contracts: erc721_contracts,
@@ -177,8 +171,7 @@ fn map_erc721_test(master: MasterProto) -> Erc721Deployments {
 #[substreams::handlers::map]
 fn graph_out(
     master: MasterProto,
-    erc20_transfer_vol: Erc20Transfers,
-    erc20_transfer_count: Erc20Transfers,
+    erc20_transfers: Erc20Transfers,
     user_erc20_data: TokenHolders,
 ) -> Result<EntityChanges, substreams::errors::Error> {
     let mut tables = Tables::new();
@@ -202,7 +195,7 @@ fn graph_out(
             );
     }
 
-    for erc20_transfer in erc20_transfer_vol.transfers {
+    for erc20_transfer in erc20_transfers.transfers {
         tables
             .create_row(
                 "TokenTransfer",
@@ -218,7 +211,40 @@ fn graph_out(
             .set("to", erc20_transfer.to)
             .set("amount", BigInt::from_str(&erc20_transfer.amount).unwrap())
             .set("count", BigInt::from_str(&erc20_transfer.count).unwrap())
-            .set("volume", BigInt::from_str(&erc20_transfer.volume).unwrap());
+            .set("volume", BigInt::from_str(&erc20_transfer.volume).unwrap())
+            .set(
+                "blocknumber",
+                BigInt::from_str(&erc20_transfer.blocknumber).unwrap(),
+            );
+    }
+
+    for token_holder in user_erc20_data.token_holders {
+        let token_balance: BigInt;
+        if let Some(balance) = BigInt::from_str(&token_holder.balance).ok() {
+            token_balance = balance;
+        } else {
+            token_balance = BigInt::from(0);
+        }
+
+        tables
+            .update_row(
+                "TokenHolder",
+                format!(
+                    "{}:{}",
+                    token_holder.holder_address, token_holder.token_address
+                ),
+            )
+            .set("holderAddress", token_holder.holder_address)
+            .set("tokenAddress", token_holder.token_address)
+            .set("balance", token_balance)
+            .set(
+                "transferVolume",
+                BigInt::from_str(&token_holder.transfer_volume).unwrap(),
+            )
+            .set(
+                "transferCount",
+                BigInt::from_str(&token_holder.transfer_count).unwrap(),
+            );
     }
 
     Ok(tables.to_entity_changes())

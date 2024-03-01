@@ -33,6 +33,8 @@ message ERC20Transfer {
   string amount = 4;
   string count = 5;
   string volume = 6;
+  string blocknumber = 7;
+  
 }
 
 message ERC20Transfers {
@@ -44,8 +46,8 @@ message ERC721Transfer {
   string to = 2;
   string from = 3;
   string token_id = 4;
-  string blocknumber = 5;
   string volume = 6;
+  string blocknumber = 5;
 }
 
 message ERC721Transfers {
