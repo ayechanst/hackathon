@@ -1,20 +1,17 @@
 use std::str::FromStr;
 
-use crate::pb::debbie::{Erc20Deployment, Erc20Transfer, MasterProto, TokenHolders};
-use crate::pb::debbie::{Erc721Deployment, Erc721Transfer};
+use crate::pb::debbie::{MasterProto, TokenHolders};
 use substreams::scalar::BigInt;
 use substreams::store::{StoreAdd, StoreAddBigInt, StoreAddInt64, StoreNew};
-use substreams::Hex;
 
 #[substreams::handlers::store]
 pub fn store_erc20_transfer_vol(transfers: MasterProto, store: StoreAddBigInt) {
     for transfer in transfers.erc20transfers {
-        //add check for these
-        store.add(
-            0,
-            transfer.address,
-            BigInt::from_str(&transfer.amount).unwrap(),
-        )
+        if let Some(amount) = BigInt::from_str(&transfer.amount).ok() {
+            store.add(0, transfer.address, amount)
+        } else {
+            continue;
+        }
     }
 }
 
@@ -28,30 +25,49 @@ pub fn store_erc20_count(transfers: MasterProto, store: StoreAddInt64) {
 #[substreams::handlers::store]
 pub fn store_user_erc20_vol(transfers: TokenHolders, store: StoreAddBigInt) {
     for transfer in transfers.token_holders {
-        //add check for these
-        store.add(
-            0,
-            format!("{}:{}", transfer.holder_address, transfer.token_address),
-            BigInt::from_str(&transfer.transfer_amount).unwrap(),
-        );
+        if let Some(amount) = BigInt::from_str(&transfer.transfer_amount).ok() {
+            store.add(
+                0,
+                format!("{}:{}", transfer.holder_address, transfer.token_address),
+                amount,
+            )
+        } else {
+            continue;
+        }
     }
 }
 
 #[substreams::handlers::store]
 pub fn store_user_erc20_balance(transfer: TokenHolders, store: StoreAddBigInt) {
     for transfer in transfer.token_holders {
-        //add if let some check??
-        let amount: substreams::scalar::BigInt;
-        if !transfer.transfer_from {
-            amount = BigInt::from_str(&transfer.transfer_amount).unwrap();
+        if let Some(amount) = BigInt::from_str(&transfer.balance).ok() {
+            if transfer.transfer_from {
+                store.add(
+                    0,
+                    format!("{}:{}", transfer.holder_address, transfer.token_address),
+                    amount * -1,
+                )
+            } else {
+                // subtract transfer amount from user balance
+                store.add(
+                    0,
+                    format!("{}:{}", transfer.holder_address, transfer.token_address),
+                    amount,
+                )
+            }
         } else {
-            amount = BigInt::from_str(&transfer.transfer_amount).unwrap() * -1;
+            continue;
         }
+    }
+}
 
+#[substreams::handlers::store]
+pub fn store_user_erc20_count(transfer: TokenHolders, store: StoreAddInt64) {
+    for transfer in transfer.token_holders {
         store.add(
             0,
             format!("{}:{}", transfer.holder_address, transfer.token_address),
-            amount,
-        );
+            1,
+        )
     }
 }

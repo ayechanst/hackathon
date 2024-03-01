@@ -39,7 +39,6 @@ pub fn map_erc20_count(
 #[substreams::handlers::map]
 pub fn map_erc20_token_holders(
     transfers: MasterProto,
-    store: StoreGetInt64,
 ) -> Result<TokenHolders, substreams::errors::Error> {
     let mut token_holders = Vec::new();
     for transfer in &transfers.erc20transfers {
@@ -67,4 +66,35 @@ pub fn map_erc20_token_holders(
     Ok(TokenHolders {
         token_holders: token_holders,
     })
+}
+
+#[substreams::handlers::map]
+pub fn map_user_erc20_data(
+    token_holders: TokenHolders,
+    store_user_vol: StoreGetBigInt,
+    store_user_balance: StoreGetBigInt,
+    store_user_count: StoreGetInt64,
+) -> TokenHolders {
+    let mut token_holders = token_holders;
+    for mut holder in &mut token_holders.token_holders {
+        if let Some(volume) = store_user_vol.get_at(
+            0,
+            &format!("{}:{}", holder.holder_address, holder.token_address),
+        ) {
+            holder.transfer_volume = volume.to_string();
+        }
+        if let Some(balance) = store_user_balance.get_at(
+            0,
+            &format!("{}:{}", holder.holder_address, holder.token_address),
+        ) {
+            holder.balance = balance.to_string();
+        }
+        if let Some(count) = store_user_count.get_at(
+            0,
+            &format!("{}:{}", holder.holder_address, holder.token_address),
+        ) {
+            holder.transfer_count = count.to_string();
+        }
+    }
+    token_holders
 }
