@@ -40,7 +40,7 @@ pub fn store_user_erc20_vol(transfers: TokenHolders, store: StoreAddBigInt) {
 #[substreams::handlers::store]
 pub fn store_user_erc20_balance(transfer: TokenHolders, store: StoreAddBigInt) {
     for transfer in transfer.token_holders {
-        if let Some(amount) = BigInt::from_str(&transfer.balance).ok() {
+        if let Some(amount) = BigInt::from_str(&transfer.transfer_amount).ok() {
             if transfer.transfer_from {
                 store.add(
                     0,

@@ -1,8 +1,8 @@
 ENDPOINT ?= mainnet.eth.streamingfast.io:443
-START_BLOCK ?= 8928157
+START_BLOCK ?= 10000000
 OTHER_BLOCK ?= 14159918
 PUDGY ?= 12876179
-STOP_BLOCK ?= +3
+STOP_BLOCK ?= +1000
 
 .PHONY: build
 build:
