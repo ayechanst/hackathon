@@ -195,20 +195,22 @@ fn graph_out(
             );
     }
 
-    for erc20_transfer in erc20_transfers.transfers {
+    for (index, erc20_transfer) in erc20_transfers.transfers.iter().enumerate() {
         tables
             .create_row(
                 "TokenTransfer",
                 format!(
-                    "{}:{}:{}:{}",
+                    "{}:{}:{}:{}:{}:{}",
                     erc20_transfer.from,
                     erc20_transfer.to,
                     erc20_transfer.amount,
                     erc20_transfer.count,
+                    erc20_transfer.blocknumber,
+                    index
                 ),
             )
-            .set("from", erc20_transfer.from)
-            .set("to", erc20_transfer.to)
+            .set("from", String::from(erc20_transfer.from.clone()))
+            .set("to", erc20_transfer.to.clone())
             .set("amount", BigInt::from_str(&erc20_transfer.amount).unwrap())
             .set("count", BigInt::from_str(&erc20_transfer.count).unwrap())
             .set("volume", BigInt::from_str(&erc20_transfer.volume).unwrap())
