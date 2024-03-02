@@ -75,14 +75,19 @@ const Chart = () => {
                           <Cell
                             key={index + keyIndex}
                             keyType={"address"}
-                            data={datum[dataKey].toString()}
+                            data={"0x" + datum[dataKey].toString()}
                             id={index}
                           />
                         );
                       }
                     } else if (dataKey === "id") {
                       return (
-                        <Cell key={index + keyIndex} keyType={"address"} data={datum[dataKey]?.toString()} id={index} />
+                        <Cell
+                          key={index + keyIndex}
+                          keyType={"address"}
+                          data={"0x" + datum[dataKey]?.toString()}
+                          id={index}
+                        />
                       );
                     } else if (dataKey === "tokenId") {
                       return (

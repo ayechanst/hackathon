@@ -17,15 +17,16 @@ const Tabs = () => {
   // const subgraphProps
 
   const { data } = useSubgraph({
-    // subgraphQuery: "Tokens",
+    // subgraphQuery: "NFTs",
     subgraphQuery: selectedTab,
+    // subgraphQuery: "Tokens",
     queryProps: { rows: 80 },
   });
-  // useEffect(() => {
-  // if (!data) return;
-  setSubgraphDataArray(data);
-  // setSelectedTab("Tokens");
-  // }, [data]);
+  useEffect(() => {
+    if (!data) return;
+    // setSelectedTab(selectedTab);
+    setSubgraphDataArray(data);
+  }, [data]);
 
   return (
     <div className="grid">

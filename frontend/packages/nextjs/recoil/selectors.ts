@@ -18,7 +18,7 @@ export const filterButtonsState = selector({
     } else if (clickedTab === "NFT Holders") {
       return ["input component"];
     } else if (clickedTab === "Tokens") {
-      return ["Transfer volume", "Tx volume"];
+      return ["Tx volume", "New Tokens"];
     } else if (clickedTab === "Token Holders") {
       return ["input component", "token balance", "transfer volume"];
     } else {

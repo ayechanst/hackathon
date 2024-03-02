@@ -49,9 +49,27 @@ export function useSubgraph({ subgraphQuery, queryProps }: UseSubgraphProps) {
       return rest;
     });
 
-    console.log("returnData", returnData);
-
-    setData(returnData);
+    const returnDataKeys = Object.keys(returnData[0]);
+    if (returnDataKeys.includes("decimals") && returnDataKeys.includes("volume")) {
+      const mapTokenVol = returnData.map((item: any) => {
+        item.volume = item.volume / Math.pow(10, item.decimals);
+        const { decimals, ...rest } = item;
+        return rest;
+      });
+      if (returnDataKeys.includes("totalSupply")) {
+        const mapTokenTotalSupply = mapTokenVol.map((item: any) => {
+          if (!item.totalSupply) {
+            item.totalSupply = "N/A";
+            return item;
+          }
+        });
+        setData(mapTokenTotalSupply);
+      }
+      setData(mapTokenVol);
+      console.log("returnData", returnData);
+    } else {
+      setData(returnData);
+    }
   }, [responseData]);
 
   return { data, loading, error };
@@ -71,6 +89,17 @@ const getQuery = (subgraphQuery: string, queryProps: string) => {
           }
         }
       `;
+    } else if (queryProps === "New") {
+      return gql`
+        {
+          nfts(first: 10, orderBy: nftDeployment__timestamp, orderDirection: desc) {
+            id
+            name
+            symbol
+            volume
+          }
+        }
+      `;
     }
     return gql`
       query nfts($rows: Int) {
@@ -83,21 +112,10 @@ const getQuery = (subgraphQuery: string, queryProps: string) => {
       }
     `;
   } else if (subgraphQuery === "Tokens") {
-    if (queryProps == "Transfer volume") {
+    if (queryProps == "Tx volume") {
       return gql`
         query tokens($rows: Int) {
-          tokens(first: $rows, orderBy: volume, orderDirection: desc) {
-            id
-            name
-            symbol
-            volume
-          }
-        }
-      `;
-    } else if (queryProps == "Tx volume") {
-      return gql`
-        query tokens($rows: Int) {
-          tokens(first: $rows, orderBy: count, orderDirection: desc) {
+          tokens(first: $rows, where: { name_not: null, symbol_not: "" }, orderBy: count, orderDirection: desc) {
             id
             name
             symbol
@@ -108,13 +126,35 @@ const getQuery = (subgraphQuery: string, queryProps: string) => {
           }
         }
       `;
+    } else if (queryProps == "New Tokens") {
+      return gql`
+        query tokens($rows: Int) {
+          tokens(
+            first: 10
+            where: { name_not: null, symbol_not: "" }
+            orderBy: tokenDeployment__timestamp
+            orderDirection: desc
+          ) {
+            name
+            symbol
+            totalSupply
+            count
+            volume
+            tokenDeployment {
+              timestamp
+            }
+          }
+        }
+      `;
     } else {
       return gql`
         query tokens($rows: Int) {
-          tokens(first: $rows, where: { name_not: null }, orderBy: count, orderDirection: desc) {
+          tokens(first: $rows, where: { name_not: null, symbol_not: "" }, orderBy: count, orderDirection: desc) {
             id
             name
             symbol
+            count
+            volume
             totalSupply
             decimals
           }
