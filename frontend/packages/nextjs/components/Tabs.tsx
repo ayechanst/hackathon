@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Chart from "./Chart";
+
 import { AnimatePresence, motion } from "framer-motion";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useSubgraph } from "~~/hooks/scaffold-eth/useSubgraph";
@@ -52,5 +53,7 @@ const Tabs = () => {
     </div>
   );
 };
+
+
 
 export default Tabs;

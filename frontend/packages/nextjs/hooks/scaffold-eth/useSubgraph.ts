@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import { gql, useQuery } from "@apollo/client";
+
 import { selectedTabState, subgraphFilterQueryState, subgraphQueryState, subgraphTimeQueryState } from "~~/recoil/atoms";
 import { useRecoilValue } from "recoil";
+
 
 // type UseSubgraphProps = {
 //   subgraphQuery?: string;
 //   queryProps?: any;
 // };
 type UseSubgraphProps = {
+
   subgraphQuery?: string;
   // queryProps?: any;
 };
@@ -44,6 +47,7 @@ export function useSubgraph({ subgraphQuery }: UseSubgraphProps) {
       return rest;
     });
 
+
     setData(returnData);
   }, [responseData]);
 
@@ -51,6 +55,7 @@ export function useSubgraph({ subgraphQuery }: UseSubgraphProps) {
 }
 
 const getQuery = (subgraphQuery: string) => {
+
   if (subgraphQuery === "erc20Transfers") {
     return gql`
       query erc20Transfers($rows: Int) {
@@ -85,7 +90,9 @@ const getQuery = (subgraphQuery: string) => {
         }
       }
     `;
+
   } else {
+
     return gql`
       query erc721Deployments($rows: Int) {
         erc721Deployments(first: $rows) {
@@ -96,5 +103,7 @@ const getQuery = (subgraphQuery: string) => {
         }
       }
     `;
+
   } 
+
 };

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+
 import { motion } from "framer-motion";
+
 
 interface ButtonProps {
   buttonName: string;
@@ -7,12 +9,15 @@ interface ButtonProps {
   isActive: boolean;
 }
 
+
 const Button: React.FC<ButtonProps> = ({ buttonName, onClick, isActive }) => {
+
   function handleClick() {
     onClick(buttonName);
   }
 
   return (
+
     <motion.button
       onClick={() => {
         onClick(handleClick);
@@ -32,6 +37,7 @@ const Button: React.FC<ButtonProps> = ({ buttonName, onClick, isActive }) => {
     >
       {buttonName}
     </motion.button>
+
   );
 };
 

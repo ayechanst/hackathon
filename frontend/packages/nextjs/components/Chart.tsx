@@ -108,6 +108,7 @@ const Chart = () => {
           <div>{paginatedPageNum + 2}</div>
           <div>»</div>
         </button>
+
       </div>
     </>
   );

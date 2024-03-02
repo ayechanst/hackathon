@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import Button from "./Button";
 import SearchInput from "./SearchInput";
@@ -25,14 +26,18 @@ const Menu = () => {
         </div>
         <div className="px-3">
           <div className="divider divider-start divider-warning">NFTs</div>
+
           <div className="flex flex-col items-center">
             <Button
               onClick={() => setSubgraphFilterQuery("erc721Transfers")}
+
               isActive={activeButton === "erc721Transfers"}
               buttonName="erc721Transfers"
             />
             <Button
+
               onClick={() => setSubgraphFilterQuery("erc721Deployments")}
+
               isActive={activeButton === "erc721Deployments"}
               buttonName="erc721Deployments"
             />
@@ -56,6 +61,7 @@ const Menu = () => {
                 );
               }
             })}
+
           </div>
         </div>
       </div>

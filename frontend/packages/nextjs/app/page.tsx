@@ -1,9 +1,11 @@
 "use client";
 
+
 import React from "react";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import type { NextPage } from "next";
 import { RecoilRoot } from "recoil";
+
 // import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import Data from "~~/components/Data";
 // import Menu from "~~/components/Menu";
@@ -16,6 +18,7 @@ const Home: NextPage = () => {
   });
 
   return (
+
     <RecoilRoot>
       <ApolloProvider client={client}>
         <div className="bg-primary">

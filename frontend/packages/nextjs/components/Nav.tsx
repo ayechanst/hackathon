@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
@@ -33,6 +34,7 @@ const Nav = () => {
           </div>
         </div>
       </motion.div>
+
     </>
   );
 };
