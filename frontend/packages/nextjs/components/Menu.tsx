@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import Button from "./Button";
 import SearchInput from "./SearchInput";
@@ -24,28 +23,9 @@ const Menu = () => {
             <SearchInput />
           </div>
         </div>
-        <div className="px-3">
-          <div className="divider divider-start divider-warning">NFTs</div>
-
-          <div className="flex flex-col items-center">
-            <Button
-              onClick={() => setSubgraphFilterQuery("erc721Transfers")}
-
-              isActive={activeButton === "erc721Transfers"}
-              buttonName="erc721Transfers"
-            />
-            <Button
-
-              onClick={() => setSubgraphFilterQuery("erc721Deployments")}
-
-              isActive={activeButton === "erc721Deployments"}
-              buttonName="erc721Deployments"
-            />
-          </div>
-        </div>
 
         <div className="px-3 pb-3">
-          <div className="divider divider-start divider-warning">Dynamic Filters</div>
+          <div className="divider divider-start divider-warning">Filters Options</div>
           <div className="flex flex-col items-center">
             {filterButtons.map((filter: string) => {
               if (filter === "input component") {
@@ -61,7 +41,6 @@ const Menu = () => {
                 );
               }
             })}
-
           </div>
         </div>
       </div>
