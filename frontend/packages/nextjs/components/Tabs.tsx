@@ -7,18 +7,14 @@ import { filterButtonsArrayState, selectedTabState, subgraphDataArrayState, subg
 
 const Tabs = () => {
   const [selectedTab, setSelectedTab] = useRecoilState(selectedTabState);
-  const tabNames = ["NFTs", "NFT Collection", "NFT Holders", "Tokens", "Token Holders"];
+  const tabNames = ["NFTs", "NFT Collection", "Tokens", "NFT Transfers"];
   const active = "text-primary border-5 border-yellow-500";
-  // let timeQuery = subgraphTimeQuery;
 
-  // const { timeData } useSubgraph({
-  //   subgraphTimeQuery,
-  //   queryProps: { rows: 10},
-  // })
   const [filterButtons, setFilterButtons] = useRecoilState(filterButtonsArrayState);
   const [subgraphDataArray, setSubgraphDataArray] = useRecoilState(subgraphDataArrayState);
 
   const subgraphQuery = useRecoilValue(subgraphQueryState);
+  // const subgraphProps
 
   const { data } = useSubgraph({
     subgraphQuery,

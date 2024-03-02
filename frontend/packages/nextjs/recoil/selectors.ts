@@ -7,7 +7,7 @@ export const filterButtonsState = selector({
   get: ({get}) => {
     const clickedTab = get(selectedTabState);
     if (clickedTab === "NFTs") {
-      return ["transfer volume"] ;
+      return ["Transfers"] ;
     } else if (clickedTab === "NFT Collection") {
       return ["transfer volume"] ;
     } else if (clickedTab === "NFT Holders") {
@@ -35,26 +35,32 @@ export const dividedSubgraphDataState = selector({
   }
 })
 
-export const masterSubgraphQueryState = selector({
-  key: 'masterSubgraphQuery',
-  get: ({get}) => {
-    const selectedTab = get(selectedTabState);
-    const selectedTime = get(subgraphFilterQueryState);
-    const selectedFilter = get(subgraphFilterQueryState);
-    const inputAddressFilter = get(searchInputQueryState);
-    if (selectedTab === "NFTs") {
-      // some kind of query format
-    } else if (selectedTab === "NFT Collection") {
-// code
-    } else if (selectedTab === "NFT Holders") {
-// code
-    } else if (selectedTab === "Tokens") {
-// code
-    } else if (selectedTab === "Token Holders") {
-     // code 
-    } else {
-      // code
-    }
-  }
-})
+// export const masterSubgraphQueryState = selector({
+//   key: 'masterSubgraphQuery',
+//   get: ({get}) => {
+//     const selectedTab = get(selectedTabState);
+//     const selectedTime = get(subgraphFilterQueryState);
+//     const selectedFilter = get(subgraphFilterQueryState);
+//     const inputAddressFilter = get(searchInputQueryState);
+//     if (selectedTab === "NFTs") {
+//       // some kind of query format
+//       nfts(first: 10, orderBy: volume, orderDirection: desc) {
+//     id
+//     name
+//     symbol
+//     volume
+//   }
+//     } else if (selectedTab === "NFT Collection") {
+// // code
+//     } else if (selectedTab === "NFT Holders") {
+// // code
+//     } else if (selectedTab === "Tokens") {
+// // code
+//     } else if (selectedTab === "Token Holders") {
+//      // code 
+//     } else {
+//       // code
+//     }
+//   }
+// })
 

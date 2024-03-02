@@ -3,16 +3,21 @@ import { gql, useQuery } from "@apollo/client";
 import { selectedTabState, subgraphFilterQueryState, subgraphQueryState, subgraphTimeQueryState } from "~~/recoil/atoms";
 import { useRecoilValue } from "recoil";
 
+// type UseSubgraphProps = {
+//   subgraphQuery?: string;
+//   queryProps?: any;
+// };
 type UseSubgraphProps = {
   subgraphQuery?: string;
-  queryProps?: any;
+  // queryProps?: any;
 };
 
-export function useSubgraph({ subgraphQuery, queryProps }: UseSubgraphProps) {
+const queryProps = useRecoilValue(subgraphFilterQueryState)
 
-  // use this in combination with subgraphQuery
-  const subgraphTimeQuery = useRecoilValue(subgraphTimeQueryState);
-  const subgraphTabQuery = useRecoilValue(selectedTabState);
+export function useSubgraph({ subgraphQuery }: UseSubgraphProps) {
+
+  // const subgraphTimeQuery = useRecoilValue(subgraphTimeQueryState);
+  // const subgraphTabQuery = useRecoilValue(selectedTabState);
   // const subgraphQuery = useRecoilValue(subgraphFilterQueryState);
 
   const {
@@ -21,7 +26,7 @@ export function useSubgraph({ subgraphQuery, queryProps }: UseSubgraphProps) {
     data: responseData,
   } = useQuery(
     getQuery(subgraphQuery), {
-      // "erc20Transfers" {
+      // variables take in the filters
     variables: queryProps,
     pollInterval: 10000,
   });
