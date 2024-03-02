@@ -34,7 +34,10 @@ const Menu = () => {
                 return (
                   <Button
                     key={filter}
-                    onClick={() => setSubgraphFilterQuery(filter)}
+                    onClick={() => {
+                      setSubgraphFilterQuery(filter);
+                      setActiveButton(filter);
+                    }}
                     isActive={activeButton === filter}
                     buttonName={filter}
                   />
