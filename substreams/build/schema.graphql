@@ -1,57 +1,54 @@
-type TokenDeployment @entity(immutable: false) {
+type Token @entity(immutable: false) {
     id: ID!
     name: String!
     symbol: String!
     decimals: BigInt!
     totalSupply: BigInt!
-    blocknumber: BigInt!
+    tokenDeployment: TokenDeployment @derivedFrom(field: "token")
+    tokenTransfers: [TokenTransfer!] @derivedFrom(field: "token")
+    tokenHolders: [TokenHolder!] @derivedFrom(field: "token")
 }
 
-type TokenTransfer @entity(immutable: false) {
+type TokenDeployment @entity(immutable: false) {
+    id: ID!
+    blocknumber: BigInt!
+    timestamp: BigInt!
+    # txHash: String
+    token: Token 
+}
+
+type TokenTransfer @entity(immutable: true) {
     id: ID!
     from: String!
     to: String!
     amount: BigInt!
     count: BigInt!
     volume: BigInt!
+    token: Token
+    blocknumber: BigInt!
+    timestamp: BigInt!
+    tokenHolderTo: TokenHolder
+    tokenHolderFrom: TokenHolder
 }
 
 type TokenHolder @entity(immutable: false) {
     id: ID!
     holderAddress: String!
-    tokenAddress: String!
+    tokenHolderSnapshots: [TokenHolderSnapshot!] @derivedFrom(field: "tokenHolder")
+    transfersTo: [TokenTransfer!] @derivedFrom(field: "tokenHolderTo")
+    transfersFrom: [TokenTransfer!] @derivedFrom(field: "tokenHolderFrom")
+    token: Token
+    timestamp: BigInt!
+}
+
+type TokenHolderSnapshot @entity(immutable: false) {
+    id: ID!
+    tokenHolder: TokenHolder
     balance: BigInt!
     transferVolume: BigInt!
     transferCount: BigInt!
+    timestamp: BigInt!
+    monthId: BigInt!
 }
 
-type NftDeployment @entity(immutable: false) {
-    id: ID!
-    name: String!
-    symbol: String!
-    blocknumber: BigInt!
-    tokenUri: String!
-}
 
-type NftTransfer @entity(immutable: false) {
-    id: ID!
-    from: String!
-    to: String!
-    tokenId: String!
-    volume: BigInt!
-    blocknumber: BigInt!
-}
-
-type NftHolder @entity(immutable: false) {
-    id: ID!
-    holderAddress: String!
-    nftAddress: String!
-    tokenBalance: BigInt!
-}
-
-type NftToken @entity(immutable: false) {
-    id: ID!
-    address: String!
-    tokenId: String!
-    volume: BigInt!
-}

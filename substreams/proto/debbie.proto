@@ -78,7 +78,9 @@ message TokenHolder {
   string transfer_volume = 4;
   string transfer_count = 5;
   string transfer_amount = 6;
-  bool transfer_from = 7;
+  string blocknumber = 7;
+  int64 month_id = 8; 
+  int64 timestamp_seconds = 9;
 }
 
 message ERC721TransfersHoldersTokens {

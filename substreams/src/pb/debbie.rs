@@ -128,8 +128,12 @@ pub struct TokenHolder {
     pub transfer_count: ::prost::alloc::string::String,
     #[prost(string, tag="6")]
     pub transfer_amount: ::prost::alloc::string::String,
-    #[prost(bool, tag="7")]
-    pub transfer_from: bool,
+    #[prost(string, tag="7")]
+    pub blocknumber: ::prost::alloc::string::String,
+    #[prost(int64, tag="8")]
+    pub month_id: i64,
+    #[prost(int64, tag="9")]
+    pub timestamp_seconds: i64,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
