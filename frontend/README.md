@@ -1,315 +1,319 @@
-# 🏗 Scaffold-ETH 2
+# Data Detective
 
-🧪 An open-source, up-to-date toolkit for building decentralized applications (dapps) on the Ethereum blockchain. It's designed to make it easier for developers to create and deploy smart contracts and build user interfaces that interact with those contracts.
+### A Token indexing tool that embeds and EVM instance in the substreams to allow us to get token data while making zero rpc calls.
 
-⚙️ Built using NextJS, RainbowKit, Hardhat, Wagmi, Viem, and Typescript.
 
-- ✅ **Contract Hot Reload**: Your frontend auto-adapts to your smart contract as you edit it.
-- 🔥 **Burner Wallet & Local Faucet**: Quickly test your application with a burner wallet and local faucet.
-- 🔐 **Integration with Wallet Providers**: Connect to different wallet providers and interact with the Ethereum network.
+## Challenges with Substreams
 
-## Contents
+Substreams significantly enhance subgraph development by offering improved performance, greater flexibility in data processing, and a more streamlined development experience but they have their own set of challenges, particularly concerning the reliance on RPC (Remote Procedure Call) calls for fetching token data. This reliance can introduce several issues:
 
-- [Requirements](#requirements)
-- [Quickstart](#quickstart)
-- [Deploying your Smart Contracts to a Live Network](#deploying-your-smart-contracts-to-a-live-network)
-- [Deploying your NextJS App](#deploying-your-nextjs-app)
-- [Interacting with your Smart Contracts: SE-2 Custom Hooks](#interacting-with-your-smart-contracts-se-2-custom-hooks)
-- [Disabling Type & Linting Error Checks](#disabling-type-and-linting-error-checks)
-  - [Disabling commit checks](#disabling-commit-checks)
-  - [Deploying to Vercel without any checks](#deploying-to-vercel-without-any-checks)
-  - [Disabling Github Workflow](#disabling-github-workflow)
-- [Contributing to Scaffold-ETH 2](#contributing-to-scaffold-eth-2)
+- **Performance Bottlenecks**: Frequent RPC calls can significantly slow down data processing, especially during periods of high demand.
+- **Data Availability and Consistency**: Relying on external sources for data can lead to inconsistencies and potential delays in data fetching.
+- **Scalability Concerns**: As the need for data grows, the sheer volume of RPC calls can overwhelm infrastructure, leading to scalability issues.
 
-## Requirements
+## Our Solution: Embedded EVM Instance
 
-Before you begin, you need to install the following tools:
+To address the challenges associated with reliance on RPC calls in Substreams, our project introduces an innovative solution: an embedded EVM  instance using the evm_core crate. This approach offers several key benefits:
 
-- [Node (v18 LTS)](https://nodejs.org/en/download/)
-- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
-- [Git](https://git-scm.com/downloads)
+### Direct Access to Token Data:
 
-## Quickstart
+- By embedding an EVM instance within the Substream, our solution can directly access token data stored on the blockchain, eliminating the need for external RPC calls. 
 
-To get started with Scaffold-ETH 2, follow the steps below:
+### Enhanced Performance:
 
-1. Clone this repo & install dependencies
+- This direct access approach significantly reduces the data processing time, offering a substantial performance improvement over traditional methods that rely on RPC calls.
 
-```
-git clone https://github.com/scaffold-eth/scaffold-eth-2.git
-cd scaffold-eth-2
-yarn install
-```
+### Improved Data Consistency and Reliability:
 
-2. Run a local network in the first terminal:
+- Accessing data directly from the blockchain ensures consistency and reliability, as there is no intermediary that could introduce delays or inconsistencies.
 
-```
-yarn chain
-```
+### Scalability:
 
-This command starts a local Ethereum network using Hardhat. The network runs on your local machine and can be used for testing and development. You can customize the network configuration in `hardhat.config.ts`.
+- Our solution scales efficiently with the blockchain, as the embedded EVM instance processes data locally, reducing the dependency on external infrastructure and avoiding common bottlenecks associated with RPC calls.
 
-3. On a second terminal, deploy the test contract:
+## How we build the EVM instance
 
-```
-yarn deploy
+Our solution enhances blockchain data processing by leveraging information available on the blockchain itself. Here's a brief overview of our approach:
+
+#### Using Code Changes as Contract Source Code
+
+- **Contract Deployments**: When a smart contract is deployed on the blockchain, it includes the deployment of contract bytecode. This bytecode is the low-level, executable code that defines the contract's behavior and capabilities. This bytecode deployment appears as code changes from the block.
+- **Code Changes Extraction**: We capture the contracts bytecode from the code changes during the deployment allowing us to have the definitive version of the contracts code as it exists on the blockchain. 
+- **Usage**: With the definitive version of the contracts source code, paired with our EVM instance we can execute or simulate contract interactions. 
+``` rust
+ // We grab the last code_change to get the most recent version of contract logic
+ if let Some(last_code_change) = call.code_changes.iter().last() {
+                let code = &last_code_change.new_code;
 ```
 
-This command deploys a test smart contract to the local network. The contract is located in `packages/hardhat/contracts` and can be modified to suit your needs. The `yarn deploy` command uses the deploy script located in `packages/hardhat/deploy` to deploy the contract to the network. You can also customize the deploy script.
+### Using Storage Changes as the Contract Storage Layout
 
-4. On a third terminal, start your NextJS app:
-
-```
-yarn start
-```
-
-Visit your app on: `http://localhost:3000`. You can interact with your smart contract using the contract component or the example ui in the frontend. You can tweak the app config in `packages/nextjs/scaffold.config.ts`.
-
-Run smart contract test with `yarn hardhat:test`
-
-- Edit your smart contract `YourContract.sol` in `packages/hardhat/contracts`
-- Edit your frontend in `packages/nextjs/pages`
-- Edit your deployment scripts in `packages/hardhat/deploy`
-
-## Deploying your Smart Contracts to a Live Network
-
-Once you are ready to deploy your smart contracts, there are a few things you need to adjust.
-
-1. Select the network
-
-By default, `yarn deploy` will deploy the contract to the local network. You can change the defaultNetwork in `packages/hardhat/hardhat.config.ts.` You could also simply run `yarn deploy --network target_network` to deploy to another network.
-
-Check the `hardhat.config.ts` for the networks that are pre-configured. You can also add other network settings to the `hardhat.config.ts file`. Here are the [Alchemy docs](https://docs.alchemy.com/docs/how-to-add-alchemy-rpc-endpoints-to-metamask) for information on specific networks.
-
-Example: To deploy the contract to the Sepolia network, run the command below:
-
-```
-yarn deploy --network sepolia
+- **Storage Changes**: Smart contracts on the blockchain have associated storage, a key-value store that holds the contract's state. When transactions modify the contract's state, these changes are reflected as storage changes.
+- **Extraction and Representation**: Our substream monitors and extracts these storage changes during the contract deployment. This provides us with a view of the contract's storage layout, allowing us access to state variables such as token Name, Symbol, Decimals and TotalSupply.
+- **Application**: We build a hashmap with the hashed storage key and new value of the storage change so we can match the storage key pushed to the stack during the evm execution. 
+``` rust
+// We Build a Hashmap with the hashed storage key to match the storage key pushed to the stack during function execution
+let storage_changes: HashMap<H256, Vec<u8>> = call
+                    .storage_changes
+                    .iter()
+                    .map(|s| (H256::from_slice(s.key.as_ref()), s.new_value.clone()))
+                    .collect();
 ```
 
-2. Generate a new account or add one to deploy the contract(s) from. Additionally you will need to add your Alchemy API key. Rename `.env.example` to `.env` and fill the required keys.
+#### Using Function Abi to execute functions locally
 
-```
-ALCHEMY_API_KEY="",
-DEPLOYER_PRIVATE_KEY=""
-```
+A critical aspect of our substreams functionality involves interacting with smart contracts in a way that accurately reflects their intended behavior. To achieve this, we utilize the ABI to get our function data. With knowledge of the contract's functions, our EVM instance can dynamically construct and execute function calls. This allows for precise interactions based on the contract's actual code and design. Integrating the contract bytecode with the dynamically captured storage layout, our embedded EVM instance can execute or simulate contract functions locally. 
 
-The deployer account is the account that will deploy your contracts. Additionally, the deployer account will be used to execute any function calls that are part of your deployment script.
 
-You can generate a random account / private key with `yarn generate` or add the private key of your crypto wallet. `yarn generate` will create a random account and add the DEPLOYER_PRIVATE_KEY to the .env file. You can check the generated account with `yarn account`.
+## Getting the data to build our EVM instance
 
-3. Deploy your smart contract(s)
+We integrated our evm instance into our intitial map module. We map the data from the block and pass it into our EVM instance in the form of Contract Creation Structs. We implemented methods for our structs that take in data from the block and identify if it is an erc20 or erc721 and then build a ERC20Creation or ERC721Creation struct accordingly. 
 
-Run the command below to deploy the smart contract to the target network. Make sure to have some funds in your deployer account to pay for the transaction.
+We did the following to get the data necessary to build our EVM instance.
 
-```
-yarn deploy --network network_name
-```
-
-4. Verify your smart contract
-
-You can verify your smart contract on Etherscan by running:
-
-```
-yarn verify --network network_name
-```
-
-eg: `yarn verify --network sepolia`
-
-This uses [etherscan-verify from hardhat-deploy](https://www.npmjs.com/package/hardhat-deploy#4-hardhat-etherscan-verify) to verify all the deployed contracts.
-
-You can alternatively use [hardhat-verify](https://hardhat.org/hardhat-runner/plugins/nomicfoundation-hardhat-verify) to verify your contracts, passing network name, contract address and constructor arguments (if any): `yarn hardhat-verify --network network_name contract_address "Constructor arg 1"`
-
-If the chain you're using is not supported by any of the verifying methods, you can add new supported chains to your chosen method, either [etherscan-verify](https://www.npmjs.com/package/hardhat-deploy#options-2) or [hardhat-verify](https://hardhat.org/hardhat-runner/plugins/nomicfoundation-hardhat-verify#adding-support-for-other-networks).
-
-## Deploying your NextJS App
-
-**Hint**: We recommend connecting your GitHub repo to Vercel (through the Vercel UI) so it gets automatically deployed when pushing to `main`.
-
-If you want to deploy directly from the CLI, run `yarn vercel` and follow the steps to deploy to Vercel. Once you log in (email, github, etc), the default options should work. It'll give you a public URL.
-
-If you want to redeploy to the same production URL you can run `yarn vercel --prod`. If you omit the `--prod` flag it will deploy it to a preview/test URL.
-
-**Make sure your `packages/nextjs/scaffold.config.ts` file has the values you need.**
-
-## Interacting with your Smart Contracts: SE-2 Custom Hooks
-
-Scaffold-ETH 2 provides a collection of custom React hooks designed to simplify interactions with your deployed smart contracts. These hooks are wrappers around `wagmi`, automatically loading the necessary contract ABI and address. They offer an easy-to-use interface for reading from, writing to, and monitoring events emitted by your smart contracts.
-
-To help developers get started with smart contract interaction using Scaffold-ETH 2, we've provided the following custom hooks:
-
-- [useScaffoldContractRead](#usescaffoldcontractread): for reading public variables and getting data from read-only functions of your contract.
-- [useScaffoldContractWrite](#usescaffoldcontractwrite): for sending transactions to your contract to write data or perform an action.
-- [useScaffoldEventSubscriber](#usescaffoldeventsubscriber): for subscribing to your contract events and receiving real-time updates when events are emitted.
-- [useScaffoldEventHistory](#usescaffoldeventhistory): for retrieving historical event logs for your contract, providing past activity data.
-- [useDeployedContractInfo](#usedeployedcontractinfo): for fetching details from your contract, including the ABI and address.
-- [useScaffoldContract](#usescaffoldcontract): for obtaining a contract instance that lets you interact with the methods of your deployed smart contract.
-
-These hooks offer a simplified and streamlined interface for interacting with your smart contracts. If you need to interact with external contracts, you can use `wagmi` directly, or add external contract data to your `deployedContracts.ts` file.
-
-### useScaffoldContractRead:
-
-Use this hook to read public variables and get data from read-only functions of your smart contract.
-
-```ts
-const { data: totalCounter } = useScaffoldContractRead({
-  contractName: "YourContract",
-  functionName: "getGreeting",
-  args: ["ARGUMENTS IF THE FUNCTION ACCEPTS ANY"],
-});
+1.  filter all the transactions in the block by transaction status. 
+2.  filter the calls for that transaction and check that the calls were not reverted. 
+3. collect these calls into a vector of successful calls. 
+4.   filter the vector of sucessful calls by the Creation CallType to ensure they are contract creation calls. 
+5.  push those calls into a vector named `all_calls` to be later used identifying  proxy contracts. 
+6. grab the code from the code changes, the call address, and storage changes from the call.  
+7. use pattern matching on the storage changes to grab the base token uri if possible. 
+8. For erc20 we create a ERC20Creation struct from the address, code, changes, and storage changes.  
+9. For erc721 we create the ERC721Creation struct by passing in all the calls and the base token uri. We need to pass all the calls into the ERC721 creation struct to analyze the call tree for potential proxy contracts. 
+10. On the sucessful creation of these structs we pass them into our `process_erc20_contract` or `process_erc721_contract` functions.
+``` rust
+let filtered_calls: Vec<_> = blk
+        .transaction_traces
+        .into_iter()
+        .filter(|tx| tx.status == 1)
+        .flat_map(|tx| {
+            tx.calls.into_iter().filter(|call| !call.state_reverted)
+        })
+        .collect();
+    for call in filtered_calls {
+        if call.call_type == eth::CallType::Create as i32 {
+            let mut all_calls = Vec::new();
+            all_calls.push(&call);
+            if let Some(last_code_change) = call.code_changes.iter().last() {
+                let code = &last_code_change.new_code;
+                let address = &call.address.to_vec();
+                let token_uri = get_token_uri(&call);
+                let storage_changes: HashMap<H256, Vec<u8>> = call
+                    .storage_changes
+                    .iter()
+                    .map(|s| (H256::from_slice(s.key.as_ref()), 
+                    s.new_value.clone()))
+                    .collect();
+                if let Some(token) =
+                    ERC20Creation::from_call(&address, code.to_vec(), 
+                    storage_changes.clone())
+                {
+                    if let Some(deployment) = process_erc20_contract(token, 
+                    clk.clone()) {
+                        erc20_contracts.push(deployment);
+                    }
+                } else if let Some(token) = ERC721Creation::from_call(all_calls, 
+                token_uri) {
+                    if let Some(deployment) = process_erc721_contract(token, 
+                    clk.clone()) {
+                        erc721_contracts.push(deployment);
+                    }
+                }
+            }
 ```
 
-This example retrieves the data returned by the `getGreeting` function of the `YourContract` smart contract. If the function accepts any arguments, they can be passed in the args array. The retrieved data is stored in the `data` property of the returned object.
 
-### useScaffoldContractWrite:
+## Using the EVM instance to get our token data
 
-Use this hook to send a transaction to your smart contract to write data or perform an action.
+Our process begins by instantiating the Deployment Protobuf, incorporating the contract's creation address and block number as specified in our struct. Initially, other fields are left as empty strings, awaiting population with data from EVM execution outcomes. Into the `execute_on` function, we input the contract's address, bytecode, and observed storage changes, accompanied by encoded function data for the targeted execution. This function then operates within our EVM instance, executing the specified function and comparing its return value against the expected outcome.
 
-```ts
-const { writeAsync, isLoading, isMining } = useScaffoldContractWrite({
-  contractName: "YourContract",
-  functionName: "setGreeting",
-  args: ["The value to set"],
-  // For payable functions, expressed in ETH
-  value: "0.01",
-  // The number of block confirmations to wait for before considering transaction to be confirmed (default : 1).
-  blockConfirmations: 1,
-  // The callback function to execute when the transaction is confirmed.
-  onBlockConfirmation: (txnReceipt) => {
-    console.log("Transaction blockHash", txnReceipt.blockHash);
-  },
-});
+``` rust
+pub fn process_erc20_contract(contract_creation: ERC20Creation, clock: Clock) -> Option<Erc20Deployment> {
+    let mut contract = Erc20Deployment {
+        address: Hex::encode(&contract_creation.address),
+        name: String::new(),
+        symbol: String::new(),
+        total_supply: String::new(),
+        decimals: String::new(),
+        blocknumber: clock.number.to_string()
+    };
+    let code = Rc::new(contract_creation.code);
+
+    // Name
+    match execute_on(
+        Hex::encode(&contract_creation.address),
+        code.clone(),
+        functions::Name {}.encode(),
+        &contract_creation.storage_changes,
+    ) {
+        Ok(return_value) => match functions::Name::output(return_value.as_ref()) {
+            Ok(x) => {
+                contract.name = x;
+            }
+            Err(e) => {
+                log::info!("Unable to decode output for name: {}", e);
+            }
+        },
+        Err(e) => {
+            log::info!("Error: {}", e);
+        }
+    }
+
+    // Symbol
+    match execute_on(
+        Hex::encode(&contract_creation.address),
+        code.clone(),
+        functions::Symbol {}.encode(),
+        &contract_creation.storage_changes,
+    ) {
+        Ok(return_value) => match 
+        functions::Symbol::output(return_value.as_ref()) {
+            Ok(x) => {
+                contract.symbol = x;
+            }
+            Err(e) => {
+                log::info!("Unable to decode output for symbol: {}", e);
+            }
+        },
+        Err(e) => {
+            log::info!("Error: {}", e);
+        }
+    }
+
+    // Decimals
+    match execute_on(
+        Hex::encode(&contract_creation.address),
+        code.clone(),
+        functions::Decimals {}.encode(),
+        &contract_creation.storage_changes,
+    ) {
+        Ok(return_value) => match 
+        functions::Decimals::output(return_value.as_ref()) {
+            Ok(x) => {
+                contract.decimals = x.to_string();
+            }
+            Err(e) => {
+                log::info!("Unable to decode output for decimals: {}", e);
+            }
+        },
+        Err(e) => {
+            log::info!("Error: {}", e);
+        }
+    }
+
+    //total supply
+    match execute_on(
+        Hex::encode(&contract_creation.address),
+        code.clone(),
+        functions::Decimals {}.encode(),
+        &contract_creation.storage_changes,
+    ) {
+        Ok(return_value) => match 
+        functions::TotalSupply::output(return_value.as_ref()) {
+            Ok(x) => {
+                contract.total_supply = x.to_string();
+            }
+            Err(e) => {
+                log::info!("Unable to decode output for total supply: {}", e);
+            }
+        },
+        Err(e) => {
+            log::info!("Error: {}", e);
+        }
+    }
+
+    Some(contract)
+}
+
 ```
 
-To send the transaction, you can call the `writeAsync` function returned by the hook. Here's an example usage:
+``` rust
+pub fn process_erc721_contract(
+    contract_creation: ERC721Creation,
+    clock: Clock,
+) -> Option<Erc721Deployment> {
+    let mut contract = Erc721Deployment {
+        address: Hex::encode(&contract_creation.address),
+        name: String::new(),
+        symbol: String::new(),
+        blocknumber: clock.number.to_string(),
+        token_uri: contract_creation.token_uri,
+    };
+    let code = Rc::new(contract_creation.code);
 
-```ts
-<button className="btn btn-primary" onClick={writeAsync}>
-  Send TX
-</button>
+    // Name
+    match execute_on(
+        Hex::encode(&contract_creation.address),
+        code.clone(),
+        functions::Name {}.encode(),
+        &contract_creation.storage_changes,
+    ) {
+        Ok(return_value) => match functions::Name::output(return_value.as_ref()) {
+            Ok(x) => {
+                contract.name = x;
+            }
+            Err(e) => {
+                log::info!("Unable to decode output for name: {}", e);
+            }
+        },
+        Err(e) => {
+            log::info!("Error: {}", e);
+        }
+    }
+
+    // Symbol
+    match execute_on(
+        Hex::encode(&contract_creation.address),
+        code.clone(),
+        functions::Symbol {}.encode(),
+        &contract_creation.storage_changes,
+    ) {
+        Ok(return_value) => match 
+        functions::Symbol::output(return_value.as_ref()) {
+            Ok(x) => {
+                contract.symbol = x;
+            }
+            Err(e) => {
+                log::info!("Unable to decode output for symbol: {}", e);
+            }
+        },
+        Err(e) => {
+            log::info!("Error: {}", e);
+        }
+    }
+
+    Some(contract)
+}
+
 ```
 
-This example sends a transaction to the `YourContract` smart contract to call the `setGreeting` function with the arguments passed in `args`. The `writeAsync` function sends the transaction to the smart contract, and the `isLoading` and `isMining` properties indicate whether the transaction is currently being processed by the network.
+#### Execute On Function
 
-### useScaffoldEventSubscriber:
+The `execute_on` function constructs the Machine Instance using our contract creation struct, initializing it with the contract's bytecode and the encoded function data, while setting both the stack and memory limits to 1024.
 
-Use this hook to subscribe to events emitted by your smart contract, and receive real-time updates when these events are emitted.
+``` rust
+let mut machine = evm_core::Machine::new(
+        code,
+        Rc::new(data), // name()
+        // Rc::new(vec![0x5c, 0x97, 0x5a, 0xbb]), // paused()
+        1024,
+        1024,
+    );
 
-```ts
-useScaffoldEventSubscriber({
-  contractName: "YourContract",
-  eventName: "GreetingChange",
-  // The listener function is called whenever a GreetingChange event is emitted by the contract.
-  // It receives the parameters emitted by the event, for this example: GreetingChange(address greetingSetter, string newGreeting, bool premium, uint256 value);
-  listener: (greetingSetter, newGreeting, premium, value) => {
-    console.log(greetingSetter, newGreeting, premium, value);
-  },
-});
 ```
 
-This example subscribes to the `GreetingChange` event emitted by the `YourContract` smart contract, and logs the parameters emitted by the event to the console whenever it is emitted. The `listener` function accepts the parameters emitted by the event, and can be customized according to your needs.
+Upon creating the machine instance, we enter a loop where an `active_opcode` variable is initialized to `None`. We then proceed to inspect and execute the next opcode, which results in either an `Ok(())` indicating normal execution, or an `Err` containing a `Capture` enum—signifying either an `ExitReason` (for scenarios like errors, reverts, self-destructs, or returns) or a `Trap` (indicating the need for further input or processing).
+#### Handling Traps
 
-### useScaffoldEventHistory:
+We address the Trap condition for CALLVALUE and SLOAD opcodes during execution as follows:
 
-Use this hook to retrieve historical event logs for your smart contract, providing past activity data.
+- **For CALLVALUE Opcode**: When encountering the CALLVALUE opcode, we insert a zero-initialized hash onto the Stack. This zero hash is used purely to fulfill EVM requirements, simulating the behavior expected within a typical EVM execution.
 
-```ts
-const {
-  data: events,
-  isLoading: isLoadingEvents,
-  error: errorReadingEvents,
-  } = useScaffoldEventHistory({
-  contractName: "YourContract",
-  eventName: "GreetingChange",
-  // Specify the starting block number from which to read events, this is a bigint.
-  fromBlock: 31231n,
-  blockData: true,
-  // Apply filters to the event based on parameter names and values { [parameterName]: value },
-  filters: { premium: true }
-  // If set to true it will return the transaction data for each event (default: false),
-  transactionData: true,
-  // If set to true it will return the receipt data for each event (default: false),
-  receiptData: true
-});
-```
+- **For SLOAD Operation**: The handling of an SLOAD operation is slightly different. This opcode typically succeeds a PUSH, where a storage key is pushed onto the Stack. In regular EVM execution:
+    - The SLOAD opcode reads this key, retrieves the corresponding storage value, and then pushes this value back onto the Stack.
+    - Without direct access to the contract's storage layout, our approach simulates this process. Upon an SLOAD encounter, we pop the storage key from the Stack. Using our HashMap of Storage Changes, we look up the value associated with this key.
+    - After finding the value, we manually push it onto the Stack, where it is then returned to our process. This value is subsequently used to fill in the relevant field in the protobuff with the data obtained.
 
-This example retrieves the historical event logs for the `GreetingChange` event of the `YourContract` smart contract, starting from block number 31231 and filtering events where the premium parameter is true. The data property of the returned object contains an array of event objects, each containing the event parameters and (optionally) the block, transaction, and receipt data. The `isLoading` property indicates whether the event logs are currently being fetched, and the `error` property contains any error that occurred during the fetching process (if applicable).
 
-### useDeployedContractInfo:
 
-Use this hook to fetch details about a deployed smart contract, including the ABI and address.
 
-```ts
-// ContractName: name of the deployed contract
-const { data: deployedContractData } = useDeployedContractInfo(contractName);
-```
-
-This example retrieves the details of the deployed contract with the specified name and stores the details in the deployedContractData object.
-
-### useScaffoldContract:
-
-Use this hook to get your contract instance by providing the contract name. It enables you interact with your contract methods.
-For reading data or sending transactions, it's recommended to use `useScaffoldContractRead` and `useScaffoldContractWrite`.
-
-```ts
-const { data: yourContract } = useScaffoldContract({
-  contractName: "YourContract",
-});
-// Returns the greeting and can be called in any function, unlike useScaffoldContractRead
-await yourContract?.greeting();
-
-// Used to write to a contract and can be called in any function
-import { useWalletClient } from "wagmi";
-
-const { data: walletClient } = useWalletClient();
-const { data: yourContract } = useScaffoldContract({
-  contractName: "YourContract",
-  walletClient,
-});
-const setGreeting = async () => {
-  // Call the method in any function
-  await yourContract?.setGreeting("the greeting here");
-};
-```
-
-This example uses the `useScaffoldContract` hook to obtain a contract instance for the `YourContract` smart contract. The data property of the returned object contains the contract instance that can be used to call any of the smart contract methods.
-
-## Disabling type and linting error checks
-
-> **Hint**
-> Typescript helps you catch errors at compile time, which can save time and improve code quality, but can be challenging for those who are new to the language or who are used to the more dynamic nature of JavaScript. Below are the steps to disable type & lint check at different levels
-
-### Disabling commit checks
-
-We run `pre-commit` [git hook](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks) which lints the staged files and don't let you commit if there is an linting error.
-
-To disable this, go to `.husky/pre-commit` file and comment out `yarn lint-staged --verbose`
-
-```diff
-- yarn lint-staged --verbose
-+ # yarn lint-staged --verbose
-```
-
-### Deploying to Vercel without any checks
-
-By default, Vercel runs types and lint checks before building your app. The deployment will fail if there are any types or lint errors.
-
-To ignore these checks while deploying from the CLI, use:
-
-```shell
-yarn vercel:yolo
-```
-
-If your repo is connected to Vercel, you can set `NEXT_PUBLIC_IGNORE_BUILD_ERROR` to `true` in a [environment variable](https://vercel.com/docs/concepts/projects/environment-variables).
-
-### Disabling Github Workflow
-
-We have github workflow setup checkout `.github/workflows/lint.yaml` which runs types and lint error checks every time code is **pushed** to `main` branch or **pull request** is made to `main` branch
-
-To disable it, **delete `.github` directory**
-
-## Contributing to Scaffold-ETH 2
-
-We welcome contributions to Scaffold-ETH 2!
-
-Please see [CONTRIBUTING.MD](https://github.com/scaffold-eth/scaffold-eth-2/blob/main/CONTRIBUTING.md) for more information and guidelines for contributing to Scaffold-ETH 2.
