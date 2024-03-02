@@ -19,7 +19,9 @@ export function useSubgraph({ subgraphQuery, queryProps }: UseSubgraphProps) {
     loading,
     error,
     data: responseData,
-  } = useQuery(getQuery(subgraphQuery), {
+  } = useQuery(
+    getQuery(subgraphQuery), {
+      // "erc20Transfers" {
     variables: queryProps,
     pollInterval: 10000,
   });
@@ -78,7 +80,7 @@ const getQuery = (subgraphQuery: string) => {
         }
       }
     `;
-  } else if (subgraphQuery == "erc721Deployments") {
+  } else {
     return gql`
       query erc721Deployments($rows: Int) {
         erc721Deployments(first: $rows) {
@@ -89,5 +91,5 @@ const getQuery = (subgraphQuery: string) => {
         }
       }
     `;
-  }
+  } 
 };

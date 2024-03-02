@@ -2,7 +2,7 @@ import { atom } from "recoil";
 
 export const searchInputQueryState = atom({
   key: 'searchInputQueryState', // unique ID (with respect to other atoms/selectors)
-  default: 'no search input', // default value (aka initial value)
+  default: '', // default value (aka initial value)
 });
 
 export const subgraphFilterQueryState = atom({
@@ -40,6 +40,6 @@ export const paginatedPageNumState = atom({
 
 export const subgraphQueryState = atom({
   key: 'subgraphqueryState',
-  default: '',
+  default: 'NFTs',
 })
 

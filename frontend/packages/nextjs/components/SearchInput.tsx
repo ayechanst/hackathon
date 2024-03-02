@@ -29,6 +29,7 @@ const SearchInput = () => {
           }`}
           placeholder="Search"
           value={searchInputQuery}
+          onChange={e => setSearchInputQuery(e.target.value)}
           onFocus={() => {
             setIsFocused(true);
             setIsActive(true);
