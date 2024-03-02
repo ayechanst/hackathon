@@ -82,15 +82,15 @@ const Chart = () => {
                       }
                     } else if (dataKey === "id") {
                       return (
-                        <Cell key={index + keyIndex} keyType={"address"} data={datum[dataKey].toString()} id={index} />
+                        <Cell key={index + keyIndex} keyType={"address"} data={datum[dataKey]?.toString()} id={index} />
                       );
                     } else if (dataKey === "tokenId") {
                       return (
-                        <Cell key={index + keyIndex} keyType={"tokenId"} data={datum[dataKey].toString()} id={index} />
+                        <Cell key={index + keyIndex} keyType={"tokenId"} data={datum[dataKey]?.toString()} id={index} />
                       );
                     } else {
                       return (
-                        <Cell key={index + keyIndex} keyType={"number"} data={datum[dataKey].toString()} id={index} />
+                        <Cell key={index + keyIndex} keyType={"number"} data={datum[dataKey]?.toString()} id={index} />
                       );
                     }
                   })}
@@ -108,7 +108,6 @@ const Chart = () => {
           <div>{paginatedPageNum + 2}</div>
           <div>»</div>
         </button>
-
       </div>
     </>
   );

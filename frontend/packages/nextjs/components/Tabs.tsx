@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Chart from "./Chart";
-
 import { AnimatePresence, motion } from "framer-motion";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useSubgraph } from "~~/hooks/scaffold-eth/useSubgraph";
@@ -14,15 +13,19 @@ const Tabs = () => {
   const [filterButtons, setFilterButtons] = useRecoilState(filterButtonsArrayState);
   const [subgraphDataArray, setSubgraphDataArray] = useRecoilState(subgraphDataArrayState);
 
-  const subgraphQuery = useRecoilValue(subgraphQueryState);
+  // const subgraphQuery = useRecoilValue(subgraphQueryState);
   // const subgraphProps
 
   const { data } = useSubgraph({
-    subgraphQuery,
+    // subgraphQuery: "Tokens",
+    subgraphQuery: selectedTab,
     queryProps: { rows: 80 },
   });
-
+  // useEffect(() => {
+  // if (!data) return;
   setSubgraphDataArray(data);
+  // setSelectedTab("Tokens");
+  // }, [data]);
 
   return (
     <div className="grid">
@@ -53,7 +56,5 @@ const Tabs = () => {
     </div>
   );
 };
-
-
 
 export default Tabs;

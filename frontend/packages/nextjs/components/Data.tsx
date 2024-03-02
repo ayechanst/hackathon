@@ -34,7 +34,7 @@ const Data = () => {
           <Tabs />
         </div>
         <div className="mr-5 mt-2 col-span-1">
-          <TimeMenu />
+          {/* <TimeMenu /> */}
 
         </div>
       </div>
