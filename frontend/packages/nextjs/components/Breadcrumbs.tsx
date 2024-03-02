@@ -9,7 +9,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ breadcrumbList }) => {
 
   return (
     <>
-      <div className="bg-gradient-to-r from-yellow-500 rounded-full text-white px-5">
+      <div className=" bg-yellow-500 rounded-full text-primary px-5 justify-end">
         <div className="text-sm breadcrumbs">
           <ul>
             {breadcrumbArray.map(crumb => (

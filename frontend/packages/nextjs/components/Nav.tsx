@@ -1,9 +1,9 @@
-
 import { useEffect, useState } from "react";
+import Breadcrumbs from "./Breadcrumbs";
 import { motion } from "framer-motion";
 
 const Nav = () => {
-  const [isPulsating, setIsPulsating] = useState(true);
+  const [isPulsating, setIsPulsating] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -16,7 +16,7 @@ const Nav = () => {
     <>
       <motion.div
         animate={{
-          boxShadow: isPulsating ? "0 0 10px 3px rgba(66, 153, 225, 0.5)" : "0 0 0px 0px rgba(0, 0, 0, 0)", // Toggle between pulsating and no shadow
+          boxShadow: isPulsating ? "0 0 10px 9px rgba(66, 153, 225, 0.5)" : "0 0 0px 0px rgba(0, 0, 0, 0)", // Toggle between pulsating and no shadow
         }}
         transition={{ duration: 2, ease: "easeInOut" }}
         className="mx-5 mt-5 mb-2 bg-zinc-700 rounded-lg shadow-xl"
@@ -28,13 +28,11 @@ const Nav = () => {
             </div>
             <button className="btn btn-ghost text-yellow-100 text-3xl">Data Detective</button>
           </div>
-          <div>
-            First ever open source, 0 rpc call, pre-compiled, multi-architectural, blockchain, substream powered subraph
-            querying, data indexer
+          <div className="ml-55">
+            <Breadcrumbs breadcrumbList={["Question", "Investigate", "Discover"]} />
           </div>
         </div>
       </motion.div>
-
     </>
   );
 };
