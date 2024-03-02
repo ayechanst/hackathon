@@ -10,25 +10,19 @@ use substreams::pb::substreams::Clock;
 use substreams::Hex;
 use substreams_ethereum::pb::eth::v2::{Call, CallType, StorageChange};
 
-pub struct ERC721Creation {
-    pub address: Vec<u8>,
-    pub code: Vec<u8>,
-    pub storage_changes: HashMap<H256, Vec<u8>>,
-    pub token_uri: String,
-}
 
-const ERC721_FN_1: &str = "b88d4fde";
-const ERC721_FN_2: &str = "06fdde03";
-const ERC721_FN_3: &str = "95d89b41";
-const ERC721_FN_4: &str = "c87b56dd";
+const SAFE_TRANSFER_FROM_FN_SIG: &str = "b88d4fde";
+const NAME_FN_SIG: &str = "06fdde03";
+const SYMBOL_FN_SIG: &str = "95d89b41";
+const TOKENURI_FN_SIG: &str = "c87b56dd";
 // to check for gas and delegatecall opcodes in sequence
 const GASDELEGATECALL: &str = "5af4";
 
 fn contains_erc721_fns(code_string: &str) -> bool {
-    code_string.contains(ERC721_FN_1)
-        && code_string.contains(ERC721_FN_2)
-        && code_string.contains(ERC721_FN_3)
-        && code_string.contains(ERC721_FN_4)
+    code_string.contains(SAFE_TRANSFER_FROM_FN_SIG)
+    && code_string.contains(NAME_FN_SIG)
+    && code_string.contains(SYMBOL_FN_SIG)
+    && code_string.contains(TOKENURI_FN_SIG)
 }
 
 fn contains_delegate_call(code_str: &str) -> bool {
@@ -61,25 +55,31 @@ struct StorageChanges(HashMap<H256, Vec<u8>>);
 impl StorageChanges {
     pub fn new(changes: &Vec<StorageChange>) -> Self {
         let storage_changes = changes
-            .iter()
-            .map(|s| (H256::from_slice(s.key.as_ref()), s.new_value.to_vec()))
-            .collect();
-        Self(storage_changes)
-    }
+        .iter()
+        .map(|s| (H256::from_slice(s.key.as_ref()), s.new_value.to_vec()))
+        .collect();
+    Self(storage_changes)
+}
 }
 
 pub fn get_token_uri(call: &Call) -> String {
     for change in &call.storage_changes {
         if let Ok(change_value) = String::from_utf8(change.new_value.clone()) {
             if change_value.starts_with("ipfs://")
-                || change_value.starts_with("https://")
-                || change_value.starts_with("http://")
+            || change_value.starts_with("https://")
+            || change_value.starts_with("http://")
             {
                 return change_value.to_string();
             }
         }
     }
     "".to_string()
+}
+pub struct ERC721Creation {
+    pub address: Vec<u8>,
+    pub code: Vec<u8>,
+    pub storage_changes: HashMap<H256, Vec<u8>>,
+    pub token_uri: String,
 }
 
 impl ERC721Creation {
@@ -250,10 +250,10 @@ fn execute_on(
     loop {
         let mut active_opcode: Option<Opcode> = None;
         if let Some((opcode, stack)) = machine.inspect() {
-            // log::info!(
-            //     "Machine active opcode is {}",
-            //     display_opcode_input(opcode, stack),
-            // );
+            log::info!(
+                "Machine active opcode is {}",
+                display_opcode_input(opcode, stack),
+            );
 
             active_opcode = Some(opcode)
         }
@@ -329,7 +329,7 @@ fn execute_on(
     }
 }
 
-fn _display_opcode_input(opcode: evm_core::Opcode, stack: &evm_core::Stack) -> String {
+fn display_opcode_input(opcode: evm_core::Opcode, stack: &evm_core::Stack) -> String {
     match opcode.0 {
         0x10 => display_opcode_with_stack("LT", stack, 2),
         0x11 => display_opcode_with_stack("GT", stack, 2),

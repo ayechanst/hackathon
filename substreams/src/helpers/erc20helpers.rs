@@ -1,5 +1,5 @@
 use crate::abi::erc20::functions;
-use crate::pb::debbie::{Erc20Deployment, Erc20Transfer, MasterProto};
+use crate::pb::debbie::Erc20Deployment;
 use evm_core::{ExitReason, Opcode};
 use primitive_types::H256;
 use std::collections::HashMap;
@@ -7,7 +7,18 @@ use std::rc::Rc;
 use substreams::log;
 use substreams::pb::substreams::Clock;
 use substreams::Hex;
-use substreams_ethereum::pb::eth::v2::Call;
+
+const SYMBOL_FN_SIG: &str = "95d89b41";
+const NAME_FN_SIG: &str = "06fdde03";
+const DECIMALS_FN_SIG: &str = "313ce567";
+const TOTAL_SUPPLY_FN_SIG: &str = "18160ddd";
+
+fn contains_erc20_fns(code_string: &str) -> bool {
+    code_string.contains(DECIMALS_FN_SIG)
+        &&code_string.contains(NAME_FN_SIG)
+        &&code_string.contains(SYMBOL_FN_SIG)
+        &&code_string.contains(TOTAL_SUPPLY_FN_SIG)
+}
 
 pub struct ERC20Creation {
     pub address: Vec<u8>,
@@ -22,11 +33,7 @@ impl ERC20Creation {
         storage_changes: HashMap<H256, Vec<u8>>,
     ) -> Option<Self> {
         let code_string = Hex::encode(&code);
-        if code_string.contains("06fdde03")
-            && code_string.contains("95d89b41")
-            && code_string.contains("313ce567")
-            && code_string.contains("18160ddd")
-        {
+        if contains_erc20_fns(&code_string) {
             Some(Self {
                 address: address.to_vec(),
                 code,
@@ -168,10 +175,10 @@ fn execute_on(
     loop {
         let mut active_opcode: Option<Opcode> = None;
         if let Some((opcode, stack)) = machine.inspect() {
-            // log::info!(
-            //     "Machine active opcode is {}",
-            //     display_opcode_input(opcode, stack),
-            // );
+            log::info!(
+                "Machine active opcode is {}",
+                display_opcode_input(opcode, stack),
+            );
 
             active_opcode = Some(opcode)
         }
@@ -180,7 +187,7 @@ fn execute_on(
             Ok(()) => {
                 if let Some(opcode) = active_opcode {
                     if let Some(output) = display_opcode_output(opcode, machine.stack()) {
-                        // log::info!("Machine executed opcode {}", output);
+                        log::info!("Machine executed opcode {}", output);
                     }
                 }
             }
