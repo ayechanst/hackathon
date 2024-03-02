@@ -12,10 +12,8 @@ use helpers::erc721helpers::*;
 
 use pb::debbie::Erc20HoldersTransfers;
 use pb::debbie::Erc721TransfersHoldersTokens;
-use pb::debbie::{
-    Erc20Deployment, Erc20Transfer, Erc20Transfers, Erc721Deployments, MasterProto, TokenHolders,
-};
-use pb::debbie::{Erc721Deployment, Erc721Tokens, Erc721Transfer, Erc721Transfers, NftHolders};
+use pb::debbie::{Erc20Deployment, Erc20Transfer, Erc721Deployments, MasterProto};
+use pb::debbie::{Erc721Deployment, Erc721Transfer};
 
 use primitive_types::H256;
 use std::collections::HashMap;
@@ -168,12 +166,13 @@ fn map_erc721_test(master: MasterProto) -> Erc721Deployments {
 
 #[substreams::handlers::map]
 fn graph_out(
+    clock: Clock,
     master: MasterProto,
     transfers_and_holders: Erc20HoldersTransfers,
     erc721_transfers_holders_tokens: Erc721TransfersHoldersTokens,
 ) -> Result<EntityChanges, substreams::errors::Error> {
     let mut tables = Tables::new();
-
+    let timestamp_seconds = clock.timestamp.unwrap().seconds;
     for erc20_deployment in master.erc20contracts {
         let total_supply: BigInt;
         if let Some(supply) = BigInt::from_str(&erc20_deployment.total_supply).ok() {
@@ -202,7 +201,8 @@ fn graph_out(
             .set("symbol", erc20_deployment.symbol)
             .set("totalSupply", total_supply)
             .set("decimals", decimals)
-            .set("blocknumber", blocknumber);
+            .set("blocknumber", blocknumber)
+            .set("timestamp", BigInt::from(timestamp_seconds));
     }
 
     for erc721_deployment in master.erc721contracts {
@@ -217,7 +217,8 @@ fn graph_out(
             .set("name", erc721_deployment.name)
             .set("symbol", erc721_deployment.symbol)
             .set("blocknumber", blocknumber)
-            .set("tokenUri", erc721_deployment.token_uri);
+            .set("tokenUri", erc721_deployment.token_uri)
+            .set("timestamp", BigInt::from(timestamp_seconds));
     }
 
     for (index, erc20_transfer) in transfers_and_holders.erc20transfers.iter().enumerate() {
@@ -267,7 +268,8 @@ fn graph_out(
             .set("amount", amount)
             .set("count", count)
             .set("volume", volume)
-            .set("blocknumber", blocknumber);
+            .set("blocknumber", blocknumber)
+            .set("timestamp", BigInt::from(timestamp_seconds));
     }
 
     for (index, erc721_transfer) in erc721_transfers_holders_tokens.transfers.iter().enumerate() {
@@ -302,7 +304,8 @@ fn graph_out(
             .set("to", erc721_transfer.to.clone())
             .set("tokenId", erc721_transfer.token_id.clone())
             .set("volume", volume)
-            .set("blocknumber", blocknumber);
+            .set("blocknumber", blocknumber)
+            .set("timestamp", BigInt::from(timestamp_seconds));
     }
 
     for token_holder in transfers_and_holders.token_holders {
@@ -339,7 +342,8 @@ fn graph_out(
             .set("tokenAddress", token_holder.token_address)
             .set("balance", token_balance)
             .set("transferVolume", transfer_volume)
-            .set("transferCount", transfer_count);
+            .set("transferCount", transfer_count)
+            .set("timestamp", BigInt::from(timestamp_seconds));
     }
 
     for token_holder in erc721_transfers_holders_tokens.erc721_token_holders {
@@ -360,7 +364,8 @@ fn graph_out(
             )
             .set("holderAddress", token_holder.holder_address)
             .set("nftAddress", token_holder.token_address)
-            .set("tokenBalance", token_balance);
+            .set("tokenBalance", token_balance)
+            .set("timestamp", BigInt::from(timestamp_seconds));
     }
 
     for token in erc721_transfers_holders_tokens.erc721_tokens {
@@ -378,10 +383,9 @@ fn graph_out(
             )
             .set("address", token.token_address)
             .set("tokenId", token.token_id)
-            .set("volume", volume);
+            .set("volume", volume)
+            .set("timestamp", BigInt::from(timestamp_seconds));
     }
 
     Ok(tables.to_entity_changes())
 }
-
-//unique key generator

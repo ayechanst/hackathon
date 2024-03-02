@@ -1,13 +1,7 @@
-use substreams::pb::substreams::Clock;
-use uuid::timestamp;
-
-use crate::{
-    abi::erc20,
-    pb::debbie::{
-        Erc20HoldersTransfers, Erc20Transfer, Erc20Transfers, MasterProto, TokenHolder,
-        TokenHolders,
-    },
+use crate::pb::debbie::{
+    Erc20HoldersTransfers, Erc20Transfer, MasterProto, TokenHolder, TokenHolders,
 };
+use substreams::pb::substreams::Clock;
 use substreams::store::{StoreGet, StoreGetBigInt, StoreGetInt64};
 
 #[substreams::handlers::map]

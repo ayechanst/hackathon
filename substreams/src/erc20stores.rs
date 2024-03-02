@@ -1,11 +1,9 @@
 use std::str::FromStr;
 
-use crate::pb::debbie::{MasterProto, TokenHolders};
+use crate::pb::debbie::MasterProto;
 use substreams::pb::substreams::Clock;
 use substreams::scalar::BigInt;
-use substreams::store::{
-    StoreAdd, StoreAddBigInt, StoreAddInt64, StoreDelete, StoreNew, StoreSet, StoreSetBigInt,
-};
+use substreams::store::{StoreAdd, StoreAddBigInt, StoreAddInt64, StoreDelete, StoreNew};
 
 #[substreams::handlers::store]
 pub fn store_erc20_transfer_vol(transfers: MasterProto, store: StoreAddBigInt) {

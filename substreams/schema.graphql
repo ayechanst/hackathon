@@ -5,6 +5,7 @@ type TokenDeployment @entity(immutable: false) {
     decimals: BigInt!
     totalSupply: BigInt!
     blocknumber: BigInt!
+    timestamp: BigInt!
 }
 
 type TokenTransfer @entity(immutable: false) {
@@ -14,6 +15,7 @@ type TokenTransfer @entity(immutable: false) {
     amount: BigInt!
     count: BigInt!
     volume: BigInt!
+    timestamp: BigInt!
 }
 
 type TokenHolder @entity(immutable: false) {
@@ -23,6 +25,7 @@ type TokenHolder @entity(immutable: false) {
     balance: BigInt!
     transferVolume: BigInt!
     transferCount: BigInt!
+    timestamp: BigInt!
 }
 
 type NftDeployment @entity(immutable: false) {
@@ -31,6 +34,7 @@ type NftDeployment @entity(immutable: false) {
     symbol: String!
     blocknumber: BigInt!
     tokenUri: String!
+    timestamp: BigInt!
 }
 
 type NftTransfer @entity(immutable: false) {
@@ -40,6 +44,7 @@ type NftTransfer @entity(immutable: false) {
     tokenId: String!
     volume: BigInt!
     blocknumber: BigInt!
+    timestamp: BigInt!
 }
 
 type NftHolder @entity(immutable: false) {
@@ -47,6 +52,7 @@ type NftHolder @entity(immutable: false) {
     holderAddress: String!
     nftAddress: String!
     tokenBalance: BigInt!
+    timestamp: BigInt!
 }
 
 type NftToken @entity(immutable: false) {
@@ -54,4 +60,5 @@ type NftToken @entity(immutable: false) {
     address: String!
     tokenId: String!
     volume: BigInt!
+    timestamp: BigInt!
 }
