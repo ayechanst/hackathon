@@ -1,0 +1,64 @@
+type TokenDeployment @entity(immutable: false) {
+    id: ID!
+    name: String!
+    symbol: String!
+    decimals: BigInt!
+    totalSupply: BigInt!
+    blocknumber: BigInt!
+    timestamp: BigInt!
+}
+
+type TokenTransfer @entity(immutable: false) {
+    id: ID!
+    from: String!
+    to: String!
+    amount: BigInt!
+    count: BigInt!
+    volume: BigInt!
+    timestamp: BigInt!
+}
+
+type TokenHolder @entity(immutable: false) {
+    id: ID!
+    holderAddress: String!
+    tokenAddress: String!
+    balance: BigInt!
+    transferVolume: BigInt!
+    transferCount: BigInt!
+    timestamp: BigInt!
+}
+
+type NftDeployment @entity(immutable: false) {
+    id: ID!
+    name: String!
+    symbol: String!
+    blocknumber: BigInt!
+    tokenUri: String!
+    timestamp: BigInt!
+}
+
+type NftTransfer @entity(immutable: false) {
+    id: ID!
+    from: String!
+    to: String!
+    tokenId: String!
+    volume: BigInt!
+    blocknumber: BigInt!
+    timestamp: BigInt!
+}
+
+type NftHolder @entity(immutable: false) {
+    id: ID!
+    holderAddress: String!
+    nftAddress: String!
+    tokenBalance: BigInt!
+    timestamp: BigInt!
+}
+
+type NftToken @entity(immutable: false) {
+    id: ID!
+    address: String!
+    tokenId: String!
+    volume: BigInt!
+    timestamp: BigInt!
+}

@@ -1,17 +1,35 @@
 import { useEffect, useState } from "react";
 import { gql, useQuery } from "@apollo/client";
 
+import { selectedTabState, subgraphFilterQueryState, subgraphQueryState, subgraphTimeQueryState } from "~~/recoil/atoms";
+import { useRecoilValue } from "recoil";
+
+
+// type UseSubgraphProps = {
+//   subgraphQuery?: string;
+//   queryProps?: any;
+// };
 type UseSubgraphProps = {
-  subgraphQuery: string;
-  queryProps?: any;
+
+  subgraphQuery?: string;
+  // queryProps?: any;
 };
 
-export function useSubgraph({ subgraphQuery, queryProps }: UseSubgraphProps) {
+const queryProps = useRecoilValue(subgraphFilterQueryState)
+
+export function useSubgraph({ subgraphQuery }: UseSubgraphProps) {
+
+  // const subgraphTimeQuery = useRecoilValue(subgraphTimeQueryState);
+  // const subgraphTabQuery = useRecoilValue(selectedTabState);
+  // const subgraphQuery = useRecoilValue(subgraphFilterQueryState);
+
   const {
     loading,
     error,
     data: responseData,
-  } = useQuery(getQuery(subgraphQuery), {
+  } = useQuery(
+    getQuery(subgraphQuery), {
+      // variables take in the filters
     variables: queryProps,
     pollInterval: 10000,
   });
@@ -29,13 +47,15 @@ export function useSubgraph({ subgraphQuery, queryProps }: UseSubgraphProps) {
       return rest;
     });
 
+
     setData(returnData);
   }, [responseData]);
 
   return { data, loading, error };
 }
 
-const getQuery = (subgraphQuery: string, queryProps?: any) => {
+const getQuery = (subgraphQuery: string) => {
+
   if (subgraphQuery === "erc20Transfers") {
     return gql`
       query erc20Transfers($rows: Int) {
@@ -70,7 +90,9 @@ const getQuery = (subgraphQuery: string, queryProps?: any) => {
         }
       }
     `;
-  } else if (subgraphQuery == "erc721Deployments") {
+
+  } else {
+
     return gql`
       query erc721Deployments($rows: Int) {
         erc721Deployments(first: $rows) {
@@ -81,5 +103,7 @@ const getQuery = (subgraphQuery: string, queryProps?: any) => {
         }
       }
     `;
-  }
+
+  } 
+
 };

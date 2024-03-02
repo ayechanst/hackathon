@@ -1,59 +1,67 @@
-import React, { useState } from "react";
+
+import React, { useEffect, useState } from "react";
 import Button from "./Button";
-import { AddressInput } from "./scaffold-eth";
+import SearchInput from "./SearchInput";
+import { motion } from "framer-motion";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { subgraphFilterQueryState } from "~~/recoil/atoms";
+import { filterButtonsState } from "~~/recoil/selectors";
 
-interface MenuProps {
-  sendButtonNameToMenu: any;
-}
-
-const Menu: React.FC<MenuProps> = ({ sendButtonNameToMenu }) => {
+const Menu = () => {
   const [address, setAddress] = useState("");
   const [activeButton, setActiveButton] = useState<string | null>(null);
-
-  const sendButtonNameToMenuOnClick = (buttonName: string) => {
-    setActiveButton(buttonName);
-    sendButtonNameToMenu(buttonName);
-  };
+  // atom
+  const [subgraphFilterQuery, setSubgraphFilterQuery] = useRecoilState(subgraphFilterQueryState);
+  const filterButtons = useRecoilValue(filterButtonsState);
 
   return (
     <>
-      <div className="w-full bg-secondary shadow-xl rounded-lg">
-        <div className="flex justify-center pt-3 font-bold text-lg">Archives</div>
+      <div className="w-full items-center">
+        <div className="flex justify-center pt-3 font-bold text-lg">Data Filtration</div>
         <div className="px-3">
           <div className="divider divider-start divider-warning">Investigate</div>
-          <div className="flex flex-col items-start">
-            {/* <input type="text" placeholder="input an address" className="w-full max-w-xs p-2 border-accent" /> */}
-            <AddressInput onChange={setAddress} value={address} placeholder="Input your address" />
+          <div className="flex flex-col items-center">
+            <SearchInput />
           </div>
         </div>
         <div className="px-3">
           <div className="divider divider-start divider-warning">NFTs</div>
-          <div className="flex flex-col items-start">
+
+          <div className="flex flex-col items-center">
             <Button
-              onClick={() => sendButtonNameToMenuOnClick("erc721Transfers")}
+              onClick={() => setSubgraphFilterQuery("erc721Transfers")}
+
               isActive={activeButton === "erc721Transfers"}
               buttonName="erc721Transfers"
             />
             <Button
-              onClick={() => sendButtonNameToMenuOnClick("erc721Deployments")}
+
+              onClick={() => setSubgraphFilterQuery("erc721Deployments")}
+
               isActive={activeButton === "erc721Deployments"}
               buttonName="erc721Deployments"
             />
           </div>
         </div>
+
         <div className="px-3 pb-3">
-          <div className="divider divider-start divider-warning">Tokens</div>
-          <div className="flex flex-col items-start">
-            <Button
-              onClick={() => sendButtonNameToMenuOnClick("erc20Transfers")}
-              isActive={activeButton === "erc20Transfers"}
-              buttonName="erc20Transfers"
-            />
-            <Button
-              onClick={() => sendButtonNameToMenuOnClick("erc20Deployments")}
-              isActive={activeButton === "erc20Deployments"}
-              buttonName="erc20Deployments"
-            />
+          <div className="divider divider-start divider-warning">Dynamic Filters</div>
+          <div className="flex flex-col items-center">
+            {filterButtons.map((filter: string) => {
+              if (filter === "input component") {
+                return <SearchInput key={filter} />;
+              } else {
+                return (
+                  <Button
+                    key={filter}
+                    onClick={() => setSubgraphFilterQuery(filter)}
+                    isActive={activeButton === filter}
+                    buttonName={filter}
+                  />
+                );
+              }
+            })}
+
           </div>
         </div>
       </div>
