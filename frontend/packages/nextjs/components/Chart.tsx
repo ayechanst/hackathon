@@ -1,19 +1,36 @@
 import React, { useEffect, useState } from "react";
 import Cell from "./Cell";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { paginatedPageNumState, subgraphDataArrayState } from "~~/recoil/atoms";
+import { dividedSubgraphDataState } from "~~/recoil/selectors";
 
-const Chart: React.FC<any> = ({ data }) => {
+const Chart = () => {
+  let [paginatedPageNum, setPaginatedPageNum] = useRecoilState(paginatedPageNumState);
+  const dividedSubgraphData = useRecoilValue(dividedSubgraphDataState);
+  const subgraphDataArray = useRecoilValue(subgraphDataArrayState);
+
   return (
     <>
       <div className="flex bg-secondary p-3 rounded-2xl place-items-center justify-between">
-        <button className="rounded-full p-1 bg-primary justify-items-end">«</button>
+        <button
+          onClick={() => {
+            if (paginatedPageNum >= 1) {
+              setPaginatedPageNum((paginatedPageNum -= 1));
+            }
+          }}
+          className="rounded-full p-1 bg-primary justify-items-end flex"
+        >
+          <div>«</div>
+          <div>{paginatedPageNum + 1}</div>
+        </button>
         <div className="place-items-center flex">
-          {data ? (
-            Object.keys(data[0]).map((dataKey: any, keyIndex: any) => {
+          {dividedSubgraphData ? (
+            Object.keys(dividedSubgraphData[0]).map((dataKey: any, keyIndex: any) => {
               return (
                 <div key={dataKey.toString()} className="px-3">
                   <div className="flex justify-center text-lg">{dataKey}</div>
 
-                  {data.map((datum: any, index: any) => {
+                  {dividedSubgraphData.map((datum: any, index: any) => {
                     if (dataKey === "from") {
                       if (datum[dataKey] === "0000000000000000000000000000000000000000") {
                         return <Cell key={index + keyIndex} keyType={"address"} data={"BURN"} id={index} />;
@@ -61,7 +78,19 @@ const Chart: React.FC<any> = ({ data }) => {
             <div>no data</div>
           )}
         </div>
-        <button className="place-self-end place-self-center rounded-full p-1 bg-primary item-center">»</button>
+        <div>
+          <button
+            onClick={() => {
+              if (paginatedPageNum < subgraphDataArray.length / 10 - 1) {
+                setPaginatedPageNum((paginatedPageNum += 1));
+              }
+            }}
+            className="place-self-end place-self-center rounded-full p-1 bg-primary item-center flex"
+          >
+            <div>{paginatedPageNum + 2}</div>
+            <div>»</div>
+          </button>
+        </div>
       </div>
     </>
   );

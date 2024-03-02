@@ -3,14 +3,14 @@ import Button from "./Button";
 import SearchInput from "./SearchInput";
 import { motion } from "framer-motion";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { subgraphQueryState } from "~~/recoil/atoms";
+import { subgraphFilterQueryState } from "~~/recoil/atoms";
 import { filterButtonsState } from "~~/recoil/selectors";
 
 const Menu = () => {
   const [address, setAddress] = useState("");
   const [activeButton, setActiveButton] = useState<string | null>(null);
   // atom
-  const [subgraphQuery, setSubgraphQuery] = useRecoilState(subgraphQueryState);
+  const [subgraphFilterQuery, setSubgraphFilterQuery] = useRecoilState(subgraphFilterQueryState);
   const filterButtons = useRecoilValue(filterButtonsState);
 
   return (
@@ -27,12 +27,12 @@ const Menu = () => {
           <div className="divider divider-start divider-warning">NFTs</div>
           <div className="flex flex-col items-center">
             <Button
-              onClick={() => setSubgraphQuery("erc721Transfers")}
+              onClick={() => setSubgraphFilterQuery("erc721Transfers")}
               isActive={activeButton === "erc721Transfers"}
               buttonName="erc721Transfers"
             />
             <Button
-              onClick={() => setSubgraphQuery("erc721Deployments")}
+              onClick={() => setSubgraphFilterQuery("erc721Deployments")}
               isActive={activeButton === "erc721Deployments"}
               buttonName="erc721Deployments"
             />
@@ -49,7 +49,7 @@ const Menu = () => {
                 return (
                   <Button
                     key={filter}
-                    onClick={() => setSubgraphQuery(filter)}
+                    onClick={() => setSubgraphFilterQuery(filter)}
                     isActive={activeButton === filter}
                     buttonName={filter}
                   />

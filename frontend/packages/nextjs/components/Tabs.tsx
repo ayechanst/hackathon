@@ -3,28 +3,29 @@ import Chart from "./Chart";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useSubgraph } from "~~/hooks/scaffold-eth/useSubgraph";
-import { filterButtonsArrayState, selectedTabState, subgraphQueryState } from "~~/recoil/atoms";
+import { filterButtonsArrayState, selectedTabState, subgraphDataArrayState, subgraphQueryState } from "~~/recoil/atoms";
 
 const Tabs = () => {
   const [selectedTab, setSelectedTab] = useRecoilState(selectedTabState);
   const tabNames = ["NFTs", "NFT Collection", "NFT Holders", "Tokens", "Token Holders"];
-  const active = "text-primary";
+  const active = "text-primary border-5 border-yellow-500";
   // let timeQuery = subgraphTimeQuery;
-
-  // recoil
 
   // const { timeData } useSubgraph({
   //   subgraphTimeQuery,
   //   queryProps: { rows: 10},
   // })
   const [filterButtons, setFilterButtons] = useRecoilState(filterButtonsArrayState);
+  const [subgraphDataArray, setSubgraphDataArray] = useRecoilState(subgraphDataArrayState);
 
   const subgraphQuery = useRecoilValue(subgraphQueryState);
 
   const { data } = useSubgraph({
     subgraphQuery,
-    queryProps: { rows: 10 },
+    queryProps: { rows: 80 },
   });
+
+  setSubgraphDataArray(data);
 
   return (
     <div className="grid">
@@ -38,12 +39,12 @@ const Tabs = () => {
                   type="radio"
                   name="tabs"
                   role="tab"
-                  className={`tab text-primary ${isActive ? active : "text-yellow-100"}`}
+                  className={`tab text-primary  ${isActive ? active : "text-yellow-100"}`}
                   aria-label={tab}
                   onClick={() => setSelectedTab(tab)}
                 />
                 <div role="tabpanel" className="tab-content bg-base-100 rounded-box p-6">
-                  <Chart data={data} />
+                  <Chart />
                 </div>
               </>
             );

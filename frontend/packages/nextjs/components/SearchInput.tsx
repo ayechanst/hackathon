@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { useRecoilState } from "recoil";
+import { searchInputQueryState } from "~~/recoil/atoms";
 
-const SearchInput = ({}) => {
-  const [searchInputQuery, setSearchInputQuery] = useState("");
+const SearchInput = () => {
+  const [searchInputQuery, setSearchInputQuery] = useRecoilState(searchInputQueryState);
   const [isFocused, setIsFocused] = useState(false);
   const [isActive, setIsActive] = useState(false);
   return (
@@ -26,7 +28,6 @@ const SearchInput = ({}) => {
             isFocused ? "text-yellow-500" : ""
           }`}
           placeholder="Search"
-          // onChange{(e) => setSearchInputQuery(e.target.value)}
           value={searchInputQuery}
           onFocus={() => {
             setIsFocused(true);
