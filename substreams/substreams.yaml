@@ -1,14 +1,14 @@
 specVersion: v0.1.0
 package:
-  name: "substreams_template"
-  version: v0.1.0
+  name: "debbie_hack"
+  version: v0.0.1
 
 imports:
-  database_change: https://github.com/streamingfast/substreams-sink-database-changes/releases/download/v1.2.1/substreams-database-change-v1.2.1.spkg
+  entities: https://github.com/streamingfast/substreams-sink-entity-changes/releases/download/v1.3.0/substreams-sink-entity-changes-v1.3.0.spkg
 
 protobuf:
   files:
-    - erc721.proto
+    - debbie.proto
   importPaths:
     - ./proto
 
@@ -18,31 +18,127 @@ binaries:
     file: ./target/wasm32-unknown-unknown/release/substreams.wasm
 
 modules:
-  - name: map_transfers
+  - name: map_blocks
     kind: map
-    initialBlock: 12287507
+    initialBlock: 1
     inputs:
       - source: sf.ethereum.type.v2.Block
+      - source: sf.substreams.v1.Clock
     output:
-      type: proto:eth.erc721.v1.Transfers
+      type: proto:debbie.MasterProto
 
-  - name: store_transfers
+  - name: store_erc20_transfer_vol
     kind: store
-    initialBlock: 12287507
+    initialBlock: 1
     updatePolicy: add
-    valueType: int64
+    valueType: bigint
     inputs:
-      - map: map_transfers
+      - map: map_blocks
 
-  - name: db_out
-    kind: map
-    initialBlock: 12287507
+  - name: store_erc20_transfer_count
+    kind: store
+    initialBlock: 1
+    updatePolicy: add
+    valueType: int64 
+    inputs:
+      - map: map_blocks
+
+  - name: store_erc20_users_vol
+    kind: store
+    initialBlock: 1
+    updatePolicy: add
+    valueType: bigint 
     inputs:
       - source: sf.substreams.v1.Clock
-      - map: map_transfers
-      - store: store_transfers
-        mode: deltas
+      - map: map_blocks
+
+  - name: store_erc20_users_count
+    kind: store
+    initialBlock: 1
+    updatePolicy: add
+    valueType: int64 
+    inputs:
+      - source: sf.substreams.v1.Clock
+      - map: map_blocks
+
+  - name: store_erc20_users_balance
+    kind: store
+    initialBlock: 1
+    updatePolicy: add
+    valueType: bigint 
+    inputs:
+      - source: sf.substreams.v1.Clock
+      - map: map_blocks
+
+  - name: map_transfers_and_holders
+    kind: map
+    initialBlock: 1
+    inputs:
+      - source: sf.substreams.v1.Clock
+      - map: map_blocks
+      - store: store_erc20_transfer_vol
+        mode: get
+      - store: store_erc20_transfer_count
+        mode: get
+      - store: store_erc20_users_vol
+        mode: get
+      - store: store_erc20_users_count
+        mode: get
+      - store: store_erc20_users_balance
+        mode: get
     output:
-      type: proto:sf.substreams.sink.database.v1.DatabaseChanges
+      type: proto:debbie.ERC20HoldersTransfers
+
+  - name: store_erc721_transfer_vol
+    kind: store
+    initialBlock: 1
+    updatePolicy: add
+    valueType: bigint 
+    inputs:
+      - map: map_blocks
+
+  - name: store_user_erc721_balance
+    kind: store
+    initialBlock: 1
+    updatePolicy: add
+    valueType: bigint 
+    inputs:
+      - source: sf.substreams.v1.Clock
+      - map: map_blocks
+
+  - name: store_erc721_token_vol
+    kind: store
+    initialBlock: 1
+    updatePolicy: add
+    valueType: bigint 
+    inputs:
+      - source: sf.substreams.v1.Clock
+      - map: map_blocks
+
+  - name: map_erc721_transfers_holders_tokens
+    kind: map
+    initialBlock: 1
+    inputs:
+      - source: sf.substreams.v1.Clock
+      - map: map_blocks
+      - store: store_erc721_transfer_vol
+        mode: get
+      - store: store_user_erc721_balance
+        mode: get
+      - store: store_erc721_token_vol
+        mode: get
+    output:
+      type: proto:debbie.ERC721TransfersHoldersTokens
+
+  - name: graph_out
+    kind: map
+    initialBlock: 1
+    inputs:
+      - source: sf.substreams.v1.Clock
+      - map: map_blocks
+      - map: map_transfers_and_holders
+      - map: map_erc721_transfers_holders_tokens
+    output:
+      type: proto:sf.substreams.sink.entity.v1.EntityChanges
 
 network: mainnet

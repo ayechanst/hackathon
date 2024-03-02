@@ -1,96 +1,115 @@
 mod abi;
+mod erc20maps;
+mod erc20stores;
+mod erc721maps;
+mod erc721stores;
+mod graphout;
+mod helpers;
 mod pb;
-use hex_literal::hex;
-use pb::eth::erc721::v1 as erc721;
-use substreams::{key, prelude::*};
-use substreams::{log, store::StoreAddInt64, Hex};
-use substreams_database_change::pb::database::DatabaseChanges;
-use substreams_database_change::tables::Tables;
+use abi::erc20::events::Transfer as Erc20TransferEvent;
+use abi::erc721::events::Transfer as Erc721TransferEvent;
+use helpers::erc20helpers::*;
+use helpers::erc721helpers::*;
+
+use pb::debbie::{Erc20Deployment, Erc20Transfer, MasterProto};
+use pb::debbie::{Erc721Deployment, Erc721Transfer};
+
+use primitive_types::H256;
+use std::collections::HashMap;
+use substreams::pb::substreams::Clock;
+use substreams::Hex;
+use substreams_ethereum::pb::eth::v2::Block;
 use substreams_ethereum::pb::sf::ethereum::r#type::v2 as eth;
+use substreams_ethereum::Event;
 
-// Bored Ape Club Contract
-const TRACKED_CONTRACT: [u8; 20] = hex!("bc4ca0eda7647a8ab7c2061c2e118a18a936f13d");
+pub use erc20maps::*;
+pub use erc20stores::*;
+pub use erc721maps::*;
+pub use erc721stores::*;
 
-substreams_ethereum::init!();
+pub struct ContractCreation {
+    pub address: String,
+    pub bytecode: String,
+    pub abi: String,
+}
 
-/// Extracts transfers events from the contract
 #[substreams::handlers::map]
-fn map_transfers(blk: eth::Block) -> Result<Option<erc721::Transfers>, substreams::errors::Error> {
-    let transfers: Vec<_> = blk
-        .events::<abi::erc721::events::Transfer>(&[&TRACKED_CONTRACT])
-        .map(|(transfer, log)| {
-            substreams::log::info!("NFT Transfer seen");
+fn map_blocks(blk: Block, clk: Clock) -> Result<MasterProto, substreams::errors::Error> {
+    let mut erc20_contracts: Vec<Erc20Deployment> = Vec::new();
+    let mut erc721_contracts: Vec<Erc721Deployment> = Vec::new();
+    let mut erc20_transfers: Vec<Erc20Transfer> = Vec::new();
+    let mut erc721_transfers: Vec<Erc721Transfer> = Vec::new();
 
-            erc721::Transfer {
-                trx_hash: Hex::encode(&log.receipt.transaction.hash),
-                from: Hex::encode(&transfer.from),
-                to: Hex::encode(&transfer.to),
-                token_id: transfer.token_id.to_u64(),
-                ordinal: log.block_index() as u64,
-            }
+    let filtered_calls: Vec<_> = blk
+        .transaction_traces
+        .into_iter()
+        .filter(|tx| tx.status == 1)
+        .flat_map(|tx| {
+            tx.calls.into_iter().filter(|call| !call.state_reverted)
+            // .filter(|call| call.call_type == eth::CallType::Create as i32)
         })
         .collect();
-    if transfers.len() == 0 {
-        return Ok(None);
-    }
-
-    Ok(Some(erc721::Transfers { transfers }))
-}
-
-const NULL_ADDRESS: &str = "0000000000000000000000000000000000000000";
-
-/// Store the total balance of NFT tokens for the specific TRACKED_CONTRACT by holder
-#[substreams::handlers::store]
-fn store_transfers(transfers: erc721::Transfers, s: StoreAddInt64) {
-    log::info!("NFT holders state builder");
-    for transfer in transfers.transfers {
-        if transfer.from != NULL_ADDRESS {
-            log::info!("Found a transfer out {}", Hex(&transfer.trx_hash));
-            s.add(transfer.ordinal, generate_key(&transfer.from), -1);
+    for call in filtered_calls {
+        if call.call_type == eth::CallType::Create as i32 {
+            let mut all_calls = Vec::new();
+            all_calls.push(&call);
+            if let Some(last_code_change) = call.code_changes.iter().last() {
+                let code = &last_code_change.new_code;
+                let address = &call.address.to_vec();
+                let token_uri = get_token_uri(&call);
+                let storage_changes: HashMap<H256, Vec<u8>> = call
+                    .storage_changes
+                    .iter()
+                    .map(|s| (H256::from_slice(s.key.as_ref()), s.new_value.clone()))
+                    .collect();
+                if let Some(token) =
+                    ERC20Creation::from_call(&address, code.to_vec(), storage_changes.clone())
+                {
+                    if let Some(deployment) = process_erc20_contract(token, clk.clone()) {
+                        erc20_contracts.push(deployment);
+                    }
+                } else if let Some(token) = ERC721Creation::from_call(all_calls, token_uri) {
+                    if let Some(deployment) = process_erc721_contract(token, clk.clone()) {
+                        erc721_contracts.push(deployment);
+                    }
+                }
+            }
         }
+        // let block_num = clk.number.to_string();
+        for log in &call.logs {
+            let clk = clk.clone();
+            let block_num = clk.number.to_string();
+            let timestamp_seconds = clk.timestamp.unwrap().seconds;
 
-        if transfer.to != NULL_ADDRESS {
-            log::info!("Found a transfer in {}", Hex(&transfer.trx_hash));
-            s.add(transfer.ordinal, generate_key(&transfer.to), 1);
+            if let Some(erc20_transfer) = Erc20TransferEvent::match_and_decode(log) {
+                erc20_transfers.push(Erc20Transfer {
+                    address: Hex::encode(&log.address),
+                    from: Hex::encode(erc20_transfer.from),
+                    to: Hex::encode(erc20_transfer.to),
+                    amount: erc20_transfer.value.to_string(),
+                    count: String::from("1"),
+                    volume: String::new(),
+                    blocknumber: String::from(block_num),
+                    timestamp_seconds: timestamp_seconds.clone(),
+                });
+            } else if let Some(erc721_transfer) = Erc721TransferEvent::match_and_decode(log) {
+                erc721_transfers.push(Erc721Transfer {
+                    address: Hex::encode(&log.address),
+                    from: Hex::encode(erc721_transfer.from),
+                    to: Hex::encode(erc721_transfer.to),
+                    token_id: erc721_transfer.token_id.to_string(),
+                    volume: String::new(),
+                    blocknumber: String::from(block_num),
+                    timestamp_seconds: timestamp_seconds.clone(),
+                });
+            }
         }
     }
-}
 
-#[substreams::handlers::map]
-fn db_out(
-    clock: substreams::pb::substreams::Clock,
-    transfers: erc721::Transfers,
-    owner_deltas: Deltas<DeltaInt64>,
-) -> Result<DatabaseChanges, substreams::errors::Error> {
-    let mut tables = Tables::new();
-    for transfer in transfers.transfers {
-        tables
-            .create_row(
-                "transfer",
-                format!("{}-{}", &transfer.trx_hash, transfer.ordinal),
-            )
-            .set("trx_hash", transfer.trx_hash)
-            .set("from", transfer.from)
-            .set("to", transfer.to)
-            .set("token_id", transfer.token_id)
-            .set("ordinal", transfer.ordinal);
-    }
-
-    for delta in owner_deltas.into_iter() {
-        let holder = key::segment_at(&delta.key, 1);
-        let contract = key::segment_at(&delta.key, 2);
-
-        tables
-            .create_row("owner_count", format!("{}-{}", contract, holder))
-            .set("contract", contract)
-            .set("holder", holder)
-            .set("balance", delta.new_value)
-            .set("block_number", clock.number);
-    }
-
-    Ok(tables.to_database_changes())
-}
-
-fn generate_key(holder: &String) -> String {
-    return format!("total:{}:{}", holder, Hex(TRACKED_CONTRACT));
+    Ok(MasterProto {
+        erc20contracts: erc20_contracts,
+        erc721contracts: erc721_contracts,
+        erc20transfers: erc20_transfers,
+        erc721transfers: erc721_transfers,
+    })
 }
