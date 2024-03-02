@@ -7,7 +7,7 @@ import { filterButtonsArrayState, selectedTabState, subgraphDataArrayState, subg
 
 const Tabs = () => {
   const [selectedTab, setSelectedTab] = useRecoilState(selectedTabState);
-  const tabNames = ["NFTs", "NFT Collection", "Tokens", "NFT Transfers"];
+  const tabNames = ["NFTs", "Tokens"];
   const active = "text-primary border-5 border-yellow-500";
 
   const [filterButtons, setFilterButtons] = useRecoilState(filterButtonsArrayState);
@@ -22,6 +22,7 @@ const Tabs = () => {
     // subgraphQuery: "Tokens",
     queryProps: { rows: 80 },
   });
+
   useEffect(() => {
     if (!data) return;
     // setSelectedTab(selectedTab);

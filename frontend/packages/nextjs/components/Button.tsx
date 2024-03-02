@@ -8,15 +8,9 @@ interface ButtonProps {
 }
 
 const Button: React.FC<ButtonProps> = ({ buttonName, onClick, isActive }) => {
-  function handleClick() {
-    onClick(buttonName);
-  }
-
   return (
     <motion.button
-      onClick={() => {
-        onClick(handleClick);
-      }}
+      onClick={onClick}
       className={`m-1 p-1  rounded-lg w-full ${isActive ? "active" : ""}`}
       animate={{
         backgroundColor: isActive ? "#27272a" : "#eab308",
