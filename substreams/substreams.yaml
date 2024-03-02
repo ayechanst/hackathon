@@ -20,7 +20,7 @@ binaries:
 modules:
   - name: map_blocks
     kind: map
-    initialBlock: 15347256
+    initialBlock: 1
     inputs:
       - source: sf.ethereum.type.v2.Block
       - source: sf.substreams.v1.Clock
@@ -29,7 +29,7 @@ modules:
 
   - name: store_erc20_transfer_vol
     kind: store
-    initialBlock: 15347256
+    initialBlock: 1
     updatePolicy: add
     valueType: bigint
     inputs:
@@ -37,7 +37,7 @@ modules:
 
   - name: store_erc20_transfer_count
     kind: store
-    initialBlock: 15347256
+    initialBlock: 1
     updatePolicy: add
     valueType: int64 
     inputs:
@@ -45,7 +45,7 @@ modules:
 
   - name: store_erc20_users_vol
     kind: store
-    initialBlock: 15347256
+    initialBlock: 1
     updatePolicy: add
     valueType: bigint 
     inputs:
@@ -54,7 +54,7 @@ modules:
 
   - name: store_erc20_users_count
     kind: store
-    initialBlock: 15347256
+    initialBlock: 1
     updatePolicy: add
     valueType: int64 
     inputs:
@@ -63,7 +63,7 @@ modules:
 
   - name: store_erc20_users_balance
     kind: store
-    initialBlock: 15347256
+    initialBlock: 1
     updatePolicy: add
     valueType: bigint 
     inputs:
@@ -72,7 +72,7 @@ modules:
 
   - name: map_transfers_and_holders
     kind: map
-    initialBlock: 15347256
+    initialBlock: 1
     inputs:
       - source: sf.substreams.v1.Clock
       - map: map_blocks
@@ -91,7 +91,7 @@ modules:
 
   - name: store_erc721_transfer_vol
     kind: store
-    initialBlock: 15347256
+    initialBlock: 1
     updatePolicy: add
     valueType: bigint 
     inputs:
@@ -99,7 +99,7 @@ modules:
 
   - name: store_user_erc721_balance
     kind: store
-    initialBlock: 15347256
+    initialBlock: 1
     updatePolicy: add
     valueType: bigint 
     inputs:
@@ -108,7 +108,7 @@ modules:
 
   - name: store_erc721_token_vol
     kind: store
-    initialBlock: 15347256
+    initialBlock: 1
     updatePolicy: add
     valueType: bigint 
     inputs:
@@ -117,7 +117,7 @@ modules:
 
   - name: map_erc721_transfers_holders_tokens
     kind: map
-    initialBlock: 15347256
+    initialBlock: 1
     inputs:
       - source: sf.substreams.v1.Clock
       - map: map_blocks
@@ -132,7 +132,7 @@ modules:
 
   - name: graph_out
     kind: map
-    initialBlock: 15347256 
+    initialBlock: 1
     inputs:
       - source: sf.substreams.v1.Clock
       - map: map_blocks

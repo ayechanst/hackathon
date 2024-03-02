@@ -171,6 +171,7 @@ pub fn process_erc721_contract(
         symbol: String::new(),
         blocknumber: clock.number.to_string(),
         token_uri: contract_creation.token_uri,
+        timestamp_seconds: clock.timestamp.unwrap().seconds,
     };
     let code = Rc::new(contract_creation.code);
 

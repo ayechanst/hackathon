@@ -1,12 +1,12 @@
+use crate::abi::erc20::functions;
+use crate::pb::debbie::{Erc20Deployment, Erc20Transfer, MasterProto};
+use evm_core::{ExitReason, Opcode};
 use primitive_types::H256;
 use std::collections::HashMap;
-use substreams::Hex;
 use std::rc::Rc;
-use substreams::pb::substreams::Clock;
-use evm_core::{ExitReason, Opcode};
 use substreams::log;
-use crate::pb::debbie::{Erc20Deployment, Erc20Transfer, MasterProto};
-use crate::abi::erc20::functions;
+use substreams::pb::substreams::Clock;
+use substreams::Hex;
 use substreams_ethereum::pb::eth::v2::Call;
 
 pub struct ERC20Creation {
@@ -38,14 +38,18 @@ impl ERC20Creation {
     }
 }
 
-pub fn process_erc20_contract(contract_creation: ERC20Creation, clock: Clock) -> Option<Erc20Deployment> {
+pub fn process_erc20_contract(
+    contract_creation: ERC20Creation,
+    clock: Clock,
+) -> Option<Erc20Deployment> {
     let mut contract = Erc20Deployment {
         address: Hex::encode(&contract_creation.address),
         name: String::new(),
         symbol: String::new(),
         total_supply: String::new(),
         decimals: String::new(),
-        blocknumber: clock.number.to_string()
+        blocknumber: clock.number.to_string(),
+        timestamp_seconds: clock.timestamp.unwrap().seconds,
     };
     let code = Rc::new(contract_creation.code);
 

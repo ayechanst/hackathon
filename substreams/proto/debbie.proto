@@ -9,6 +9,7 @@ message ERC20Deployment {
   string total_supply = 4;
   string decimals = 5;
   string blocknumber = 6;
+  int64 timestamp_seconds = 7;
 }
 
 message ERC20Deployments {
@@ -21,6 +22,7 @@ message ERC721Deployment {
   string symbol = 3;
   string blocknumber = 4;
   string token_uri = 5;
+  int64 timestamp_seconds = 6;
 }
 
 message ERC721Deployments {
@@ -40,7 +42,7 @@ message ERC20Transfer {
   string count = 5;
   string volume = 6;
   string blocknumber = 7;
-  
+  int64 timestamp_seconds = 8;
 }
 
 message ERC20Transfers {
@@ -52,8 +54,9 @@ message ERC721Transfer {
   string to = 2;
   string from = 3;
   string token_id = 4;
-  string volume = 6;
-  string blocknumber = 5;
+  string volume = 5;
+  string blocknumber = 6;
+  int64 timestamp_seconds = 7;
 }
 
 message ERC721Transfers {
@@ -97,6 +100,7 @@ message ERC721Token {
   string token_id = 1;
   string token_address = 2;
   string transfer_volume = 3;
+  int64 timestamp_seconds = 4;
 }
 
 message NFTHolders {
@@ -107,6 +111,7 @@ message NFTHolder {
   string holder_address = 1;
   string token_address = 2;
   string token_balance = 3;
-  bool transfer_from = 4;
+  int64 month_id = 4;
+  string blocknumber = 5;
+  int64 timestamp_seconds = 6;
 }
-

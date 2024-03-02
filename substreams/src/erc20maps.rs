@@ -43,6 +43,7 @@ pub fn map_transfers_and_holders(
             count,
             volume,
             blocknumber: String::from(&blocknumber),
+            timestamp_seconds: transfer.timestamp_seconds,
         });
         let user_balance;
         if let Some(user_balance_bigint) = store_user_balance.get_at(
