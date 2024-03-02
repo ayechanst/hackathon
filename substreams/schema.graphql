@@ -1,9 +1,11 @@
 type Token @entity(immutable: false) {
     id: ID!
-    name: String!
-    symbol: String!
-    decimals: BigInt!
-    totalSupply: BigInt!
+    name: String
+    symbol: String
+    decimals: BigInt
+    totalSupply: BigInt
+    volume: BigInt
+    count: BigInt
     tokenDeployment: TokenDeployment @derivedFrom(field: "token")
     tokenTransfers: [TokenTransfer!] @derivedFrom(field: "token")
     tokenHolders: [TokenHolder!] @derivedFrom(field: "token")
@@ -56,6 +58,7 @@ type Nft @entity(immutable: false) {
     name: String
     symbol: String
     tokenUri: String
+    volume: BigInt
     nftDeployment: NftDeployment @derivedFrom(field: "nft")
     nftTransfers: [NftTransfer!] @derivedFrom(field: "nft")
     nftHolders: [NftHolder!] @derivedFrom(field: "nft")

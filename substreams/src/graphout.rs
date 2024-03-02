@@ -48,17 +48,19 @@ fn graph_out(
         }
 
         tables
-            .create_row("TokenDeployment", &erc20_deployment.address)
+            .update_row("TokenDeployment", &erc20_deployment.address)
             .set("blocknumber", blocknumber)
             .set("timestamp", BigInt::from(timestamp_seconds))
             .set("token", &erc20_deployment.address);
 
         tables
-            .create_row("Token", &erc20_deployment.address)
+            .update_row("Token", &erc20_deployment.address)
             .set("name", erc20_deployment.name)
             .set("symbol", erc20_deployment.symbol)
             .set("decimals", decimals)
-            .set("totalSupply", total_supply);
+            .set("totalSupply", total_supply)
+            .set("volume", BigInt::zero())
+            .set("count", BigInt::zero());
     }
 
     for erc721_deployment in master.erc721contracts {
@@ -75,10 +77,11 @@ fn graph_out(
             .set("nft", &erc721_deployment.address);
 
         tables
-            .create_row("Nft", &erc721_deployment.address)
+            .update_row("Nft", &erc721_deployment.address)
             .set("name", erc721_deployment.name)
             .set("symbol", erc721_deployment.symbol)
-            .set("tokenUri", erc721_deployment.token_uri);
+            .set("tokenUri", erc721_deployment.token_uri)
+            .set("volume", BigInt::zero());
     }
 
     for (index, erc20_transfer) in transfers_and_holders.erc20transfers.iter().enumerate() {
@@ -139,6 +142,11 @@ fn graph_out(
                 "tokenHolderFrom",
                 &format!("{}:{}", &erc20_transfer.from, erc20_transfer.address),
             );
+
+        tables
+            .update_row("Token", &erc20_transfer.address)
+            .set("volume", &volume)
+            .set("count", &count);
     }
 
     for (index, erc721_transfer) in erc721_transfers_holders_tokens.transfers.iter().enumerate() {
@@ -172,7 +180,7 @@ fn graph_out(
             .set("from", erc721_transfer.from.clone())
             .set("to", erc721_transfer.to.clone())
             .set("tokenId", erc721_transfer.token_id.clone())
-            .set("volume", volume)
+            .set("volume", &volume)
             .set("blocknumber", blocknumber)
             .set("timestamp", BigInt::from(timestamp_seconds))
             .set(
@@ -183,6 +191,10 @@ fn graph_out(
                 "nftHolderFrom",
                 &format!("{}:{}", &erc721_transfer.from, &erc721_transfer.address),
             );
+
+        tables
+            .update_row("Nft", &erc721_transfer.address)
+            .set("volume", BigInt::from(volume));
     }
 
     for token_holder in transfers_and_holders.token_holders {
