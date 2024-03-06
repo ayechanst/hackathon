@@ -1,6 +1,14 @@
 // @generated
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Deployments {
+    #[prost(message, repeated, tag="1")]
+    pub token_deployments: ::prost::alloc::vec::Vec<Erc20Deployment>,
+    #[prost(message, repeated, tag="2")]
+    pub nft_deployments: ::prost::alloc::vec::Vec<Erc721Deployment>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Erc20Deployment {
     #[prost(string, tag="1")]
     pub address: ::prost::alloc::string::String,

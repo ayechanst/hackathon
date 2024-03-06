@@ -1,9 +1,16 @@
 ENDPOINT ?= mainnet.eth.streamingfast.io:443
+# //this one might not be an erc20
+# START_BLOCK ?= 14500327 
+#nft no data
+START_BLOCK ?= 16209658
 
-START_BLOCK ?= 15347256
+# START_BLOCK ?= 14496745 
+# START_BLOCK ?= 14336882
+# //this gets everything but name
+# START_BLOCK ?= 15347256
 OTHER_BLOCK ?= 14159918
 PUDGY ?= 12876179
-STOP_BLOCK ?= +300
+STOP_BLOCK ?= +1
 
 .PHONY: build
 build:
@@ -11,7 +18,7 @@ build:
 
 .PHONY: run
 run: build
-	substreams run -e $(ENDPOINT) substreams.yaml graph_out -s $(START_BLOCK) -t $(STOP_BLOCK)
+	substreams run -e $(ENDPOINT) substreams.yaml map_deployments -s $(START_BLOCK) -t $(STOP_BLOCK)
 
 .PHONY: gui
 gui: build

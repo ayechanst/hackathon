@@ -9,7 +9,7 @@ dataSources:
     network: mainnet
     source:
       package:
-        moduleName: graph_out
+        moduleName: map_deployments
         file: Debbie_Hack/debbie-hack-v0.0.1.spkg
     mapping:
       kind: substreams/graph-entities

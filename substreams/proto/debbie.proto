@@ -2,6 +2,11 @@ syntax = "proto3";
 
 package debbie;
 
+message Deployments {
+  repeated ERC20Deployment token_deployments = 1;
+  repeated ERC721Deployment nft_deployments = 2;
+}
+
 message ERC20Deployment {
   string address = 1;
   string name = 2;

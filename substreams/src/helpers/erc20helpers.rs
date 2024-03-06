@@ -7,17 +7,24 @@ use std::rc::Rc;
 use substreams::log;
 use substreams::pb::substreams::Clock;
 use substreams::Hex;
+use tiny_keccak::{Hasher, Keccak};
 
 const SYMBOL_FN_SIG: &str = "95d89b41";
 const NAME_FN_SIG: &str = "06fdde03";
 const DECIMALS_FN_SIG: &str = "313ce567";
 const TOTAL_SUPPLY_FN_SIG: &str = "18160ddd";
+const BALANCE_OF_FN_SIG: &str = "70a08231";
+const ALLOWANCE_FN_SIG: &str = "dd62ed3e";
+const TRANSFER_FN_SIG: &str = "a9059cbb";
 
 fn contains_erc20_fns(code_string: &str) -> bool {
     code_string.contains(DECIMALS_FN_SIG)
-        &&code_string.contains(NAME_FN_SIG)
-        &&code_string.contains(SYMBOL_FN_SIG)
-        &&code_string.contains(TOTAL_SUPPLY_FN_SIG)
+        && code_string.contains(NAME_FN_SIG)
+        && code_string.contains(SYMBOL_FN_SIG)
+        && code_string.contains(TOTAL_SUPPLY_FN_SIG)
+        && code_string.contains(BALANCE_OF_FN_SIG)
+        && code_string.contains(ALLOWANCE_FN_SIG)
+        && code_string.contains(TRANSFER_FN_SIG)
 }
 
 pub struct ERC20Creation {
@@ -76,7 +83,7 @@ pub fn process_erc20_contract(
             }
         },
         Err(e) => {
-            log::info!("Error: {}", e);
+            log::info!("Error name: {}", e);
         }
     }
 
@@ -124,7 +131,7 @@ pub fn process_erc20_contract(
     match execute_on(
         Hex::encode(&contract_creation.address),
         code.clone(),
-        functions::Decimals {}.encode(),
+        functions::TotalSupply {}.encode(),
         &contract_creation.storage_changes,
     ) {
         Ok(return_value) => match functions::TotalSupply::output(return_value.as_ref()) {
@@ -221,10 +228,29 @@ fn execute_on(
                                 machine.stack_mut().push(H256::zero()).unwrap();
                             }
 
+                            //sha3
+                            0x20 => {
+                                let start = machine.stack_mut().pop().unwrap();
+                                let length = machine.stack_mut().pop().unwrap();
+
+                                // Get the data from memory
+                                let data = machine.memory_mut().get(
+                                    start.to_low_u64_be().try_into().unwrap(),
+                                    length.to_low_u64_be().try_into().unwrap(),
+                                );
+
+                                let mut penis = Keccak::v256();
+                                let mut output = [0u8; 32];
+                                penis.update(&data);
+                                penis.finalize(&mut output);
+
+                                machine.stack_mut().push(H256::from_slice(&output)).unwrap();
+                            }
+
                             // SLOAD
                             0x54 => {
                                 let key = machine.stack_mut().pop().unwrap();
-
+                                substreams::log::info!("popped storage key {:?}", key);
                                 if let Some(value) = storage_changes.get(&key) {
                                     machine.stack_mut().push(H256::from_slice(value)).unwrap();
                                 } else {
@@ -233,6 +259,7 @@ fn execute_on(
                                         key
                                     ));
                                 }
+                                log::info!("SLOAD HANDLED \n\n\n")
                             }
                             _ => {
                                 return Err(anyhow::anyhow!(
