@@ -11,7 +11,6 @@ const Chart = ({ data }: any) => {
   useEffect(() => {
     if (!data) return;
     const keys = Object.keys(data);
-    console.log("keys", keys);
     setDividedSubgraphData(data[keys[0]].slice(pageNum * 10, pageNum * 10 + 10));
   }, [pageNum, data]);
 
@@ -53,6 +52,7 @@ const Chart = ({ data }: any) => {
         <motion.div className="place-items-center flex" animate={controls} transition={{ duration: 0.5 }}>
           {dividedSubgraphData ? (
             Object.keys(dividedSubgraphData[0]).map((dataKey: any, keyIndex: any) => {
+              if (dataKey === "__typename") return;
               return (
                 <div key={dataKey.toString()} className="px-3">
                   <div className="flex justify-center text-lg">{dataKey}</div>

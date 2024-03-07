@@ -18,7 +18,6 @@ const Tabs = () => {
     `,
     {
       variables: queryJuice.variables,
-      pollInterval: 1000,
     },
   );
 

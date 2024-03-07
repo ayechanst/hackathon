@@ -1,11 +1,12 @@
 import { atom } from "recoil";
+import { Query } from "~~/components/Data";
 
 export const searchInputQueryState = atom({
   key: "searchInputQueryState", // unique ID (with respect to other atoms/selectors)
   default: "", // default value (aka initial value)
 });
 
-export const queryState = atom({
+export const queryState = atom<Query>({
   key: "queryState",
   default: {
     subgraphQuery: `

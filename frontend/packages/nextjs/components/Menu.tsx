@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import Button from "./Button";
 import SearchInput from "./SearchInput";
-import { motion } from "framer-motion";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { subgraphFilterQueryState } from "~~/recoil/atoms";
+import { queryState, selectedTabState } from "~~/recoil/atoms";
 import { filterButtonsState } from "~~/recoil/selectors";
+import { queryHelper } from "~~/utils/scaffold-eth/queryHelper";
 
 const Menu = () => {
   const [address, setAddress] = useState("");
   const [activeButton, setActiveButton] = useState<string | null>(null);
-  // atom
-  const [subgraphFilterQuery, setSubgraphFilterQuery] = useRecoilState(subgraphFilterQueryState);
+  const [queryJuice, setQueryJuice] = useRecoilState(queryState);
+  const selectedTab = useRecoilValue(selectedTabState);
   const filterButtons = useRecoilValue(filterButtonsState);
 
   return (
@@ -35,8 +35,9 @@ const Menu = () => {
                   <Button
                     key={filter}
                     onClick={() => {
-                      setSubgraphFilterQuery(filter);
+                      const query = queryHelper(selectedTab, filter);
                       setActiveButton(filter);
+                      setQueryJuice(query);
                     }}
                     isActive={activeButton === filter}
                     buttonName={filter}
