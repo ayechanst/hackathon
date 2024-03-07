@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from "react";
 import Cell from "./Cell";
 import { motion, useAnimation } from "framer-motion";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { paginatedPageNumState, subgraphDataArrayState } from "~~/recoil/atoms";
-import { dividedSubgraphDataState } from "~~/recoil/selectors";
 
-const Chart = () => {
-  let [paginatedPageNum, setPaginatedPageNum] = useRecoilState(paginatedPageNumState);
-  const dividedSubgraphData = useRecoilValue(dividedSubgraphDataState);
-  const subgraphDataArray = useRecoilValue(subgraphDataArrayState);
+const Chart = ({ data }: any) => {
+  const [pageNum, setPageNum] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const controls = useAnimation();
+  const [dividedSubgraphData, setDividedSubgraphData] = useState<any>();
+
+  useEffect(() => {
+    if (!data) return;
+    const keys = Object.keys(data);
+    console.log("keys", keys);
+    setDividedSubgraphData(data[keys[0]].slice(pageNum * 10, pageNum * 10 + 10));
+  }, [pageNum, data]);
 
   useEffect(() => {
     if (isAnimating) {
@@ -21,19 +24,20 @@ const Chart = () => {
   }, [isAnimating]);
 
   const handlePageChange = (pageNumChange: any) => {
-    setPaginatedPageNum(prevPageNum => {
-      let newPageNum = prevPageNum + pageNumChange;
+    setPageNum(prev => {
+      let newPageNum = prev + pageNumChange;
       if (newPageNum < 0) {
         newPageNum = 0;
-      } else if (newPageNum >= Math.ceil(subgraphDataArray.length / 10)) {
-        newPageNum = Math.ceil(subgraphDataArray.length / 10) - 1;
+      } else if (newPageNum >= 8) {
+        newPageNum = 7;
       }
-      setIsAnimating(true);
-      setTimeout(() => {
-        setIsAnimating(false);
-      }, 400); // Set the timeout duration to match the animation duration
       return newPageNum;
     });
+
+    setIsAnimating(true);
+    setTimeout(() => {
+      setIsAnimating(false);
+    }, 400); // Set the timeout duration to match the animation duration
   };
 
   return (
@@ -44,7 +48,7 @@ const Chart = () => {
           className="rounded-full p-1 bg-primary justify-items-end flex"
         >
           <div>«</div>
-          <div>{paginatedPageNum + 1}</div>
+          <div>{pageNum + 1}</div>
         </motion.button>
         <motion.div className="place-items-center flex" animate={controls} transition={{ duration: 0.5 }}>
           {dividedSubgraphData ? (
@@ -110,7 +114,7 @@ const Chart = () => {
           onClick={() => handlePageChange(1)}
           className="place-self-end place-self-center rounded-full p-1 bg-primary item-center flex"
         >
-          <div>{paginatedPageNum + 2}</div>
+          <div>{pageNum + 2}</div>
           <div>»</div>
         </button>
       </div>

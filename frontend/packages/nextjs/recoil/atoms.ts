@@ -5,6 +5,25 @@ export const searchInputQueryState = atom({
   default: "", // default value (aka initial value)
 });
 
+export const queryState = atom({
+  key: "queryState",
+  default: {
+    subgraphQuery: `
+    query tokenDeployment($rows: Int) {
+        tokenDeployments(first: $rows, orderBy: blocknumber, orderDirection: desc) {
+          id
+          name
+          symbol
+          blocknumber
+        }
+      }
+    `,
+    variables: {
+      rows: 80,
+    },
+  },
+});
+
 // this sets the props in the query hook
 export const subgraphFilterQueryState = atom({
   key: "subgraphQueryState",

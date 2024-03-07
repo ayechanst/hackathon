@@ -1,59 +1,67 @@
 import React, { useEffect, useState } from "react";
 import Chart from "./Chart";
-import { AnimatePresence, motion } from "framer-motion";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { useSubgraph } from "~~/hooks/scaffold-eth/useSubgraph";
-import { filterButtonsArrayState, selectedTabState, subgraphDataArrayState, subgraphQueryState } from "~~/recoil/atoms";
+import { gql, useQuery } from "@apollo/client";
+import { useRecoilState } from "recoil";
+import { selectedTabState } from "~~/recoil/atoms";
+import { queryState } from "~~/recoil/atoms";
+import { queryHelper } from "~~/utils/scaffold-eth/queryHelper";
 
 const Tabs = () => {
   const [selectedTab, setSelectedTab] = useRecoilState(selectedTabState);
-  const tabNames = ["NFTs", "Tokens"];
-  const active = "text-primary border-5 border-yellow-500";
+  const [nftsActive, setNftsActive] = useState(false);
+  const [tokensActive, setTokensActive] = useState(true);
+  const [queryJuice, setQueryJuice] = useRecoilState(queryState);
 
-  const [filterButtons, setFilterButtons] = useRecoilState(filterButtonsArrayState);
-  const [subgraphDataArray, setSubgraphDataArray] = useRecoilState(subgraphDataArrayState);
-
-  // const subgraphQuery = useRecoilValue(subgraphQueryState);
-  // const subgraphProps
-
-  const { data } = useSubgraph({
-    // subgraphQuery: "NFTs",
-    subgraphQuery: selectedTab,
-    // subgraphQuery: "Tokens",
-    queryProps: { rows: 80 },
-  });
+  const { loading, error, data } = useQuery(
+    gql`
+      ${queryJuice.subgraphQuery}
+    `,
+    {
+      variables: queryJuice.variables,
+      pollInterval: 1000,
+    },
+  );
 
   useEffect(() => {
-    if (!data) return;
-    // setSelectedTab(selectedTab);
-    setSubgraphDataArray(data);
-  }, [data]);
+    console.log("data tabs", data);
+    console.log("loading tabs", loading);
+  }, [loading, data]);
+
+  const handleTabChange = (tab: string) => {
+    if (tab === selectedTab) return;
+    setSelectedTab(tab);
+    setNftsActive(!nftsActive);
+    setTokensActive(!tokensActive);
+    const query = queryHelper(tab);
+    setQueryJuice(query);
+  };
 
   return (
     <div className="grid">
       <div role="tablist" className="tabs tabs-lifted">
-        {data ? (
-          tabNames.map(tab => {
-            const isActive = selectedTab === tab;
-            return (
-              <>
-                <input
-                  type="radio"
-                  name="tabs"
-                  role="tab"
-                  className={`tab text-primary  ${isActive ? active : "text-yellow-100"}`}
-                  aria-label={tab}
-                  onClick={() => setSelectedTab(tab)}
-                />
-                <div role="tabpanel" className="tab-content bg-base-100 rounded-box p-6">
-                  <Chart />
-                </div>
-              </>
-            );
-          })
-        ) : (
-          <div>no data from tabs</div>
-        )}
+        <input
+          type="radio"
+          name="tabs"
+          role="tab"
+          className={`tab tab-lifted ${tokensActive ? "tab-active" : "text-yellow-100"}`}
+          aria-label="Tokens"
+          onClick={() => handleTabChange("Tokens")}
+        />
+        <div role="tabpanel" className="tab-content bg-base-100 p-4 rounded-box">
+          {loading ? <div>Loading...</div> : <Chart data={data} />}
+        </div>
+
+        <input
+          type="radio"
+          name="tabs"
+          role="tab"
+          className={`tab tab-lifted ${nftsActive ? "tab-active" : "text-yellow-100"}`}
+          aria-label="NFTs"
+          onClick={() => handleTabChange("NFTs")}
+        />
+        <div role="tabpanel" className="tab-content bg-base-100 p-4 rounded-box">
+          {loading ? <div>Loading...</div> : <Chart data={data} />}
+        </div>
       </div>
     </div>
   );
