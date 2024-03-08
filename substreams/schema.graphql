@@ -9,6 +9,8 @@ type Token @entity(immutable: false) {
     tokenDeployment: TokenDeployment @derivedFrom(field: "token")
     tokenTransfers: [TokenTransfer!] @derivedFrom(field: "token")
     tokenHolders: [TokenHolder!] @derivedFrom(field: "token")
+    tokenDailySnapshots: [TokenDailySnapshot!] @derivedFrom(field: "token")
+    tokenWeeklySnapshots: [TokenWeeklySnapshot!] @derivedFrom(field: "token")
 }
 
 type TokenDeployment @entity(immutable: false) {
@@ -17,6 +19,26 @@ type TokenDeployment @entity(immutable: false) {
     timestamp: BigInt!
     # txHash: String
     token: Token 
+}
+
+type TokenDailySnapshot @entity(immutable: false) {
+    id: ID!
+    tokenAddress: String
+    token: Token
+    volume: BigInt
+    count: BigInt
+    timestamp: BigInt
+    dayId: BigInt
+}
+
+type TokenWeeklySnapshot @entity(immutable: false) {
+    id: ID!
+    tokenAddress: String
+    token: Token
+    volume: BigInt
+    count: BigInt
+    timestamp: BigInt
+    weekId: BigInt
 }
 
 type TokenTransfer @entity(immutable: true) {

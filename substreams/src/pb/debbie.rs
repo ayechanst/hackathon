@@ -25,6 +25,26 @@ pub struct Erc20Deployments {
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Erc20Snapshots {
+    #[prost(message, repeated, tag="1")]
+    pub token_snapshots: ::prost::alloc::vec::Vec<Erc20Snapshot>,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct Erc20Snapshot {
+    #[prost(string, tag="1")]
+    pub token: ::prost::alloc::string::String,
+    #[prost(string, tag="2")]
+    pub volume: ::prost::alloc::string::String,
+    #[prost(int64, tag="3")]
+    pub tx_count: i64,
+    #[prost(int64, tag="4")]
+    pub timestamp_seconds: i64,
+    #[prost(int64, tag="5")]
+    pub snapshot_id: i64,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Erc721Deployment {
     #[prost(string, tag="1")]
     pub address: ::prost::alloc::string::String,
@@ -52,6 +72,10 @@ pub struct Erc20HoldersTransfers {
     pub erc20transfers: ::prost::alloc::vec::Vec<Erc20Transfer>,
     #[prost(message, repeated, tag="2")]
     pub token_holders: ::prost::alloc::vec::Vec<TokenHolder>,
+    #[prost(message, repeated, tag="3")]
+    pub token_weekly_snapshots: ::prost::alloc::vec::Vec<Erc20Snapshot>,
+    #[prost(message, repeated, tag="4")]
+    pub token_daily_snapshots: ::prost::alloc::vec::Vec<Erc20Snapshot>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]

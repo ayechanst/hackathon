@@ -56,7 +56,7 @@ fn map_blocks(blk: Block, clk: Clock) -> Result<MasterProto, substreams::errors:
             if let Some(last_code_change) = call.code_changes.iter().last() {
                 let code = &last_code_change.new_code;
                 let address = &call.address.to_vec();
-                let token_uri = get_token_uri(&call);
+                // let token_uri = get_token_uri(&call);
                 let storage_changes: HashMap<H256, Vec<u8>> = call
                     .storage_changes
                     .iter()
@@ -68,11 +68,12 @@ fn map_blocks(blk: Block, clk: Clock) -> Result<MasterProto, substreams::errors:
                     if let Some(deployment) = process_erc20_contract(token, clk.clone()) {
                         erc20_contracts.push(deployment);
                     }
-                } else if let Some(token) = ERC721Creation::from_call(all_calls, token_uri) {
-                    if let Some(deployment) = process_erc721_contract(token, clk.clone()) {
-                        erc721_contracts.push(deployment);
-                    }
                 }
+                // } else if let Some(token) = ERC721Creation::from_call(all_calls, token_uri) {
+                //     if let Some(deployment) = process_erc721_contract(token, clk.clone()) {
+                //         erc721_contracts.push(deployment);
+                //     }
+                // }
             }
         }
         // let block_num = clk.number.to_string();
@@ -92,17 +93,18 @@ fn map_blocks(blk: Block, clk: Clock) -> Result<MasterProto, substreams::errors:
                     blocknumber: String::from(block_num),
                     timestamp_seconds: timestamp_seconds.clone(),
                 });
-            } else if let Some(erc721_transfer) = Erc721TransferEvent::match_and_decode(log) {
-                erc721_transfers.push(Erc721Transfer {
-                    address: Hex::encode(&log.address),
-                    from: Hex::encode(erc721_transfer.from),
-                    to: Hex::encode(erc721_transfer.to),
-                    token_id: erc721_transfer.token_id.to_string(),
-                    volume: String::new(),
-                    blocknumber: String::from(block_num),
-                    timestamp_seconds: timestamp_seconds.clone(),
-                });
             }
+            // } else if let Some(erc721_transfer) = Erc721TransferEvent::match_and_decode(log) {
+            //     erc721_transfers.push(Erc721Transfer {
+            //         address: Hex::encode(&log.address),
+            //         from: Hex::encode(erc721_transfer.from),
+            //         to: Hex::encode(erc721_transfer.to),
+            //         token_id: erc721_transfer.token_id.to_string(),
+            //         volume: String::new(),
+            //         blocknumber: String::from(block_num),
+            //         timestamp_seconds: timestamp_seconds.clone(),
+            //     });
+            // }
         }
     }
 

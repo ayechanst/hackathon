@@ -16,6 +16,18 @@ message ERC20Deployments {
   repeated ERC20Deployment contracts = 1;
 }
 
+message ERC20Snapshots {
+  repeated ERC20Snapshot token_snapshots = 1;
+}
+
+message ERC20Snapshot {
+  string token = 1;
+  string volume = 2;
+  int64 tx_count = 3;
+  int64 timestamp_seconds = 4;
+  int64 snapshot_id = 5;
+}
+
 message ERC721Deployment {
   string address = 1;
   string name = 2;
@@ -32,6 +44,8 @@ message ERC721Deployments {
 message ERC20HoldersTransfers {
   repeated ERC20Transfer erc20transfers = 1;
   repeated TokenHolder token_holders = 2;
+  repeated ERC20Snapshot token_weekly_snapshots = 3;
+  repeated ERC20Snapshot token_daily_snapshots = 4;
 }
 
 message ERC20Transfer {
