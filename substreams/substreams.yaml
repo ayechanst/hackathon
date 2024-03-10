@@ -20,7 +20,7 @@ binaries:
 modules:
   - name: map_blocks
     kind: map
-    initialBlock: 1
+    initialBlock: 14336882
     inputs:
       - source: sf.ethereum.type.v2.Block
       - source: sf.substreams.v1.Clock

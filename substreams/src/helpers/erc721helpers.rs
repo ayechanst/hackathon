@@ -9,7 +9,7 @@ use substreams::log;
 use substreams::pb::substreams::Clock;
 use substreams::Hex;
 use substreams_ethereum::pb::eth::v2::{Call, CallType, StorageChange};
-
+use tiny_keccak::{Hasher, Keccak};
 
 const SAFE_TRANSFER_FROM_FN_SIG: &str = "b88d4fde";
 const NAME_FN_SIG: &str = "06fdde03";
@@ -20,15 +20,24 @@ const GASDELEGATECALL: &str = "5af4";
 
 fn contains_erc721_fns(code_string: &str) -> bool {
     code_string.contains(SAFE_TRANSFER_FROM_FN_SIG)
-    && code_string.contains(NAME_FN_SIG)
-    && code_string.contains(SYMBOL_FN_SIG)
-    && code_string.contains(TOKENURI_FN_SIG)
+        && code_string.contains(NAME_FN_SIG)
+        && code_string.contains(SYMBOL_FN_SIG)
+        && code_string.contains(TOKENURI_FN_SIG)
 }
 
 fn contains_delegate_call(code_str: &str) -> bool {
     code_str.contains(GASDELEGATECALL)
 }
 
+trait UsizeConversion {
+    fn to_usize(&self) -> usize;
+}
+
+impl UsizeConversion for H256 {
+    fn to_usize(&self) -> usize {
+        self.to_low_u64_be().try_into().unwrap()
+    }
+}
 enum ParentCallType<'a> {
     Normal(&'a Call),
     Delegate(&'a Call),
@@ -55,19 +64,19 @@ struct StorageChanges(HashMap<H256, Vec<u8>>);
 impl StorageChanges {
     pub fn new(changes: &Vec<StorageChange>) -> Self {
         let storage_changes = changes
-        .iter()
-        .map(|s| (H256::from_slice(s.key.as_ref()), s.new_value.to_vec()))
-        .collect();
-    Self(storage_changes)
-}
+            .iter()
+            .map(|s| (H256::from_slice(s.key.as_ref()), s.new_value.to_vec()))
+            .collect();
+        Self(storage_changes)
+    }
 }
 
 pub fn get_token_uri(call: &Call) -> String {
     for change in &call.storage_changes {
         if let Ok(change_value) = String::from_utf8(change.new_value.clone()) {
             if change_value.starts_with("ipfs://")
-            || change_value.starts_with("https://")
-            || change_value.starts_with("http://")
+                || change_value.starts_with("https://")
+                || change_value.starts_with("http://")
             {
                 return change_value.to_string();
             }
@@ -175,12 +184,16 @@ pub fn process_erc721_contract(
     };
     let code = Rc::new(contract_creation.code);
 
+    let log_name = "name";
+    let log_symbol = "symbol";
+
     // Name
     match execute_on(
         Hex::encode(&contract_creation.address),
         code.clone(),
         functions::Name {}.encode(),
         &contract_creation.storage_changes,
+        log_name,
     ) {
         Ok(return_value) => match functions::Name::output(return_value.as_ref()) {
             Ok(x) => {
@@ -201,6 +214,7 @@ pub fn process_erc721_contract(
         code.clone(),
         functions::Symbol {}.encode(),
         &contract_creation.storage_changes,
+        log_symbol,
     ) {
         Ok(return_value) => match functions::Symbol::output(return_value.as_ref()) {
             Ok(x) => {
@@ -223,6 +237,7 @@ fn execute_on(
     code: Rc<Vec<u8>>,
     data: Vec<u8>,
     storage_changes: &HashMap<H256, Vec<u8>>,
+    function_log: &str,
 ) -> Result<Vec<u8>, anyhow::Error> {
     let valids = evm_core::Valids::new(&code);
     let mut jump_dest = 0;
@@ -233,7 +248,8 @@ fn execute_on(
     }
 
     log::info!(
-        "ERC721: Trying contract: {:?} with {} valid jump destinations (code len {}))",
+        "\n\n\n\n\nERC721: Trying function {:?} for contract: {:?} with {} valid jump destinations (code len {}))",
+        function_log,
         address,
         jump_dest,
         code.len(),
@@ -296,6 +312,22 @@ fn execute_on(
                                 machine.stack_mut().push(H256::zero()).unwrap();
                             }
 
+                            // SHA3
+                            0x20 => {
+                                let offset = machine.stack_mut().pop().unwrap();
+                                let data_length = machine.stack_mut().pop().unwrap();
+                                let data_memory = machine
+                                    .memory_mut()
+                                    .get(offset.to_usize(), data_length.to_usize());
+                                let mut hash = Keccak::v256();
+                                let mut output = [0u8; 32];
+                                hash.update(&data_memory);
+                                hash.finalize(&mut output);
+                                machine.stack_mut().push(H256::from_slice(&output)).unwrap();
+
+                                log::info!("SHA3 HANDLED \n");
+                            }
+
                             // SLOAD
                             0x54 => {
                                 let key = machine.stack_mut().pop().unwrap();
@@ -303,6 +335,7 @@ fn execute_on(
 
                                 if let Some(value) = storage_changes.get(&key) {
                                     machine.stack_mut().push(H256::from_slice(value)).unwrap();
+                                    log::info!("SLOAD HANDLED \n")
                                 } else {
                                     return Err(anyhow::anyhow!(
                                         "SLOAD unknown storage key {:x}",
@@ -311,10 +344,6 @@ fn execute_on(
                                 }
                             }
 
-                            // // SHA3
-                            // 0x20 => {
-                            //     panic!("asdlfkjasdlkfjasdlkfj")
-                            // }
                             _ => {
                                 return Err(anyhow::anyhow!(
                                     "ERC721: Capture trap unhandled: {:?}",

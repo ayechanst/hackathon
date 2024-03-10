@@ -76,34 +76,34 @@ fn map_blocks(blk: Block, clk: Clock) -> Result<MasterProto, substreams::errors:
             }
         }
         // let block_num = clk.number.to_string();
-        for log in &call.logs {
-            let clk = clk.clone();
-            let block_num = clk.number.to_string();
-            let timestamp_seconds = clk.timestamp.unwrap().seconds;
+        // for log in &call.logs {
+        //     let clk = clk.clone();
+        //     let block_num = clk.number.to_string();
+        //     let timestamp_seconds = clk.timestamp.unwrap().seconds;
 
-            if let Some(erc20_transfer) = Erc20TransferEvent::match_and_decode(log) {
-                erc20_transfers.push(Erc20Transfer {
-                    address: Hex::encode(&log.address),
-                    from: Hex::encode(erc20_transfer.from),
-                    to: Hex::encode(erc20_transfer.to),
-                    amount: erc20_transfer.value.to_string(),
-                    count: String::from("1"),
-                    volume: String::new(),
-                    blocknumber: String::from(block_num),
-                    timestamp_seconds: timestamp_seconds.clone(),
-                });
-            } else if let Some(erc721_transfer) = Erc721TransferEvent::match_and_decode(log) {
-                erc721_transfers.push(Erc721Transfer {
-                    address: Hex::encode(&log.address),
-                    from: Hex::encode(erc721_transfer.from),
-                    to: Hex::encode(erc721_transfer.to),
-                    token_id: erc721_transfer.token_id.to_string(),
-                    volume: String::new(),
-                    blocknumber: String::from(block_num),
-                    timestamp_seconds: timestamp_seconds.clone(),
-                });
-            }
-        }
+        //     if let Some(erc20_transfer) = Erc20TransferEvent::match_and_decode(log) {
+        //         erc20_transfers.push(Erc20Transfer {
+        //             address: Hex::encode(&log.address),
+        //             from: Hex::encode(erc20_transfer.from),
+        //             to: Hex::encode(erc20_transfer.to),
+        //             amount: erc20_transfer.value.to_string(),
+        //             count: String::from("1"),
+        //             volume: String::new(),
+        //             blocknumber: String::from(block_num),
+        //             timestamp_seconds: timestamp_seconds.clone(),
+        //         });
+        //     } else if let Some(erc721_transfer) = Erc721TransferEvent::match_and_decode(log) {
+        //         erc721_transfers.push(Erc721Transfer {
+        //             address: Hex::encode(&log.address),
+        //             from: Hex::encode(erc721_transfer.from),
+        //             to: Hex::encode(erc721_transfer.to),
+        //             token_id: erc721_transfer.token_id.to_string(),
+        //             volume: String::new(),
+        //             blocknumber: String::from(block_num),
+        //             timestamp_seconds: timestamp_seconds.clone(),
+        //         });
+        //     }
+        // }
     }
 
     Ok(MasterProto {
