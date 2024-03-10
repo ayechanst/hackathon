@@ -26,13 +26,6 @@ fn graph_out(
     let timestamp_seconds = clock.timestamp.unwrap().seconds;
     let month_id = timestamp_seconds / 2592000;
     for erc20_deployment in master.erc20contracts {
-        let total_supply: BigInt;
-        if let Some(supply) = BigInt::from_str(&erc20_deployment.total_supply).ok() {
-            total_supply = supply;
-        } else {
-            total_supply = BigInt::from(0);
-        }
-
         tables
             .update_row("TokenDeployment", &erc20_deployment.address)
             .set(
@@ -78,6 +71,14 @@ fn graph_out(
                 "timestamp",
                 BigInt::from(daily_token_snapshot.timestamp_seconds),
             );
+
+        // tables
+        //     .update_row("Token", &daily_token_snapshot.token)
+        //     .set(
+        //         "dayVolume",
+        //         BigInt::from_str(&daily_token_snapshot.volume).unwrap_or(BigInt::zero()),
+        //     )
+        //     .set("dayCount", daily_token_snapshot.tx_count);
     }
 
     for weekly_token_snapshot in transfers_and_holders.token_weekly_snapshots {
@@ -100,25 +101,13 @@ fn graph_out(
                 "timestamp",
                 BigInt::from(weekly_token_snapshot.timestamp_seconds),
             );
-        tables
-            .update_row(
-                "TokenWeeklySnapshot",
-                &format!(
-                    "{}:{}",
-                    &weekly_token_snapshot.token, weekly_token_snapshot.snapshot_id
-                ),
-            )
-            .set("tokenAddress", &weekly_token_snapshot.token)
-            .set("token", &weekly_token_snapshot.token)
-            .set(
-                "volume",
-                BigInt::from_str(&weekly_token_snapshot.volume).unwrap_or(BigInt::zero()),
-            )
-            .set("count", weekly_token_snapshot.tx_count)
-            .set(
-                "timestamp",
-                BigInt::from(weekly_token_snapshot.timestamp_seconds),
-            );
+        // tables
+        //     .update_row("Token", &weekly_token_snapshot.token)
+        //     .set(
+        //         "weekVolume",
+        //         BigInt::from_str(&weekly_token_snapshot.volume).unwrap_or(BigInt::zero()),
+        //     )
+        //     .set("weekCount", weekly_token_snapshot.tx_count);
     }
 
     // for erc721_deployment in master.erc721contracts {
@@ -143,34 +132,6 @@ fn graph_out(
     // }
 
     for (index, erc20_transfer) in transfers_and_holders.erc20transfers.iter().enumerate() {
-        let amount: BigInt;
-        if let Some(amt) = BigInt::from_str(&erc20_transfer.amount).ok() {
-            amount = amt;
-        } else {
-            amount = BigInt::from(0);
-        }
-
-        let count: BigInt;
-        if let Some(cnt) = BigInt::from_str(&erc20_transfer.count).ok() {
-            count = cnt;
-        } else {
-            count = BigInt::from(0);
-        }
-
-        let volume: BigInt;
-        if let Some(vol) = BigInt::from_str(&erc20_transfer.volume).ok() {
-            volume = vol;
-        } else {
-            volume = BigInt::from(0);
-        }
-
-        let blocknumber: BigInt;
-        if let Some(block) = BigInt::from_str(&erc20_transfer.blocknumber).ok() {
-            blocknumber = block;
-        } else {
-            blocknumber = BigInt::from(0);
-        }
-
         tables
             .create_row(
                 "TokenTransfer",
@@ -186,11 +147,23 @@ fn graph_out(
             )
             .set("from", &erc20_transfer.from)
             .set("to", &erc20_transfer.to)
-            .set("amount", &amount)
-            .set("count", &count)
-            .set("volume", &volume)
+            .set(
+                "amount",
+                BigInt::from_str(&erc20_transfer.amount).unwrap_or(BigInt::zero()),
+            )
+            .set(
+                "count",
+                BigInt::from_str(&erc20_transfer.count).unwrap_or(BigInt::zero()),
+            )
+            .set(
+                "volume",
+                BigInt::from_str(&erc20_transfer.volume).unwrap_or(BigInt::zero()),
+            )
             .set("token", &erc20_transfer.address)
-            .set("blocknumber", &blocknumber)
+            .set(
+                "blocknumber",
+                BigInt::from_str(&erc20_transfer.blocknumber).unwrap_or(BigInt::zero()),
+            )
             .set("timestamp", BigInt::from(timestamp_seconds))
             .set(
                 "tokenHolderTo",
@@ -203,8 +176,24 @@ fn graph_out(
 
         tables
             .update_row("Token", &erc20_transfer.address)
-            .set("volume", &volume)
-            .set("count", &count);
+            .set(
+                "volume",
+                BigInt::from_str(&erc20_transfer.volume).unwrap_or(BigInt::zero()),
+            )
+            .set(
+                "count",
+                BigInt::from_str(&erc20_transfer.count).unwrap_or(BigInt::zero()),
+            )
+            .set("dayCount", erc20_transfer.day_count)
+            .set(
+                "dayVolume",
+                BigInt::from_str(&erc20_transfer.day_volume).unwrap_or(BigInt::zero()),
+            )
+            .set("weekCount", erc20_transfer.week_count)
+            .set(
+                "weekVolume",
+                BigInt::from_str(&erc20_transfer.week_volume).unwrap_or(BigInt::zero()),
+            );
     }
 
     // for (index, erc721_transfer) in erc721_transfers_holders_tokens.transfers.iter().enumerate() {
@@ -255,65 +244,53 @@ fn graph_out(
     //         .set("volume", BigInt::from(volume));
     // }
 
-    for token_holder in transfers_and_holders.token_holders {
-        let token_balance: BigInt;
-        if let Some(balance) = BigInt::from_str(&token_holder.balance).ok() {
-            token_balance = balance;
-        } else {
-            token_balance = BigInt::from(0);
-        }
+    // for token_holder in transfers_and_holders.token_holders {
+    //     tables
+    //         .update_row(
+    //             "TokenHolder",
+    //             format!(
+    //                 "{}:{}",
+    //                 &token_holder.holder_address, &token_holder.token_address
+    //             ),
+    //         )
+    //         .set("holderAddress", &token_holder.holder_address)
+    //         .set("token", &token_holder.token_address)
+    //         .set("timestamp", BigInt::from(timestamp_seconds));
 
-        let transfer_volume: BigInt;
-        if let Some(volume) = BigInt::from_str(&token_holder.transfer_volume).ok() {
-            transfer_volume = volume;
-        } else {
-            transfer_volume = BigInt::from(0);
-        }
-
-        let transfer_count: BigInt;
-        if let Some(count) = BigInt::from_str(&token_holder.transfer_count).ok() {
-            transfer_count = count;
-        } else {
-            transfer_count = BigInt::from(0);
-        }
-
-        tables
-            .update_row(
-                "TokenHolder",
-                format!(
-                    "{}:{}",
-                    &token_holder.holder_address, &token_holder.token_address
-                ),
-            )
-            .set("holderAddress", &token_holder.holder_address)
-            .set("token", &token_holder.token_address)
-            .set("timestamp", BigInt::from(timestamp_seconds));
-
-        tables
-            .update_row(
-                "TokenHolderSnapshot",
-                format!(
-                    "{}:{}:{}",
-                    &token_holder.holder_address, &token_holder.token_address, month_id
-                ),
-            )
-            .set(
-                "tokenHolder",
-                &format!(
-                    "{}:{}",
-                    &token_holder.holder_address, &token_holder.token_address
-                ),
-            )
-            .set("balance", token_balance)
-            .set("transferVolume", transfer_volume)
-            .set("transferCount", transfer_count)
-            .set("timestamp", BigInt::from(token_holder.timestamp_seconds))
-            .set(
-                "blocknumber",
-                BigInt::from_str(&token_holder.blocknumber).unwrap_or(BigInt::from(0)),
-            )
-            .set("monthId", BigInt::from(token_holder.month_id));
-    }
+    //     tables
+    //         .update_row(
+    //             "TokenHolderSnapshot",
+    //             format!(
+    //                 "{}:{}:{}",
+    //                 &token_holder.holder_address, &token_holder.token_address, month_id
+    //             ),
+    //         )
+    //         .set(
+    //             "tokenHolder",
+    //             &format!(
+    //                 "{}:{}",
+    //                 &token_holder.holder_address, &token_holder.token_address
+    //             ),
+    //         )
+    //         .set(
+    //             "balance",
+    //             BigInt::from_str(&token_holder.balance).unwrap_or(BigInt::zero()),
+    //         )
+    //         .set(
+    //             "transferVolume",
+    //             BigInt::from_str(&token_holder.transfer_volume).unwrap_or(BigInt::zero()),
+    //         )
+    //         .set(
+    //             "transferCount",
+    //             BigInt::from_str(&token_holder.transfer_count).unwrap_or(BigInt::zero()),
+    //         )
+    //         .set("timestamp", BigInt::from(token_holder.timestamp_seconds))
+    //         .set(
+    //             "blocknumber",
+    //             BigInt::from_str(&token_holder.blocknumber).unwrap_or(BigInt::from(0)),
+    //         )
+    //         .set("monthId", BigInt::from(token_holder.month_id));
+    // }
 
     // for token_holder in erc721_transfers_holders_tokens.erc721_token_holders {
     //     tables

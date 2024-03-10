@@ -71,10 +71,8 @@ pub struct Erc20HoldersTransfers {
     #[prost(message, repeated, tag="1")]
     pub erc20transfers: ::prost::alloc::vec::Vec<Erc20Transfer>,
     #[prost(message, repeated, tag="2")]
-    pub token_holders: ::prost::alloc::vec::Vec<TokenHolder>,
-    #[prost(message, repeated, tag="3")]
     pub token_weekly_snapshots: ::prost::alloc::vec::Vec<Erc20Snapshot>,
-    #[prost(message, repeated, tag="4")]
+    #[prost(message, repeated, tag="3")]
     pub token_daily_snapshots: ::prost::alloc::vec::Vec<Erc20Snapshot>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -93,8 +91,20 @@ pub struct Erc20Transfer {
     #[prost(string, tag="6")]
     pub volume: ::prost::alloc::string::String,
     #[prost(string, tag="7")]
-    pub blocknumber: ::prost::alloc::string::String,
+    pub day_volume: ::prost::alloc::string::String,
     #[prost(int64, tag="8")]
+    pub day_count: i64,
+    #[prost(string, tag="9")]
+    pub week_volume: ::prost::alloc::string::String,
+    #[prost(int64, tag="10")]
+    pub week_count: i64,
+    #[prost(string, tag="11")]
+    pub month_volume: ::prost::alloc::string::String,
+    #[prost(int64, tag="12")]
+    pub month_count: i64,
+    #[prost(string, tag="13")]
+    pub blocknumber: ::prost::alloc::string::String,
+    #[prost(int64, tag="14")]
     pub timestamp_seconds: i64,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]

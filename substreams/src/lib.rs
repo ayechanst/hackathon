@@ -90,6 +90,12 @@ fn map_blocks(blk: Block, clk: Clock) -> Result<MasterProto, substreams::errors:
                     amount: erc20_transfer.value.to_string(),
                     count: String::from("1"),
                     volume: String::new(),
+                    day_count: 0,
+                    day_volume: String::new(),
+                    week_count: 0,
+                    week_volume: String::new(),
+                    month_count: 0,
+                    month_volume: String::new(),
                     blocknumber: String::from(block_num),
                     timestamp_seconds: timestamp_seconds.clone(),
                 });

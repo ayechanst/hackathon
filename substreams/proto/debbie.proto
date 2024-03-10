@@ -43,9 +43,8 @@ message ERC721Deployments {
 
 message ERC20HoldersTransfers {
   repeated ERC20Transfer erc20transfers = 1;
-  repeated TokenHolder token_holders = 2;
-  repeated ERC20Snapshot token_weekly_snapshots = 3;
-  repeated ERC20Snapshot token_daily_snapshots = 4;
+  repeated ERC20Snapshot token_weekly_snapshots = 2;
+  repeated ERC20Snapshot token_daily_snapshots = 3;
 }
 
 message ERC20Transfer {
@@ -55,8 +54,14 @@ message ERC20Transfer {
   string amount = 4;
   string count = 5;
   string volume = 6;
-  string blocknumber = 7;
-  int64 timestamp_seconds = 8;
+  string dayVolume = 7;
+  int64 dayCount = 8;
+  string weekVolume = 9;
+  int64 weekCount = 10;
+  string monthVolume = 11;
+  int64 monthCount = 12;
+  string blocknumber = 13;
+  int64 timestamp_seconds = 14;
 }
 
 message ERC20Transfers {
