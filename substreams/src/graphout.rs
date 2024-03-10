@@ -33,23 +33,12 @@ fn graph_out(
             total_supply = BigInt::from(0);
         }
 
-        let decimals: BigInt;
-        if let Some(dec) = BigInt::from_str(&erc20_deployment.decimals).ok() {
-            decimals = dec;
-        } else {
-            decimals = BigInt::from(0);
-        }
-
-        let blocknumber: BigInt;
-        if let Some(block) = BigInt::from_str(&erc20_deployment.blocknumber).ok() {
-            blocknumber = block;
-        } else {
-            blocknumber = BigInt::from(0);
-        }
-
         tables
             .update_row("TokenDeployment", &erc20_deployment.address)
-            .set("blocknumber", blocknumber)
+            .set(
+                "blocknumber",
+                BigInt::from_str(&erc20_deployment.blocknumber).unwrap_or(BigInt::from(0)),
+            )
             .set("timestamp", BigInt::from(timestamp_seconds))
             .set("token", &erc20_deployment.address);
 
@@ -57,8 +46,14 @@ fn graph_out(
             .update_row("Token", &erc20_deployment.address)
             .set("name", erc20_deployment.name)
             .set("symbol", erc20_deployment.symbol)
-            .set("decimals", decimals)
-            .set("totalSupply", total_supply)
+            .set(
+                "decimals",
+                BigInt::from_str(&erc20_deployment.decimals).unwrap_or(BigInt::zero()),
+            )
+            .set(
+                "totalSupply",
+                BigInt::from_str(&erc20_deployment.total_supply).unwrap_or(BigInt::zero()),
+            )
             .set("volume", BigInt::zero())
             .set("count", BigInt::zero());
     }

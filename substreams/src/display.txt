@@ -1,0 +1,28 @@
+Token 
+{
+    address: string
+    name: string
+    symbol: string
+    decimals: number
+    totalSupply: number
+    numberOfTransfer: number
+    Volume: number
+    deployment: timestamp
+}
+
+NFT Collection
+{
+  address: string
+  name: string
+  symbol: string
+  tokenURI: string
+  numberOfTransfer: number
+  deployment: timestamp
+  tokens: [
+    {
+        tokenId: string
+
+    }
+  ]
+}
+

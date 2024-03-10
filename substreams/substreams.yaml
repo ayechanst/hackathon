@@ -43,69 +43,6 @@ modules:
     inputs:
       - map: map_blocks
 
-  - name: store_erc20_transfer_count_weekly
-    kind: store
-    initialBlock: 933537
-    updatePolicy: add
-    valueType: int64
-    inputs: 
-      - source: sf.substreams.v1.Clock
-      - map: map_blocks
-
-  - name: store_erc20_transfer_count_daily
-    kind: store
-    initialBlock: 933537
-    updatePolicy: add
-    valueType: int64
-    inputs: 
-      - source: sf.substreams.v1.Clock
-      - map: map_blocks
-
-  - name: store_erc20_transfer_vol_weekly
-    kind: store
-    initialBlock: 933537
-    updatePolicy: add
-    valueType: bigint 
-    inputs: 
-      - source: sf.substreams.v1.Clock
-      - map: map_blocks
-
-  - name: store_erc20_transfer_vol_daily
-    kind: store
-    initialBlock: 933537
-    updatePolicy: add
-    valueType: bigint 
-    inputs: 
-      - source: sf.substreams.v1.Clock
-      - map: map_blocks
-
-  - name: store_erc20_users_vol
-    kind: store
-    initialBlock: 933537
-    updatePolicy: add
-    valueType: bigint 
-    inputs:
-      - source: sf.substreams.v1.Clock
-      - map: map_blocks
-
-  - name: store_erc20_users_count
-    kind: store
-    initialBlock: 933537
-    updatePolicy: add
-    valueType: int64 
-    inputs:
-      - source: sf.substreams.v1.Clock
-      - map: map_blocks
-
-  - name: store_erc20_users_balance
-    kind: store
-    initialBlock: 933537
-    updatePolicy: add
-    valueType: bigint 
-    inputs:
-      - source: sf.substreams.v1.Clock
-      - map: map_blocks
-
   - name: map_transfers_and_holders
     kind: map
     initialBlock: 933537
@@ -116,20 +53,14 @@ modules:
         mode: get
       - store: store_erc20_transfer_count
         mode: get
-      - store: store_erc20_users_vol
-        mode: get
-      - store: store_erc20_users_count
-        mode: get
-      - store: store_erc20_users_balance
-        mode: get
       - store: store_erc20_transfer_count_weekly
         mode: get
-      - store: store_erc20_transfer_count_daily
-        mode: get
-      - store: store_erc20_transfer_vol_weekly
-        mode: get
-      - store: store_erc20_transfer_vol_daily
-        mode: get
+      # - store: store_erc20_transfer_count_daily
+      #   mode: get
+      # - store: store_erc20_transfer_vol_weekly
+      #   mode: get
+      # - store: store_erc20_transfer_vol_daily
+      #   mode: get
     output:
       type: proto:debbie.ERC20HoldersTransfers
 

@@ -6,6 +6,14 @@ type Token @entity(immutable: false) {
     totalSupply: BigInt
     volume: BigInt
     count: BigInt
+    dayVolume: BigInt
+    dayCount: BigInt
+    weekVolume: BigInt
+    weekCount: BigInt
+    monthVolume: BigInt
+    monthCount: BigInt
+    yearVolume: BigInt
+    yearCount: BigInt
     tokenDeployment: TokenDeployment @derivedFrom(field: "token")
     tokenTransfers: [TokenTransfer!] @derivedFrom(field: "token")
     tokenHolders: [TokenHolder!] @derivedFrom(field: "token")
