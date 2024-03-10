@@ -86,6 +86,25 @@ fn graph_out(
                 "TokenWeeklySnapshot",
                 &format!(
                     "{}:{}",
+                    &weekly_token_snapshot.token, &weekly_token_snapshot.snapshot_id
+                ),
+            )
+            .set("tokenAddress", &weekly_token_snapshot.token)
+            .set("token", &weekly_token_snapshot.token)
+            .set(
+                "volume",
+                BigInt::from_str(&weekly_token_snapshot.volume).unwrap_or(BigInt::zero()),
+            )
+            .set("count", weekly_token_snapshot.tx_count)
+            .set(
+                "timestamp",
+                BigInt::from(weekly_token_snapshot.timestamp_seconds),
+            );
+        tables
+            .update_row(
+                "TokenWeeklySnapshot",
+                &format!(
+                    "{}:{}",
                     &weekly_token_snapshot.token, weekly_token_snapshot.snapshot_id
                 ),
             )
