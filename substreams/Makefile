@@ -1,9 +1,11 @@
 ENDPOINT ?= mainnet.eth.streamingfast.io:443
 
+
 START_BLOCK ?= 933537
+
 OTHER_BLOCK ?= 14159918
 PUDGY ?= 12876179
-STOP_BLOCK ?= +300
+STOP_BLOCK ?= +1
 
 .PHONY: build
 build:
@@ -11,7 +13,7 @@ build:
 
 .PHONY: run
 run: build
-	substreams run -e $(ENDPOINT) substreams.yaml graph_out -s $(START_BLOCK) -t $(STOP_BLOCK)
+	substreams run -e $(ENDPOINT) substreams.yaml map_blocks -s $(START_BLOCK) -t $(STOP_BLOCK)
 
 .PHONY: gui
 gui: build

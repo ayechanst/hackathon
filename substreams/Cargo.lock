@@ -900,6 +900,7 @@ dependencies = [
  "substreams-database-change",
  "substreams-entity-change",
  "substreams-ethereum",
+ "tiny-keccak",
  "uuid",
 ]
 
