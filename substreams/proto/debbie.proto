@@ -74,8 +74,11 @@ message ERC721Transfer {
   string from = 3;
   string token_id = 4;
   string volume = 5;
-  string blocknumber = 6;
-  int64 timestamp_seconds = 7;
+  int64 dayVolume = 6;
+  int64 weekVolume = 7;
+  int64 monthVolume = 8;
+  string blocknumber = 9;
+  int64 timestamp_seconds = 10;
 }
 
 message ERC721Transfers {
@@ -107,8 +110,7 @@ message TokenHolder {
 
 message ERC721TransfersHoldersTokens {
   repeated ERC721Transfer transfers = 1;
-  repeated NFTHolder erc721_token_holders = 2;
-  repeated ERC721Token erc721_tokens = 3;
+  repeated ERC721Token erc721_tokens = 2;
 }
 
 message ERC721Tokens {

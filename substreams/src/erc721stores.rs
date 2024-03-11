@@ -11,34 +11,53 @@ pub fn store_erc721_transfer_vol(transfers: MasterProto, store: StoreAddBigInt) 
 }
 
 #[substreams::handlers::store]
-pub fn store_user_erc721_balance(clock: Clock, transfers: MasterProto, store: StoreAddBigInt) {
+pub fn store_erc721_transfer_weekly(clock: Clock, transfers: MasterProto, store: StoreAddBigInt) {
+    let timestamp_seconds = clock.timestamp.unwrap().seconds;
+    let week_id = timestamp_seconds / 604800;
+    let prev_week_id = week_id - 1;
+
+    store.delete_prefix(0, &format!("Erc721ContractVolWeek:{}", prev_week_id));
+
+    for transfer in transfers.erc721transfers {
+        store.add(
+            0,
+            format!("Erc721ContractVolWeek:{}:{}", week_id, transfer.address),
+            BigInt::one(),
+        )
+    }
+}
+
+#[substreams::handlers::store]
+pub fn store_erc721_transfer_daily(clock: Clock, transfers: MasterProto, store: StoreAddBigInt) {
+    let timestamp_seconds = clock.timestamp.unwrap().seconds;
+    let day_id = timestamp_seconds / 86400;
+    let prev_day_id = day_id - 1;
+
+    store.delete_prefix(0, &format!("Erc721ContractVolDay:{}", prev_day_id));
+
+    for transfer in transfers.erc721transfers {
+        store.add(
+            0,
+            format!("Erc721ContractVolDay:{}:{}", day_id, transfer.address),
+            BigInt::one(),
+        )
+    }
+}
+
+#[substreams::handlers::store]
+pub fn store_erc721_transfer_monthly(clock: Clock, transfers: MasterProto, store: StoreAddBigInt) {
     let timestamp_seconds = clock.timestamp.unwrap().seconds;
     let month_id = timestamp_seconds / 2592000;
     let prev_month_id = month_id - 1;
 
-    store.delete_prefix(0, &format!("UserErc721BalanceMonth:{}", prev_month_id));
+    store.delete_prefix(0, &format!("Erc721ContractVolMonth:{}", prev_month_id));
 
     for transfer in transfers.erc721transfers {
-        if transfer.to != "00000000000000000000".to_string() {
-            store.add(
-                0,
-                format!(
-                    "UserErc721BalanceMonth:{}:{}:{}",
-                    month_id, transfer.to, transfer.address
-                ),
-                BigInt::one(),
-            )
-        }
-        if transfer.from != "00000000000000000000".to_string() {
-            store.add(
-                0,
-                format!(
-                    "UserErc721BalanceMonth:{}:{}:{}",
-                    month_id, transfer.from, transfer.address
-                ),
-                BigInt::from(-1),
-            )
-        }
+        store.add(
+            0,
+            format!("Erc721ContractVolMonth:{}:{}", month_id, transfer.address),
+            BigInt::one(),
+        )
     }
 }
 

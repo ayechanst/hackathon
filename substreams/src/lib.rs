@@ -1,6 +1,8 @@
 mod abi;
+pub mod erc20_gout;
 mod erc20maps;
 mod erc20stores;
+pub mod erc721_gout;
 mod erc721maps;
 mod erc721stores;
 mod graphout;
@@ -22,6 +24,7 @@ use substreams_ethereum::pb::eth::v2::Block;
 use substreams_ethereum::pb::sf::ethereum::r#type::v2 as eth;
 use substreams_ethereum::Event;
 
+pub use erc20_gout::*;
 pub use erc20maps::*;
 pub use erc20stores::*;
 pub use erc721maps::*;
@@ -56,7 +59,7 @@ fn map_blocks(blk: Block, clk: Clock) -> Result<MasterProto, substreams::errors:
             if let Some(last_code_change) = call.code_changes.iter().last() {
                 let code = &last_code_change.new_code;
                 let address = &call.address.to_vec();
-                // let token_uri = get_token_uri(&call);
+                let token_uri = get_token_uri(&call);
                 let storage_changes: HashMap<H256, Vec<u8>> = call
                     .storage_changes
                     .iter()
@@ -68,12 +71,11 @@ fn map_blocks(blk: Block, clk: Clock) -> Result<MasterProto, substreams::errors:
                     if let Some(deployment) = process_erc20_contract(token, clk.clone()) {
                         erc20_contracts.push(deployment);
                     }
+                } else if let Some(token) = ERC721Creation::from_call(all_calls, token_uri) {
+                    if let Some(deployment) = process_erc721_contract(token, clk.clone()) {
+                        erc721_contracts.push(deployment);
+                    }
                 }
-                // } else if let Some(token) = ERC721Creation::from_call(all_calls, token_uri) {
-                //     if let Some(deployment) = process_erc721_contract(token, clk.clone()) {
-                //         erc721_contracts.push(deployment);
-                //     }
-                // }
             }
         }
         // let block_num = clk.number.to_string();
@@ -99,18 +101,20 @@ fn map_blocks(blk: Block, clk: Clock) -> Result<MasterProto, substreams::errors:
                     blocknumber: String::from(block_num),
                     timestamp_seconds: timestamp_seconds.clone(),
                 });
+            } else if let Some(erc721_transfer) = Erc721TransferEvent::match_and_decode(log) {
+                erc721_transfers.push(Erc721Transfer {
+                    address: Hex::encode(&log.address),
+                    from: Hex::encode(erc721_transfer.from),
+                    to: Hex::encode(erc721_transfer.to),
+                    token_id: erc721_transfer.token_id.to_string(),
+                    volume: String::new(),
+                    week_volume: 0,
+                    day_volume: 0,
+                    month_volume: 0,
+                    blocknumber: String::from(block_num),
+                    timestamp_seconds: timestamp_seconds.clone(),
+                });
             }
-            // } else if let Some(erc721_transfer) = Erc721TransferEvent::match_and_decode(log) {
-            //     erc721_transfers.push(Erc721Transfer {
-            //         address: Hex::encode(&log.address),
-            //         from: Hex::encode(erc721_transfer.from),
-            //         to: Hex::encode(erc721_transfer.to),
-            //         token_id: erc721_transfer.token_id.to_string(),
-            //         volume: String::new(),
-            //         blocknumber: String::from(block_num),
-            //         timestamp_seconds: timestamp_seconds.clone(),
-            //     });
-            // }
         }
     }
 

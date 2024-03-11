@@ -20,7 +20,7 @@ pub fn map_erc20_transfers(
     let mut token_weekly_snapshots: Vec<Erc20Snapshot> = Vec::new();
 
     let timestamp_seconds = clock.timestamp.unwrap().seconds;
-    // let month_id = timestamp_seconds / 2592000;
+    let month_id = timestamp_seconds / 2592000;
     let week_id = timestamp_seconds / 604800;
     let day_id = timestamp_seconds / 86400;
 
@@ -72,14 +72,14 @@ pub fn map_erc20_transfers(
         let monthly_count = store_token_monthly
             .get_at(
                 0,
-                &format!("Erc20TokenCountMonth:{}:{}", week_id, &transfer.address),
+                &format!("Erc20TokenCountMonth:{}:{}", month_id, &transfer.address),
             )
             .unwrap_or(BigInt::zero());
 
         let monthly_vol = store_token_monthly
             .get_at(
                 0,
-                &format!("Erc20TokenVolMonth:{}:{}", week_id, &transfer.address),
+                &format!("Erc20TokenVolMonth:{}:{}", month_id, &transfer.address),
             )
             .unwrap_or(BigInt::zero());
 

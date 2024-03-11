@@ -90,6 +90,9 @@ type Nft @entity(immutable: false) {
     symbol: String
     tokenUri: String
     volume: BigInt
+    dayVolume: BigInt
+    weekVolume: BigInt
+    monthVolume: BigInt
     nftDeployment: NftDeployment @derivedFrom(field: "nft")
     nftTransfers: [NftTransfer!] @derivedFrom(field: "nft")
     nftHolders: [NftHolder!] @derivedFrom(field: "nft")

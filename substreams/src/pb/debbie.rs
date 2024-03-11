@@ -126,9 +126,15 @@ pub struct Erc721Transfer {
     pub token_id: ::prost::alloc::string::String,
     #[prost(string, tag="5")]
     pub volume: ::prost::alloc::string::String,
-    #[prost(string, tag="6")]
-    pub blocknumber: ::prost::alloc::string::String,
+    #[prost(int64, tag="6")]
+    pub day_volume: i64,
     #[prost(int64, tag="7")]
+    pub week_volume: i64,
+    #[prost(int64, tag="8")]
+    pub month_volume: i64,
+    #[prost(string, tag="9")]
+    pub blocknumber: ::prost::alloc::string::String,
+    #[prost(int64, tag="10")]
     pub timestamp_seconds: i64,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
@@ -183,8 +189,6 @@ pub struct Erc721TransfersHoldersTokens {
     #[prost(message, repeated, tag="1")]
     pub transfers: ::prost::alloc::vec::Vec<Erc721Transfer>,
     #[prost(message, repeated, tag="2")]
-    pub erc721_token_holders: ::prost::alloc::vec::Vec<NftHolder>,
-    #[prost(message, repeated, tag="3")]
     pub erc721_tokens: ::prost::alloc::vec::Vec<Erc721Token>,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
