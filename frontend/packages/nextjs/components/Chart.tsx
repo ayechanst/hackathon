@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Cell from "./Cell";
 import { motion, useAnimation } from "framer-motion";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { paginatedPageNumState } from "~~/recoil/atoms";
 
 interface ChartProps {
   data: any;

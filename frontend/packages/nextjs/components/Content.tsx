@@ -8,12 +8,19 @@ const Content = () => {
   const [selectedTab, setSelectedTab] = useState("");
   const [filter, setFilter] = useState("");
   const [timeFilter, setTimeFilter] = useState("");
+  const [searchInputValue, setSearchInputValue] = useState<string | void>("");
   const active = "text-primary";
+
+  console.log("search value: ", searchInputValue);
 
   const { data } = useSubgraph({
     subgraphQuery: selectedTab,
     queryProps: { rows: 80 },
   });
+
+  const handleSearchInputChange = (value: any) => {
+    setSearchInputValue(value);
+  };
 
   // useEffect(() => {
   //   if (!data) return;
@@ -25,32 +32,68 @@ const Content = () => {
     <>
       <div className="flex">
         {/* ------------------------------- start of Menu --------------------------------------- */}
-        <div className="w-1/4 items-center m-10">
-          <div className="flex justify-center pt-3 font-bold text-lg">Data Filtration</div>
-          <div className="px-3">
-            <div className="divider divider-start divider-warning">Investigate</div>
-            <div className="flex flex-col items-center">
-              <SearchInput />
+        <div className="flex flex-col w-1/4">
+          <div className="items-center m-10">
+            <div className="flex justify-center pt-3 font-bold text-lg">Data Filtration</div>
+            <div className="px-3">
+              <div className="divider divider-start divider-warning">
+                {selectedTab === "Tokens" ? <div>Search a Token</div> : <div>Search an NFT Collection</div>}
+              </div>
+              <div className="flex flex-col items-center">
+                <SearchInput onFormSubmit={handleSearchInputChange} />
+              </div>
+            </div>
+            <div className="px-3 pb-3">
+              <div className="divider divider-start divider-warning">Filters Options</div>
+              <div className="flex flex-col w-full">
+                {selectedTab === "Tokens" ? (
+                  <div>
+                    <Button
+                      buttonName="Newest Deployments"
+                      isActive={filter === "Newest Deployments"}
+                      onClick={() => setFilter("Newest Deployments")}
+                    />
+                    <Button buttonName="Volume" isActive={filter === "Volume"} onClick={() => setFilter("Volume")} />
+                  </div>
+                ) : (
+                  <div>
+                    <Button buttonName="butt" isActive={filter === "butt"} onClick={() => setFilter("butt")} />
+                    <Button buttonName="fee" isActive={filter === "fee"} onClick={() => setFilter("fee")} />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-          <div className="px-3 pb-3">
-            <div className="divider divider-start divider-warning">Filters Options</div>
-            <div className="flex flex-col w-full">
-              {selectedTab === "Tokens" ? (
-                <div>
-                  <Button buttonName="tx" isActive={filter === "tx"} onClick={() => setFilter("tx")} />
-                  <Button buttonName="volume" isActive={filter === "volume"} onClick={() => setFilter("volume")} />
-                </div>
-              ) : (
-                <div>
-                  <Button buttonName="butt" isActive={filter === "butt"} onClick={() => setFilter("butt")} />
-                  <Button buttonName="fee" isActive={filter === "fee"} onClick={() => setFilter("fee")} />
-                </div>
-              )}
+          {/* ------------------------------------ end of Menu ------------------------------ */}
+
+          {/* ------------------------------------ start of TimeMenu ------------------------------ */}
+          <div className="m-10 h-full bg-secondary shadow-xl rounded-lg">
+            <div className="flex justify-center pt-5 font-bold text-lg">Time Line</div>
+            <div className="divider"></div>
+            <div className="px-3">
+              <div className="flex flex-col items-center">
+                <Button buttonName="1 day" isActive={timeFilter === "1 day"} onClick={() => setTimeFilter("1 day")} />
+                <Button
+                  buttonName="1 week"
+                  isActive={timeFilter === "1 week"}
+                  onClick={() => setTimeFilter("1 week")}
+                />
+                <Button
+                  buttonName="1 month"
+                  isActive={timeFilter === "1 month"}
+                  onClick={() => setTimeFilter("1 month")}
+                />
+                <Button
+                  buttonName="1 year"
+                  isActive={timeFilter === "1 year"}
+                  onClick={() => setTimeFilter("1 year")}
+                />
+                <div className="pb-3"></div>
+              </div>
             </div>
           </div>
         </div>
-        {/* ------------------------------------ end of Menu ------------------------------ */}
+        {/* ------------------------------------ end of TimeMenu ------------------------------ */}
 
         {/* ------------------------------------ start of Tabs ------------------------------ */}
         <div className="w-3/4 mt-10 mr-10">
