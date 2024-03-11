@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
+import Button from "./Button";
 import Chart from "./Chart";
 import SearchInput from "./SearchInput";
 import { useSubgraph } from "~~/hooks/scaffold-eth/useSubgraph";
 
-const Tabs = () => {
+const Content = () => {
   const [selectedTab, setSelectedTab] = useState("");
+  const [filter, setFilter] = useState("");
+  const [timeFilter, setTimeFilter] = useState("");
   const active = "text-primary";
 
   const { data } = useSubgraph({
@@ -21,6 +24,7 @@ const Tabs = () => {
   return (
     <>
       <div className="flex">
+        {/* ------------------------------- start of Menu --------------------------------------- */}
         <div className="w-1/4 items-center m-10">
           <div className="flex justify-center pt-3 font-bold text-lg">Data Filtration</div>
           <div className="px-3">
@@ -29,31 +33,26 @@ const Tabs = () => {
               <SearchInput />
             </div>
           </div>
-
           <div className="px-3 pb-3">
             <div className="divider divider-start divider-warning">Filters Options</div>
-            <div className="flex flex-col items-center">
-              {/* {filterButtons.map((filter: string) => {
-              if (filter === "input component") {
-                return <SearchInput key={filter} />;
-              } else {
-                return (
-                  <Button
-                    key={filter}
-                    onClick={() => {
-                      setSubgraphFilterQuery(filter);
-                      setActiveButton(filter);
-                    }}
-                    isActive={activeButton === filter}
-                    buttonName={filter}
-                  />
-                );
-              }
-            })} */}
+            <div className="flex flex-col w-full">
+              {selectedTab === "Tokens" ? (
+                <div>
+                  <Button buttonName="tx" isActive={filter === "tx"} onClick={() => setFilter("tx")} />
+                  <Button buttonName="volume" isActive={filter === "volume"} onClick={() => setFilter("volume")} />
+                </div>
+              ) : (
+                <div>
+                  <Button buttonName="butt" isActive={filter === "butt"} onClick={() => setFilter("butt")} />
+                  <Button buttonName="fee" isActive={filter === "fee"} onClick={() => setFilter("fee")} />
+                </div>
+              )}
             </div>
           </div>
         </div>
-        {/* tabs */}
+        {/* ------------------------------------ end of Menu ------------------------------ */}
+
+        {/* ------------------------------------ start of Tabs ------------------------------ */}
         <div className="w-3/4 mt-10 mr-10">
           <div role="tablist" className="tabs tabs-lifted">
             <input
@@ -80,8 +79,9 @@ const Tabs = () => {
             </div>
           </div>
         </div>
+        {/* ---------------------------------- end of Tabs ------------------------------- */}
       </div>
     </>
   );
 };
-export default Tabs;
+export default Content;

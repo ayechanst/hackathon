@@ -12,18 +12,7 @@ const TimeMenu = () => {
     setSubgraphTimeQuery(buttonName);
   };
 
-  const timeButtonArray = [
-    "1 hour",
-    "12 hours",
-    "1 day",
-    "7 days",
-    "2 weeks",
-    "1 month",
-    "1 year",
-    "2 years",
-    "3 years",
-    "GENESIS",
-  ];
+  const timeButtonArray = ["1 day", "7 days", "1 month", "1 year", "2 years", "3 years", "GENESIS"];
 
   return (
     <>
