@@ -20,7 +20,7 @@ binaries:
 modules:
   - name: map_blocks
     kind: map
-    initialBlock: 14336882
+    initialBlock: 933537
     inputs:
       - source: sf.ethereum.type.v2.Block
       - source: sf.substreams.v1.Clock
@@ -29,7 +29,7 @@ modules:
 
   - name: store_erc20_transfer_vol
     kind: store
-    initialBlock: 1
+    initialBlock: 933537
     updatePolicy: add
     valueType: bigint
     inputs:
@@ -37,42 +37,42 @@ modules:
 
   - name: store_erc20_transfer_count
     kind: store
-    initialBlock: 1
+    initialBlock: 933537
     updatePolicy: add
     valueType: int64 
     inputs:
       - map: map_blocks
 
-  - name: store_erc20_users_vol
+  - name: store_erc20_transfer_monthly
     kind: store
-    initialBlock: 1
+    initialBlock: 933537
     updatePolicy: add
     valueType: bigint 
     inputs:
       - source: sf.substreams.v1.Clock
       - map: map_blocks
 
-  - name: store_erc20_users_count
+  - name: store_erc20_transfer_weekly
     kind: store
-    initialBlock: 1
-    updatePolicy: add
-    valueType: int64 
-    inputs:
-      - source: sf.substreams.v1.Clock
-      - map: map_blocks
-
-  - name: store_erc20_users_balance
-    kind: store
-    initialBlock: 1
+    initialBlock: 933537
     updatePolicy: add
     valueType: bigint 
     inputs:
       - source: sf.substreams.v1.Clock
       - map: map_blocks
 
-  - name: map_transfers_and_holders
+  - name: store_erc20_transfer_daily
+    kind: store
+    initialBlock: 933537
+    updatePolicy: add
+    valueType: bigint 
+    inputs:
+      - source: sf.substreams.v1.Clock
+      - map: map_blocks
+
+  - name: map_erc20_transfers
     kind: map
-    initialBlock: 1
+    initialBlock: 933537
     inputs:
       - source: sf.substreams.v1.Clock
       - map: map_blocks
@@ -80,26 +80,44 @@ modules:
         mode: get
       - store: store_erc20_transfer_count
         mode: get
-      - store: store_erc20_users_vol
+      - store: store_erc20_transfer_monthly
         mode: get
-      - store: store_erc20_users_count
+      - store: store_erc20_transfer_weekly
         mode: get
-      - store: store_erc20_users_balance
+      - store: store_erc20_transfer_daily
         mode: get
     output:
       type: proto:debbie.ERC20HoldersTransfers
 
   - name: store_erc721_transfer_vol
     kind: store
-    initialBlock: 1
+    initialBlock: 933537
     updatePolicy: add
     valueType: bigint 
     inputs:
       - map: map_blocks
 
-  - name: store_user_erc721_balance
+  - name: store_erc721_transfer_monthly
     kind: store
-    initialBlock: 1
+    initialBlock: 933537
+    updatePolicy: add
+    valueType: bigint 
+    inputs:
+      - source: sf.substreams.v1.Clock
+      - map: map_blocks
+
+  - name: store_erc721_transfer_weekly
+    kind: store
+    initialBlock: 933537
+    updatePolicy: add
+    valueType: bigint 
+    inputs:
+      - source: sf.substreams.v1.Clock
+      - map: map_blocks
+  
+  - name: store_erc721_transfer_daily
+    kind: store
+    initialBlock: 933537
     updatePolicy: add
     valueType: bigint 
     inputs:
@@ -108,36 +126,39 @@ modules:
 
   - name: store_erc721_token_vol
     kind: store
-    initialBlock: 1
+    initialBlock: 933537
     updatePolicy: add
     valueType: bigint 
     inputs:
       - source: sf.substreams.v1.Clock
       - map: map_blocks
 
-  - name: map_erc721_transfers_holders_tokens
+  - name: map_erc721_transfers_tokens
     kind: map
-    initialBlock: 1
+    initialBlock: 933537
     inputs:
       - source: sf.substreams.v1.Clock
       - map: map_blocks
       - store: store_erc721_transfer_vol
         mode: get
-      - store: store_user_erc721_balance
-        mode: get
       - store: store_erc721_token_vol
+        mode: get
+      - store: store_erc721_transfer_monthly
+        mode: get
+      - store: store_erc721_transfer_weekly
+        mode: get
+      - store: store_erc721_transfer_daily
         mode: get
     output:
       type: proto:debbie.ERC721TransfersHoldersTokens
 
   - name: graph_out
     kind: map
-    initialBlock: 1
+    initialBlock: 933537
     inputs:
-      - source: sf.substreams.v1.Clock
       - map: map_blocks
-      - map: map_transfers_and_holders
-      - map: map_erc721_transfers_holders_tokens
+      - map: map_erc20_transfers
+      - map: map_erc721_transfers_tokens
     output:
       type: proto:sf.substreams.sink.entity.v1.EntityChanges
 
