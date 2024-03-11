@@ -94,6 +94,11 @@ pub fn transfers(tables: &mut Tables, erc20_transfers: Vec<Erc20Transfer>) {
             .set(
                 "weekVolume",
                 BigInt::from_str(&erc20_transfer.week_volume).unwrap_or(BigInt::zero()),
+            )
+            .set("monthCount", erc20_transfer.month_count)
+            .set(
+                "monthVolume",
+                BigInt::from_str(&erc20_transfer.month_volume).unwrap_or(BigInt::zero()),
             );
     }
 }
