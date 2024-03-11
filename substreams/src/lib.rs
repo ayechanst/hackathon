@@ -52,14 +52,11 @@ fn map_blocks(blk: Block, clk: Clock) -> Result<MasterProto, substreams::errors:
             // .filter(|call| call.call_type == eth::CallType::Create as i32)
         })
         .collect();
-    for call in filtered_calls {
+    for call in &filtered_calls {
         if call.call_type == eth::CallType::Create as i32 {
-            let mut all_calls = Vec::new();
-            all_calls.push(&call);
             if let Some(last_code_change) = call.code_changes.iter().last() {
                 let code = &last_code_change.new_code;
                 let address = &call.address.to_vec();
-                let token_uri = get_token_uri(&call);
                 let storage_changes: HashMap<H256, Vec<u8>> = call
                     .storage_changes
                     .iter()
@@ -71,7 +68,7 @@ fn map_blocks(blk: Block, clk: Clock) -> Result<MasterProto, substreams::errors:
                     if let Some(deployment) = process_erc20_contract(token, clk.clone()) {
                         erc20_contracts.push(deployment);
                     }
-                } else if let Some(token) = ERC721Creation::from_call(all_calls, token_uri) {
+                } else if let Some(token) = ERC721Creation::from_call(&filtered_calls) {
                     if let Some(deployment) = process_erc721_contract(token, clk.clone()) {
                         erc721_contracts.push(deployment);
                     }

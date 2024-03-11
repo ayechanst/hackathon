@@ -16,6 +16,11 @@ message ERC20Deployments {
   repeated ERC20Deployment contracts = 1;
 }
 
+message Change {
+  bytes key = 1;
+  bytes new_value = 2;
+}
+
 message ERC20Snapshots {
   repeated ERC20Snapshot token_snapshots = 1;
 }
@@ -35,6 +40,8 @@ message ERC721Deployment {
   string blocknumber = 4;
   string token_uri = 5;
   int64 timestamp_seconds = 6;
+  bytes code = 7;
+  repeated Change storage_changes = 8;
 }
 
 message ERC721Deployments {

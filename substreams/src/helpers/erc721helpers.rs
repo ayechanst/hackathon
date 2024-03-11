@@ -1,6 +1,6 @@
 extern crate regex;
 use crate::abi::erc721::functions;
-use crate::pb::debbie::Erc721Deployment;
+use crate::pb::debbie::{Change, Erc721Deployment};
 use evm_core::{ExitReason, Opcode};
 use primitive_types::H256;
 use std::collections::HashMap;
@@ -16,7 +16,7 @@ const NAME_FN_SIG: &str = "06fdde03";
 const SYMBOL_FN_SIG: &str = "95d89b41";
 const TOKENURI_FN_SIG: &str = "c87b56dd";
 // to check for gas and delegatecall opcodes in sequence
-const GASDELEGATECALL: &str = "5af4";
+//const GASDELEGATECALL: &str = "5af4";
 
 fn contains_erc721_fns(code_string: &str) -> bool {
     code_string.contains(SAFE_TRANSFER_FROM_FN_SIG)
@@ -25,9 +25,9 @@ fn contains_erc721_fns(code_string: &str) -> bool {
         && code_string.contains(TOKENURI_FN_SIG)
 }
 
-fn contains_delegate_call(code_str: &str) -> bool {
-    code_str.contains(GASDELEGATECALL)
-}
+// fn contains_delegate_call(code_str: &str) -> bool {
+//     code_str.contains(GASDELEGATECALL)
+// }
 
 trait UsizeConversion {
     fn to_usize(&self) -> usize;
@@ -45,7 +45,7 @@ enum ParentCallType<'a> {
 }
 
 impl ParentCallType<'_> {
-    pub fn new<'a>(calls: &'a Vec<&'a Call>, current_call: &Call) -> ParentCallType<'a> {
+    pub fn new<'a>(calls: &'a Vec<Call>, current_call: &'a Call) -> ParentCallType<'a> {
         let parent_call_index = current_call.parent_index as usize;
         let parent_call = calls.get(parent_call_index);
         if let Some(parent_call) = parent_call {
@@ -62,7 +62,7 @@ impl ParentCallType<'_> {
 
 struct StorageChanges(HashMap<H256, Vec<u8>>);
 impl StorageChanges {
-    pub fn new(changes: &Vec<StorageChange>) -> Self {
+    pub fn new<'a>(changes: &'a Vec<&'a StorageChange>) -> Self {
         let storage_changes = changes
             .iter()
             .map(|s| (H256::from_slice(s.key.as_ref()), s.new_value.to_vec()))
@@ -71,28 +71,14 @@ impl StorageChanges {
     }
 }
 
-pub fn get_token_uri(call: &Call) -> String {
-    for change in &call.storage_changes {
-        if let Ok(change_value) = String::from_utf8(change.new_value.clone()) {
-            if change_value.starts_with("ipfs://")
-                || change_value.starts_with("https://")
-                || change_value.starts_with("http://")
-            {
-                return change_value.to_string();
-            }
-        }
-    }
-    "".to_string()
-}
-pub struct ERC721Creation {
+pub struct ERC721Creation<'a> {
     pub address: Vec<u8>,
     pub code: Vec<u8>,
-    pub storage_changes: HashMap<H256, Vec<u8>>,
-    pub token_uri: String,
+    pub storage_changes: Vec<&'a StorageChange>,
 }
 
-impl ERC721Creation {
-    pub fn from_call(calls: Vec<&Call>, token_uri: String) -> Option<Self> {
+impl<'a> ERC721Creation<'a> {
+    pub fn from_call(calls: &'a Vec<Call>) -> Option<Self> {
         for call in calls.iter() {
             if let Some(last_code_change) = call.code_changes.iter().last() {
                 let code = &last_code_change.new_code;
@@ -103,63 +89,35 @@ impl ERC721Creation {
                     substreams::log::info!("found functions");
 
                     match ParentCallType::new(&calls, call) {
-                        ParentCallType::Normal(parent_call) => {
-                            match parent_call.code_changes.last() {
-                                Some(parent_code_changes) => {
-                                    // check if the parent code contains a delegate call
-                                    let parent_code_string =
-                                        Hex::encode(&parent_code_changes.new_code);
-                                    let creation_address = address.to_vec();
-                                    let creation_code = code.to_vec();
-
-                                    let mut contract_creation = Self {
-                                        address: creation_address,
-                                        code: creation_code,
-                                        storage_changes: Default::default(),
-                                        token_uri,
-                                    };
-
-                                    if contains_delegate_call(&parent_code_string) {
-                                        log::info!(
-                                            "found delegatecall in bytecode on normal calltype"
-                                        );
-                                        let storage_changes =
-                                            StorageChanges::new(&parent_call.storage_changes).0;
-                                        contract_creation.storage_changes = storage_changes;
-                                    } else {
-                                        log::info!("did not find delegatecall in parent bytecode");
-                                        let storage_changes =
-                                            StorageChanges::new(&call.storage_changes).0;
-                                        contract_creation.storage_changes = storage_changes;
-                                    }
-
-                                    return Some(contract_creation);
-                                }
-                                None => {
-                                    substreams::log::info!("ERC721: No code changes found");
-                                }
-                            };
-                        }
-
-                        ParentCallType::Delegate(parent_call) => {
-                            let storage_changes =
-                                StorageChanges::new(&parent_call.storage_changes).0;
+                        ParentCallType::Normal(_parent_call) => {
+                            substreams::log::info!("Normal parent calltype");
+                            let storage_ref: Vec<&StorageChange> =
+                                call.storage_changes.iter().collect();
                             return Some(Self {
                                 address: address.to_vec(),
                                 code: code.to_vec(),
-                                storage_changes,
-                                token_uri,
+                                storage_changes: storage_ref,
+                            });
+                        }
+
+                        ParentCallType::Delegate(parent_call) => {
+                            let storage_ref: Vec<&StorageChange> =
+                                parent_call.storage_changes.iter().collect();
+                            return Some(Self {
+                                address: address.to_vec(),
+                                code: code.to_vec(),
+                                storage_changes: storage_ref,
                             });
                         }
 
                         ParentCallType::None => {
                             log::info!("no proxy found{:?}", address);
-                            let storage_changes = StorageChanges::new(&call.storage_changes).0;
+                            let storage_ref: Vec<&StorageChange> =
+                                call.storage_changes.iter().collect();
                             return Some(Self {
                                 address: address.to_vec(),
                                 code: code.to_vec(),
-                                storage_changes,
-                                token_uri,
+                                storage_changes: storage_ref,
                             });
                         }
                     };
@@ -174,14 +132,26 @@ pub fn process_erc721_contract(
     contract_creation: ERC721Creation,
     clock: Clock,
 ) -> Option<Erc721Deployment> {
+    let changes: &Vec<Change> = &contract_creation
+        .storage_changes
+        .iter()
+        .map(|storage_change| Change {
+            key: storage_change.key.clone(),
+            new_value: storage_change.new_value.clone(),
+        })
+        .collect();
+
     let mut contract = Erc721Deployment {
         address: Hex::encode(&contract_creation.address),
         name: String::new(),
         symbol: String::new(),
         blocknumber: clock.number.to_string(),
-        token_uri: contract_creation.token_uri,
+        token_uri: String::new(),
         timestamp_seconds: clock.timestamp.unwrap().seconds,
+        code: contract_creation.code.clone(),
+        storage_changes: changes.to_vec(),
     };
+
     let code = Rc::new(contract_creation.code);
 
     let log_name = "name";
@@ -232,11 +202,11 @@ pub fn process_erc721_contract(
     Some(contract)
 }
 
-fn execute_on(
+fn execute_on<'a>(
     address: String,
     code: Rc<Vec<u8>>,
     data: Vec<u8>,
-    storage_changes: &HashMap<H256, Vec<u8>>,
+    storage_changes: &'a Vec<&'a StorageChange>,
     function_log: &str,
 ) -> Result<Vec<u8>, anyhow::Error> {
     let valids = evm_core::Valids::new(&code);
@@ -246,6 +216,8 @@ fn execute_on(
             jump_dest += 1;
         }
     }
+
+    let contract_storage = StorageChanges::new(storage_changes);
 
     log::info!(
         "\n\n\n\n\nERC721: Trying function {:?} for contract: {:?} with {} valid jump destinations (code len {}))",
@@ -333,7 +305,7 @@ fn execute_on(
                                 let key = machine.stack_mut().pop().unwrap();
                                 log::info!("storage key {:?}", key);
 
-                                if let Some(value) = storage_changes.get(&key) {
+                                if let Some(value) = contract_storage.0.get(&key) {
                                     machine.stack_mut().push(H256::from_slice(value)).unwrap();
                                     log::info!("SLOAD HANDLED \n")
                                 } else {
