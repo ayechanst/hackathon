@@ -2,13 +2,17 @@ import React, { useEffect, useState } from "react";
 import Cell from "./Cell";
 import { motion, useAnimation } from "framer-motion";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { paginatedPageNumState, subgraphDataArrayState } from "~~/recoil/atoms";
-import { dividedSubgraphDataState } from "~~/recoil/selectors";
+import { paginatedPageNumState } from "~~/recoil/atoms";
 
-const Chart = () => {
-  let [paginatedPageNum, setPaginatedPageNum] = useRecoilState(paginatedPageNumState);
-  const dividedSubgraphData = useRecoilValue(dividedSubgraphDataState);
-  const subgraphDataArray = useRecoilValue(subgraphDataArrayState);
+interface ChartProps {
+  data: any;
+}
+
+const Chart: React.FC<ChartProps> = ({ data }) => {
+  // let [paginatedPageNum, setPaginatedPageNum] = useRecoilState(paginatedPageNumState);
+  const [pageNum, setPageNum] = useState(0);
+  // const dividedSubgraphData = useRecoilValue(dividedSubgraphDataState);
+  // const subgraphDataArray = useRecoilValue(subgraphDataArrayState);
   const [isAnimating, setIsAnimating] = useState(false);
   const controls = useAnimation();
 
@@ -20,25 +24,28 @@ const Chart = () => {
     }
   }, [isAnimating]);
 
-  const handlePageChange = (pageNumChange: any) => {
-    setPaginatedPageNum(prevPageNum => {
-      let newPageNum = prevPageNum + pageNumChange;
-      if (newPageNum < 0) {
-        newPageNum = 0;
-      } else if (newPageNum >= Math.ceil(subgraphDataArray.length / 10)) {
-        newPageNum = Math.ceil(subgraphDataArray.length / 10) - 1;
-      }
-      setIsAnimating(true);
-      setTimeout(() => {
-        setIsAnimating(false);
-      }, 400); // Set the timeout duration to match the animation duration
-      return newPageNum;
-    });
-  };
+  //   let paginatedData = [];
+  //     for (let i = 0; i < subgraphDataArray.length; i += 10) {
+  //     returnedValue.push(subgraphDataArray.slice(i, i + 10));
+  //     }
+  //     return returnedValue[paginatedPageNum];
+  // }
+
+  //   function handlePageChange(pageNumChange: any) {
+  //     setPageNum(prevPageNum => {
+
+  //       setIsAnimating(true);
+  //       setTimeout(() => {
+  //         setIsAnimating(false);
+  //       }, 400); // Set the timeout duration to match the animation duration
+  //       return newPageNum;
+  //     });
+  //   };
 
   return (
     <>
-      <div className="flex bg-secondary p-3 rounded-2xl place-items-center justify-between">
+      {/* {data.length() % 2 === 0 ? <div>sup1</div> : <div>sup2</div>} */}
+      {/* <div className="flex bg-secondary p-3 rounded-2xl place-items-center justify-between">
         <motion.button
           onClick={() => handlePageChange(-1)}
           className="rounded-full p-1 bg-primary justify-items-end flex"
@@ -113,7 +120,7 @@ const Chart = () => {
           <div>{paginatedPageNum + 2}</div>
           <div>»</div>
         </button>
-      </div>
+      </div> */}
     </>
   );
 };

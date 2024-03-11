@@ -4,10 +4,9 @@ import React from "react";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import type { NextPage } from "next";
 import { RecoilRoot } from "recoil";
-// import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import Data from "~~/components/Data";
-// import Menu from "~~/components/Menu";
 import Nav from "~~/components/Nav";
+import Tabs from "~~/components/Tabs";
 
 const Home: NextPage = () => {
   const client = new ApolloClient({
@@ -21,7 +20,7 @@ const Home: NextPage = () => {
         <div className="bg-primary">
           <Nav />
           <div className="w-screen">
-            <Data />
+            <Tabs />
           </div>
         </div>
       </ApolloProvider>

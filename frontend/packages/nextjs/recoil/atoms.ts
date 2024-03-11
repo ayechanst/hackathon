@@ -11,16 +11,6 @@ export const subgraphFilterQueryState = atom({
   default: "erc20Transfers",
 });
 
-export const filterButtonsArrayState = atom({
-  key: "filterButtonsArrayState",
-  default: ["transfer volume"],
-});
-
-export const subgraphTimeQueryState = atom({
-  key: "subgraphTimeQueryState",
-  default: "1 day",
-});
-
 // Tabs.tsx
 
 export const selectedTabState = atom({
@@ -28,10 +18,10 @@ export const selectedTabState = atom({
   default: "Tokens",
 });
 
-export const subgraphDataArrayState = atom({
-  key: "subgraphData",
-  default: [{}],
-});
+// export const subgraphDataArrayState = atom({
+//   key: "subgraphData",
+//   default: [{}],
+// });
 
 // Chart.tsx
 export const paginatedPageNumState = atom({
