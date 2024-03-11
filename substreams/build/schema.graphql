@@ -6,9 +6,20 @@ type Token @entity(immutable: false) {
     totalSupply: BigInt
     volume: BigInt
     count: BigInt
+    dayVolume: BigInt
+    dayCount: BigInt
+    weekVolume: BigInt
+    weekCount: BigInt
+    monthVolume: BigInt
+    monthCount: BigInt
+    yearVolume: BigInt
+    yearCount: BigInt
+    deploymentTimestamp: BigInt
     tokenDeployment: TokenDeployment @derivedFrom(field: "token")
     tokenTransfers: [TokenTransfer!] @derivedFrom(field: "token")
     tokenHolders: [TokenHolder!] @derivedFrom(field: "token")
+    tokenDailySnapshots: [TokenDailySnapshot!] @derivedFrom(field: "token")
+    tokenWeeklySnapshots: [TokenWeeklySnapshot!] @derivedFrom(field: "token")
 }
 
 type TokenDeployment @entity(immutable: false) {
@@ -17,6 +28,26 @@ type TokenDeployment @entity(immutable: false) {
     timestamp: BigInt!
     # txHash: String
     token: Token 
+}
+
+type TokenDailySnapshot @entity(immutable: false) {
+    id: ID!
+    tokenAddress: String
+    token: Token
+    volume: BigInt
+    count: BigInt
+    timestamp: BigInt
+    dayId: BigInt
+}
+
+type TokenWeeklySnapshot @entity(immutable: false) {
+    id: ID!
+    tokenAddress: String
+    token: Token
+    volume: BigInt
+    count: BigInt
+    timestamp: BigInt
+    weekId: BigInt
 }
 
 type TokenTransfer @entity(immutable: true) {
@@ -59,6 +90,10 @@ type Nft @entity(immutable: false) {
     symbol: String
     tokenUri: String
     volume: BigInt
+    dayVolume: BigInt
+    weekVolume: BigInt
+    monthVolume: BigInt
+    deploymentTimestamp: BigInt
     nftDeployment: NftDeployment @derivedFrom(field: "nft")
     nftTransfers: [NftTransfer!] @derivedFrom(field: "nft")
     nftHolders: [NftHolder!] @derivedFrom(field: "nft")

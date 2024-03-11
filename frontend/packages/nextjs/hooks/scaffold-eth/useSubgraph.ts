@@ -2,16 +2,15 @@ import { useEffect, useState } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { useRecoilValue } from "recoil";
 import {
-  selectedTabState,
   subgraphFilterQueryState,
   subgraphQueryState,
-  subgraphTimeQueryState,
 } from "~~/recoil/atoms";
 
 // type UseSubgraphProps = {
 //   subgraphQuery?: string;
 //   queryProps?: any;
 // };
+
 type UseSubgraphProps = {
   subgraphQuery?: string;
   queryProps?: any;

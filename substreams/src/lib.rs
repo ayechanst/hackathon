@@ -1,6 +1,8 @@
 mod abi;
+pub mod erc20_gout;
 mod erc20maps;
 mod erc20stores;
+pub mod erc721_gout;
 mod erc721maps;
 mod erc721stores;
 mod graphout;
@@ -22,6 +24,7 @@ use substreams_ethereum::pb::eth::v2::Block;
 use substreams_ethereum::pb::sf::ethereum::r#type::v2 as eth;
 use substreams_ethereum::Event;
 
+pub use erc20_gout::*;
 pub use erc20maps::*;
 pub use erc20stores::*;
 pub use erc721maps::*;
@@ -73,34 +76,43 @@ fn map_blocks(blk: Block, clk: Clock) -> Result<MasterProto, substreams::errors:
             }
         }
         // let block_num = clk.number.to_string();
-        // for log in &call.logs {
-        //     let clk = clk.clone();
-        //     let block_num = clk.number.to_string();
-        //     let timestamp_seconds = clk.timestamp.unwrap().seconds;
+        for log in &call.logs {
+            let clk = clk.clone();
+            let block_num = clk.number.to_string();
+            let timestamp_seconds = clk.timestamp.unwrap().seconds;
 
-        //     if let Some(erc20_transfer) = Erc20TransferEvent::match_and_decode(log) {
-        //         erc20_transfers.push(Erc20Transfer {
-        //             address: Hex::encode(&log.address),
-        //             from: Hex::encode(erc20_transfer.from),
-        //             to: Hex::encode(erc20_transfer.to),
-        //             amount: erc20_transfer.value.to_string(),
-        //             count: String::from("1"),
-        //             volume: String::new(),
-        //             blocknumber: String::from(block_num),
-        //             timestamp_seconds: timestamp_seconds.clone(),
-        //         });
-        //     } else if let Some(erc721_transfer) = Erc721TransferEvent::match_and_decode(log) {
-        //         erc721_transfers.push(Erc721Transfer {
-        //             address: Hex::encode(&log.address),
-        //             from: Hex::encode(erc721_transfer.from),
-        //             to: Hex::encode(erc721_transfer.to),
-        //             token_id: erc721_transfer.token_id.to_string(),
-        //             volume: String::new(),
-        //             blocknumber: String::from(block_num),
-        //             timestamp_seconds: timestamp_seconds.clone(),
-        //         });
-        //     }
-        // }
+            if let Some(erc20_transfer) = Erc20TransferEvent::match_and_decode(log) {
+                erc20_transfers.push(Erc20Transfer {
+                    address: Hex::encode(&log.address),
+                    from: Hex::encode(&erc20_transfer.from),
+                    to: Hex::encode(&erc20_transfer.to),
+                    amount: erc20_transfer.value.to_string(),
+                    count: String::from("1"),
+                    volume: String::new(),
+                    day_count: 0,
+                    day_volume: String::new(),
+                    week_count: 0,
+                    week_volume: String::new(),
+                    month_count: 0,
+                    month_volume: String::new(),
+                    blocknumber: String::from(block_num),
+                    timestamp_seconds: timestamp_seconds.clone(),
+                });
+            } else if let Some(erc721_transfer) = Erc721TransferEvent::match_and_decode(log) {
+                erc721_transfers.push(Erc721Transfer {
+                    address: Hex::encode(&log.address),
+                    from: Hex::encode(erc721_transfer.from),
+                    to: Hex::encode(erc721_transfer.to),
+                    token_id: erc721_transfer.token_id.to_string(),
+                    volume: String::new(),
+                    week_volume: 0,
+                    day_volume: 0,
+                    month_volume: 0,
+                    blocknumber: String::from(block_num),
+                    timestamp_seconds: timestamp_seconds.clone(),
+                });
+            }
+        }
     }
 
     Ok(MasterProto {

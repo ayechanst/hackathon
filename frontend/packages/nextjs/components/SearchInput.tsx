@@ -1,15 +1,30 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { useRecoilState } from "recoil";
-import { searchInputQueryState } from "~~/recoil/atoms";
 
-const SearchInput = () => {
-  const [searchInputQuery, setSearchInputQuery] = useRecoilState(searchInputQueryState);
+interface SearchInputProps {
+  onFormSubmit: (value: string) => void;
+}
+
+const SearchInput: React.FC<SearchInputProps> = ({ onFormSubmit }) => {
+  const [inputValue, setInputValue] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const [isActive, setIsActive] = useState(false);
+
+  function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setInputValue(event.target.value);
+  }
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (onFormSubmit) {
+      onFormSubmit(inputValue);
+    }
+  }
+
   return (
-    <motion.div
+    <motion.form
       className={`rounded-lg w-full m-2`}
+      onSubmit={handleSubmit}
       animate={{
         backgroundColor: isActive ? "#27272a" : "#eab308",
         color: isActive ? "#eab308" : "#27272a",
@@ -28,8 +43,8 @@ const SearchInput = () => {
             isFocused ? "text-yellow-500" : ""
           }`}
           placeholder="Search"
-          value={searchInputQuery}
-          onChange={e => setSearchInputQuery(e.target.value)}
+          value={inputValue}
+          onChange={handleInputChange}
           onFocus={() => {
             setIsFocused(true);
             setIsActive(true);
@@ -47,7 +62,8 @@ const SearchInput = () => {
           />
         </svg>
       </label>
-    </motion.div>
+    </motion.form>
   );
 };
+
 export default SearchInput;

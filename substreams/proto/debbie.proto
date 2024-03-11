@@ -21,6 +21,18 @@ message Change {
   bytes new_value = 2;
 }
 
+message ERC20Snapshots {
+  repeated ERC20Snapshot token_snapshots = 1;
+}
+
+message ERC20Snapshot {
+  string token = 1;
+  string volume = 2;
+  int64 tx_count = 3;
+  int64 timestamp_seconds = 4;
+  int64 snapshot_id = 5;
+}
+
 message ERC721Deployment {
   string address = 1;
   string name = 2;
@@ -38,7 +50,8 @@ message ERC721Deployments {
 
 message ERC20HoldersTransfers {
   repeated ERC20Transfer erc20transfers = 1;
-  repeated TokenHolder token_holders = 2;
+  repeated ERC20Snapshot token_weekly_snapshots = 2;
+  repeated ERC20Snapshot token_daily_snapshots = 3;
 }
 
 message ERC20Transfer {
@@ -48,8 +61,14 @@ message ERC20Transfer {
   string amount = 4;
   string count = 5;
   string volume = 6;
-  string blocknumber = 7;
-  int64 timestamp_seconds = 8;
+  string dayVolume = 7;
+  int64 dayCount = 8;
+  string weekVolume = 9;
+  int64 weekCount = 10;
+  string monthVolume = 11;
+  int64 monthCount = 12;
+  string blocknumber = 13;
+  int64 timestamp_seconds = 14;
 }
 
 message ERC20Transfers {
@@ -62,8 +81,11 @@ message ERC721Transfer {
   string from = 3;
   string token_id = 4;
   string volume = 5;
-  string blocknumber = 6;
-  int64 timestamp_seconds = 7;
+  int64 dayVolume = 6;
+  int64 weekVolume = 7;
+  int64 monthVolume = 8;
+  string blocknumber = 9;
+  int64 timestamp_seconds = 10;
 }
 
 message ERC721Transfers {
@@ -95,8 +117,7 @@ message TokenHolder {
 
 message ERC721TransfersHoldersTokens {
   repeated ERC721Transfer transfers = 1;
-  repeated NFTHolder erc721_token_holders = 2;
-  repeated ERC721Token erc721_tokens = 3;
+  repeated ERC721Token erc721_tokens = 2;
 }
 
 message ERC721Tokens {
