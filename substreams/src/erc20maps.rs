@@ -1,5 +1,4 @@
 use crate::pb::debbie::{Erc20HoldersTransfers, Erc20Snapshot, Erc20Transfer, MasterProto};
-
 use substreams::scalar::BigInt;
 
 use substreams::pb::substreams::Clock;

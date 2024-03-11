@@ -93,6 +93,7 @@ type Nft @entity(immutable: false) {
     dayVolume: BigInt
     weekVolume: BigInt
     monthVolume: BigInt
+    deploymentTimestamp: BigInt
     nftDeployment: NftDeployment @derivedFrom(field: "nft")
     nftTransfers: [NftTransfer!] @derivedFrom(field: "nft")
     nftHolders: [NftHolder!] @derivedFrom(field: "nft")

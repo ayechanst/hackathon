@@ -27,7 +27,8 @@ pub fn deployments(tables: &mut Tables, erc20_deployments: Vec<Erc20Deployment>)
                 BigInt::from_str(&erc20_deployment.total_supply).unwrap_or(BigInt::zero()),
             )
             .set("volume", BigInt::zero())
-            .set("count", BigInt::zero());
+            .set("count", BigInt::zero())
+            .set("deploymentTimestamp", erc20_deployment.timestamp_seconds);
     }
 }
 

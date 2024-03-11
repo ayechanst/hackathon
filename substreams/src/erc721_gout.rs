@@ -11,10 +11,7 @@ pub fn deployments(tables: &mut Tables, erc721_deployments: Vec<Erc721Deployment
                 "blocknumber",
                 BigInt::from_str(&erc721_deployment.blocknumber).unwrap_or(BigInt::from(0)),
             )
-            .set(
-                "timestamp",
-                BigInt::from(erc721_deployment.timestamp_seconds),
-            )
+            .set("timestamp", erc721_deployment.timestamp_seconds)
             .set("nft", &erc721_deployment.address);
 
         tables
@@ -22,7 +19,8 @@ pub fn deployments(tables: &mut Tables, erc721_deployments: Vec<Erc721Deployment
             .set("name", erc721_deployment.name)
             .set("symbol", erc721_deployment.symbol)
             .set("tokenUri", erc721_deployment.token_uri)
-            .set("volume", BigInt::zero());
+            .set("volume", BigInt::zero())
+            .set("deploymentTimestamp", erc721_deployment.timestamp_seconds);
     }
 }
 
