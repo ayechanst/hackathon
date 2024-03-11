@@ -19,43 +19,31 @@ pub fn deployments(tables: &mut Tables, erc721_deployments: Vec<Erc721Deployment
             .set("name", erc721_deployment.name)
             .set("symbol", erc721_deployment.symbol)
             .set("tokenUri", erc721_deployment.token_uri)
-            .set("volume", BigInt::zero())
             .set("deploymentTimestamp", erc721_deployment.timestamp_seconds);
     }
 }
 
 pub fn transfers(tables: &mut Tables, erc721_transfers: Vec<Erc721Transfer>) {
     for (index, erc721_transfer) in erc721_transfers.iter().enumerate() {
-        let volume: BigInt;
-        if let Some(vol) = BigInt::from_str(&erc721_transfer.volume).ok() {
-            volume = vol;
-        } else {
-            volume = BigInt::from(0);
-        }
-
-        let blocknumber: BigInt;
-        if let Some(block) = BigInt::from_str(&erc721_transfer.blocknumber).ok() {
-            blocknumber = block;
-        } else {
-            blocknumber = BigInt::from(0);
-        }
+        let volume = BigInt::from_str(&erc721_transfer.volume).unwrap_or(BigInt::zero());
+        let blocknumber = BigInt::from_str(&erc721_transfer.blocknumber).unwrap_or(BigInt::zero());
 
         tables
             .update_row(
                 "NftTransfer",
-                format!(
+                &format!(
                     "{}:{}:{}:{}:{}:{}",
-                    erc721_transfer.from,
-                    erc721_transfer.to,
-                    erc721_transfer.token_id,
-                    erc721_transfer.volume,
-                    erc721_transfer.blocknumber,
-                    index
+                    &erc721_transfer.from,
+                    &erc721_transfer.to,
+                    &erc721_transfer.token_id,
+                    &erc721_transfer.volume,
+                    &erc721_transfer.blocknumber,
+                    &index
                 ),
             )
-            .set("from", erc721_transfer.from.clone())
-            .set("to", erc721_transfer.to.clone())
-            .set("tokenId", erc721_transfer.token_id.clone())
+            .set("from", &erc721_transfer.from)
+            .set("to", &erc721_transfer.to)
+            .set("tokenId", &erc721_transfer.token_id)
             .set("volume", &volume)
             .set("blocknumber", blocknumber)
             .set("timestamp", erc721_transfer.timestamp_seconds)
@@ -70,7 +58,7 @@ pub fn transfers(tables: &mut Tables, erc721_transfers: Vec<Erc721Transfer>) {
 
         tables
             .update_row("Nft", &erc721_transfer.address)
-            .set("volume", BigInt::from(volume))
+            .set("volume", volume)
             .set("dayVolume", erc721_transfer.day_volume)
             .set("weekVolume", erc721_transfer.week_volume)
             .set("monthVolume", erc721_transfer.month_volume);
@@ -91,6 +79,6 @@ pub fn token_transfers(tables: &mut Tables, token_transfers: Vec<Erc721Token>) {
                 BigInt::from_str(&token.transfer_volume).unwrap_or(BigInt::one()),
             )
             .set("nft", &token.token_address)
-            .set("timestamp", BigInt::from(token.timestamp_seconds));
+            .set("timestamp", token.timestamp_seconds);
     }
 }

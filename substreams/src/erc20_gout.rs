@@ -34,6 +34,9 @@ pub fn deployments(tables: &mut Tables, erc20_deployments: Vec<Erc20Deployment>)
 
 pub fn transfers(tables: &mut Tables, erc20_transfers: Vec<Erc20Transfer>) {
     for (index, erc20_transfer) in erc20_transfers.iter().enumerate() {
+        let transfer_volume = BigInt::from_str(&erc20_transfer.volume).unwrap_or(BigInt::zero());
+        let transfer_count = BigInt::from_str(&erc20_transfer.count).unwrap_or(BigInt::zero());
+        let transfer_amount = BigInt::from_str(&erc20_transfer.amount).unwrap_or(BigInt::zero());
         tables
             .create_row(
                 "TokenTransfer",
@@ -49,18 +52,9 @@ pub fn transfers(tables: &mut Tables, erc20_transfers: Vec<Erc20Transfer>) {
             )
             .set("from", &erc20_transfer.from)
             .set("to", &erc20_transfer.to)
-            .set(
-                "amount",
-                BigInt::from_str(&erc20_transfer.amount).unwrap_or(BigInt::zero()),
-            )
-            .set(
-                "count",
-                BigInt::from_str(&erc20_transfer.count).unwrap_or(BigInt::zero()),
-            )
-            .set(
-                "volume",
-                BigInt::from_str(&erc20_transfer.volume).unwrap_or(BigInt::zero()),
-            )
+            .set("amount", transfer_amount)
+            .set("count", &transfer_count)
+            .set("volume", &transfer_volume)
             .set("token", &erc20_transfer.address)
             .set(
                 "blocknumber",
@@ -78,14 +72,8 @@ pub fn transfers(tables: &mut Tables, erc20_transfers: Vec<Erc20Transfer>) {
 
         tables
             .update_row("Token", &erc20_transfer.address)
-            .set(
-                "volume",
-                BigInt::from_str(&erc20_transfer.volume).unwrap_or(BigInt::zero()),
-            )
-            .set(
-                "count",
-                BigInt::from_str(&erc20_transfer.count).unwrap_or(BigInt::zero()),
-            )
+            .set("volume", transfer_volume)
+            .set("count", transfer_count)
             .set("dayCount", erc20_transfer.day_count)
             .set(
                 "dayVolume",

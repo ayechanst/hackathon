@@ -87,8 +87,8 @@ fn map_blocks(blk: Block, clk: Clock) -> Result<MasterProto, substreams::errors:
             if let Some(erc20_transfer) = Erc20TransferEvent::match_and_decode(log) {
                 erc20_transfers.push(Erc20Transfer {
                     address: Hex::encode(&log.address),
-                    from: Hex::encode(erc20_transfer.from),
-                    to: Hex::encode(erc20_transfer.to),
+                    from: Hex::encode(&erc20_transfer.from),
+                    to: Hex::encode(&erc20_transfer.to),
                     amount: erc20_transfer.value.to_string(),
                     count: String::from("1"),
                     volume: String::new(),

@@ -1,17 +1,16 @@
 use crate::pb::debbie::MasterProto;
 use substreams::pb::substreams::Clock;
-use substreams::scalar::BigInt;
-use substreams::store::{StoreAdd, StoreAddBigInt, StoreDelete, StoreNew};
+use substreams::store::{StoreAdd, StoreAddInt64, StoreDelete, StoreNew};
 
 #[substreams::handlers::store]
-pub fn store_erc721_transfer_vol(transfers: MasterProto, store: StoreAddBigInt) {
+pub fn store_erc721_transfer_vol(transfers: MasterProto, store: StoreAddInt64) {
     for transfer in transfers.erc721transfers {
-        store.add(0, transfer.address, BigInt::one())
+        store.add(0, transfer.address, 1)
     }
 }
 
 #[substreams::handlers::store]
-pub fn store_erc721_transfer_weekly(clock: Clock, transfers: MasterProto, store: StoreAddBigInt) {
+pub fn store_erc721_transfer_weekly(clock: Clock, transfers: MasterProto, store: StoreAddInt64) {
     let timestamp_seconds = clock.timestamp.unwrap().seconds;
     let week_id = timestamp_seconds / 604800;
     let prev_week_id = week_id - 1;
@@ -22,13 +21,13 @@ pub fn store_erc721_transfer_weekly(clock: Clock, transfers: MasterProto, store:
         store.add(
             0,
             format!("Erc721ContractVolWeek:{}:{}", week_id, transfer.address),
-            BigInt::one(),
+            1,
         )
     }
 }
 
 #[substreams::handlers::store]
-pub fn store_erc721_transfer_daily(clock: Clock, transfers: MasterProto, store: StoreAddBigInt) {
+pub fn store_erc721_transfer_daily(clock: Clock, transfers: MasterProto, store: StoreAddInt64) {
     let timestamp_seconds = clock.timestamp.unwrap().seconds;
     let day_id = timestamp_seconds / 86400;
     let prev_day_id = day_id - 1;
@@ -39,13 +38,13 @@ pub fn store_erc721_transfer_daily(clock: Clock, transfers: MasterProto, store: 
         store.add(
             0,
             format!("Erc721ContractVolDay:{}:{}", day_id, transfer.address),
-            BigInt::one(),
+            1,
         )
     }
 }
 
 #[substreams::handlers::store]
-pub fn store_erc721_transfer_monthly(clock: Clock, transfers: MasterProto, store: StoreAddBigInt) {
+pub fn store_erc721_transfer_monthly(clock: Clock, transfers: MasterProto, store: StoreAddInt64) {
     let timestamp_seconds = clock.timestamp.unwrap().seconds;
     let month_id = timestamp_seconds / 2592000;
     let prev_month_id = month_id - 1;
@@ -56,13 +55,13 @@ pub fn store_erc721_transfer_monthly(clock: Clock, transfers: MasterProto, store
         store.add(
             0,
             format!("Erc721ContractVolMonth:{}:{}", month_id, transfer.address),
-            BigInt::one(),
+            1,
         )
     }
 }
 
 #[substreams::handlers::store]
-pub fn store_erc721_token_vol(clock: Clock, transfers: MasterProto, store: StoreAddBigInt) {
+pub fn store_erc721_token_vol(clock: Clock, transfers: MasterProto, store: StoreAddInt64) {
     let timestamp_seconds = clock.timestamp.unwrap().seconds;
     let month_id = timestamp_seconds / 2592000;
     let prev_month_id = month_id - 1;
@@ -76,7 +75,7 @@ pub fn store_erc721_token_vol(clock: Clock, transfers: MasterProto, store: Store
                 "Erc721TokenVolMonth:{}:{}:{}",
                 month_id, transfer.address, transfer.token_id
             ),
-            BigInt::one(),
+            1,
         )
     }
 }
