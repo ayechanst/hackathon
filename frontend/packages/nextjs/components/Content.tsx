@@ -6,7 +6,7 @@ import { gql, useQuery } from "@apollo/client";
 import { Query, queryHelper } from "~~/queryHelpers";
 
 const Content = () => {
-  const [selectedTab, setSelectedTab] = useState("");
+  const [selectedTab, setSelectedTab] = useState("Tokens");
   const [filter, setFilter] = useState("");
   const [timeFilter, setTimeFilter] = useState("");
   const [query, setQuery] = useState<Query>(queryHelper("Tokens"));
@@ -30,7 +30,7 @@ const Content = () => {
     if (!data) return;
     console.log("data: ", data);
 
-    console.log("keys: ", Object.keys(data.tokens));
+    console.log("keys: ", Object.keys(data["tokens"][0]));
     //   // setSelectedTab(selectedTab);
     //   ``setSubgraphDataArray``(data);
   }, [data]);
@@ -112,12 +112,13 @@ const Content = () => {
               className={`tab text-primary  ${selectedTab === "Tokens" ? active : "text-yellow-100"}`}
               onClick={() => setSelectedTab("Tokens")}
               aria-label="Tokens"
+              checked={selectedTab === "Tokens"}
             />
             <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
               {data ? (
                 <div>
                   tab1
-                  {/* <Chart data={data} /> */}
+                  <Chart data={data} />
                 </div>
               ) : loading ? (
                 <div> loading mothafuckin bitch</div>
@@ -137,7 +138,7 @@ const Content = () => {
               {data ? (
                 <div>
                   tab1
-                  {/* <Chart data={data} /> */}
+                  <Chart data={data} />
                 </div>
               ) : loading ? (
                 <div> loading mothafuckin bitch</div>

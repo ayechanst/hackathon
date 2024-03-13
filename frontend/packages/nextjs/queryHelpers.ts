@@ -1,34 +1,24 @@
 import { variables, queries } from "./subgraphQueries";
 
 export const queryHelper = (selectedTab: string, tabFilter: string = "default", timeFilter: string = "default") => {
-  switch (selectedTab) {
-    case "Tokens":
-      switch (tabFilter) {
-        case "oldest":
-          return { subgraphQuery: queries.tokensByTimeQuery, variables: variables.timestampAscending };
-          break;
-        case "newest":
-          return { subgraphQuery: queries.tokensByTimeQuery, variables: variables.timestampDescending };
-          break;
-        default:
-          return { subgraphQuery: queries.defaultTokenQuery, variables: variables.default };
-          break;
-      }
-    case "NFTs":
-      switch (tabFilter) {
-        case "oldest":
-          return { subgraphQuery: queries.NFTsByTimeQuery, variables: variables.timestampAscending };
-          break;
-        case "newest":
-          return { subgraphQuery: queries.NFTsByTimeQuery, variables: variables.timestampDescending };
-          break;
-        default:
-          return { subgraphQuery: queries.defaultNFTQuery, variables: variables.default };
-          break;
-      }
-    default:
+  if (selectedTab === "Tokens") {
+    if (tabFilter === "oldest") {
+      return { subgraphQuery: queries.tokensByTimeQuery, variables: variables.timestampAscending };
+    } else if (tabFilter === "newest") {
+      return { subgraphQuery: queries.tokensByTimeQuery, variables: variables.timestampDescending };
+    } else {
       return { subgraphQuery: queries.defaultTokenQuery, variables: variables.default };
-      break;
+    }
+  } else if (selectedTab === "NFTs") {
+    if (tabFilter === "oldest") {
+      return { subgraphQuery: queries.NFTsByTimeQuery, variables: variables.timestampAscending };
+    } else if (tabFilter === "newest") {
+      return { subgraphQuery: queries.NFTsByTimeQuery, variables: variables.timestampDescending };
+    } else {
+      return { subgraphQuery: queries.defaultNFTQuery, variables: variables.default };
+    }
+  } else {
+    return { subgraphQuery: queries.defaultTokenQuery, variables: variables.default };
   }
 };
 

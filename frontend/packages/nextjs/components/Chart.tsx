@@ -9,69 +9,51 @@ interface ChartProps {
 }
 
 const Chart: React.FC<ChartProps> = ({ data }) => {
-  // let [paginatedPageNum, setPaginatedPageNum] = useRecoilState(paginatedPageNumState);
-  const [pageNum, setPageNum] = useState(0);
-  // const dividedSubgraphData = useRecoilValue(dividedSubgraphDataState);
-  // const subgraphDataArray = useRecoilValue(subgraphDataArrayState);
+  const [pageNum, setPageNum] = useState<number>(0);
+  const [paginatedData, setPaginatedData] = useState<any>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const controls = useAnimation();
 
-  // useEffect(() => {
-  //   if (isAnimating) {
-  //     controls.start({ opacity: 0, x: -100 });
-  //     console.log("data: ", data);
-  //   } else {
-  //     controls.start({ opacity: 1, x: 0 });
-  //     console.log("data: ", data);
-  //   }
-  //   console.log("data: ", data);
-  // }, [isAnimating]);
-
   useEffect(() => {
-    console.log("data: ", data);
-    console.log("key: ", Object.keys(data[0]));
-  }, [data]);
+    let dataChunk = [];
+    let key = Object.keys(data);
+    console.log("key");
+    let newData = data[key[0]];
+    for (let i = 0; i < newData.length; i += 10) {
+      dataChunk.push(newData.slice(i, (i += 10)));
+    }
+    setPaginatedData(dataChunk);
+  }, []);
 
-  //   let paginatedData = [];
-  //     for (let i = 0; i < subgraphDataArray.length; i += 10) {
-  //     returnedValue.push(subgraphDataArray.slice(i, i + 10));
-  //     }
-  //     return returnedValue[paginatedPageNum];
-  // }
+  function handlePageChange(pageNumChange: number) {
+    if (pageNum >= 0 || pageNum < paginatedData.length + 1) {
+      setPageNum(prev => (prev += pageNumChange));
+    }
+  }
 
-  //   function handlePageChange(pageNumChange: any) {
-  //     setPageNum(prevPageNum => {
-
-  //       setIsAnimating(true);
-  //       setTimeout(() => {
-  //         setIsAnimating(false);
-  //       }, 400); // Set the timeout duration to match the animation duration
-  //       return newPageNum;
-  //     });
-  //   };
+  console.log("paginated data: ", paginatedData);
 
   return (
     <>
-      {/* {data.length() % 2 === 0 ? <div>sup1</div> : <div>sup2</div>} */}
       <div className="flex bg-secondary p-3 rounded-2xl place-items-center justify-between">
-        {/* <motion.button
+        <motion.button
           onClick={() => handlePageChange(-1)}
           className="rounded-full p-1 bg-primary justify-items-end flex"
         >
           <div>«</div>
-          <div>{paginatedPageNum + 1}</div>
-        </motion.button> */}
-        <motion.div className="place-items-center flex" animate={controls} transition={{ duration: 0.5 }}>
-          {/* {dividedSubgraphData ? ( */}
-          {data ? (
+          <div>{pageNum + 1}</div>
+        </motion.button>
+        {/* <motion.div className="place-items-center flex" animate={controls} transition={{ duration: 0.5 }}> */}
+        <motion.div className="place-items-center flex">
+          {paginatedData ? (
             // Object.keys(dividedSubgraphData[0]).map((dataKey: any, keyIndex: any) => {
-            Object.keys(data[0]).map((dataKey: any, keyIndex: any) => {
+            Object.keys(paginatedData[0][0]).map((dataKey: any, keyIndex: any) => {
               return (
                 <div key={dataKey.toString()} className="px-3">
                   <div className="flex justify-center text-lg">{dataKey}</div>
 
                   {/* {dividedSubgraphData.map((datum: any, index: any) => { */}
-                  {data.map((datum: any, index: any) => {
+                  {paginatedData[pageNum].map((datum: any, index: any) => {
                     if (dataKey === "from") {
                       if (datum[dataKey] === "0000000000000000000000000000000000000000") {
                         return <Cell key={index + keyIndex} keyType={"address"} data={"BURN"} id={index} />;
@@ -124,16 +106,19 @@ const Chart: React.FC<ChartProps> = ({ data }) => {
             <div>no data</div>
           )}
         </motion.div>
-        {/* <button
+        <button
           onClick={() => handlePageChange(1)}
           className="place-self-end place-self-center rounded-full p-1 bg-primary item-center flex"
         >
-          <div>{paginatedPageNum + 2}</div>
+          <div>{pageNum + 2}</div>
           <div>»</div>
-        </button> */}
+        </button>
       </div>
     </>
   );
 };
 
 export default Chart;
+// function setPageNum(arg0: (prevPageNum: any) => any) {
+//   throw new Error("Function not implemented.");
+// }
