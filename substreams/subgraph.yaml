@@ -1,12 +1,12 @@
 specVersion: 0.0.4
-description: Eth Denver Hackathon SPS 
+description: Data Detective NFT and Token Deployments with NO RPC CALLS! 
 repository: https://github.com/ayechanst/hackathon 
 schema:
   file: schema.graphql
 
 dataSources:
   - kind: substreams
-    name: Debbie_Hack 
+    name: Data_Detective_NFT_and_Token_Deployments 
     network: mainnet 
     source:
       package:

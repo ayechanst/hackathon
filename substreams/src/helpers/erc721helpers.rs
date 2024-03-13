@@ -10,7 +10,6 @@ use substreams::pb::substreams::Clock;
 use substreams::Hex;
 use substreams_ethereum::pb::eth::v2::{Call, CallType, StorageChange};
 
-
 const SAFE_TRANSFER_FROM_FN_SIG: &str = "b88d4fde";
 const NAME_FN_SIG: &str = "06fdde03";
 const SYMBOL_FN_SIG: &str = "95d89b41";
@@ -20,9 +19,9 @@ const GASDELEGATECALL: &str = "5af4";
 
 fn contains_erc721_fns(code_string: &str) -> bool {
     code_string.contains(SAFE_TRANSFER_FROM_FN_SIG)
-    && code_string.contains(NAME_FN_SIG)
-    && code_string.contains(SYMBOL_FN_SIG)
-    && code_string.contains(TOKENURI_FN_SIG)
+        && code_string.contains(NAME_FN_SIG)
+        && code_string.contains(SYMBOL_FN_SIG)
+        && code_string.contains(TOKENURI_FN_SIG)
 }
 
 fn contains_delegate_call(code_str: &str) -> bool {
@@ -55,19 +54,19 @@ struct StorageChanges(HashMap<H256, Vec<u8>>);
 impl StorageChanges {
     pub fn new(changes: &Vec<StorageChange>) -> Self {
         let storage_changes = changes
-        .iter()
-        .map(|s| (H256::from_slice(s.key.as_ref()), s.new_value.to_vec()))
-        .collect();
-    Self(storage_changes)
-}
+            .iter()
+            .map(|s| (H256::from_slice(s.key.as_ref()), s.new_value.to_vec()))
+            .collect();
+        Self(storage_changes)
+    }
 }
 
 pub fn get_token_uri(call: &Call) -> String {
     for change in &call.storage_changes {
         if let Ok(change_value) = String::from_utf8(change.new_value.clone()) {
             if change_value.starts_with("ipfs://")
-            || change_value.starts_with("https://")
-            || change_value.starts_with("http://")
+                || change_value.starts_with("https://")
+                || change_value.starts_with("http://")
             {
                 return change_value.to_string();
             }
