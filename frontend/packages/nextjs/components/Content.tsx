@@ -2,31 +2,38 @@ import React, { useEffect, useState } from "react";
 import Button from "./Button";
 import Chart from "./Chart";
 import SearchInput from "./SearchInput";
-import { useSubgraph } from "~~/hooks/scaffold-eth/useSubgraph";
+import { gql, useQuery } from "@apollo/client";
+import { Query, queryHelper } from "~~/queryHelpers";
 
 const Content = () => {
   const [selectedTab, setSelectedTab] = useState("");
   const [filter, setFilter] = useState("");
   const [timeFilter, setTimeFilter] = useState("");
+  const [query, setQuery] = useState<Query>(queryHelper("Tokens"));
   const [searchInputValue, setSearchInputValue] = useState<string | void>("");
   const active = "text-primary";
 
-  console.log("search value: ", searchInputValue);
-
-  const { data } = useSubgraph({
-    subgraphQuery: selectedTab,
-    queryProps: { rows: 80 },
-  });
+  const { loading, error, data } = useQuery(
+    gql`
+      ${query.subgraphQuery}
+    `,
+    {
+      variables: query.variables,
+    },
+  );
 
   const handleSearchInputChange = (value: any) => {
     setSearchInputValue(value);
   };
 
-  // useEffect(() => {
-  //   if (!data) return;
-  //   // setSelectedTab(selectedTab);
-  //   setSubgraphDataArray(data);
-  // }, [data]);
+  useEffect(() => {
+    if (!data) return;
+    console.log("data: ", data);
+
+    console.log("keys: ", Object.keys(data.tokens));
+    //   // setSelectedTab(selectedTab);
+    //   ``setSubgraphDataArray``(data);
+  }, [data]);
 
   return (
     <>
@@ -107,7 +114,16 @@ const Content = () => {
               aria-label="Tokens"
             />
             <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
-              tab 1 <Chart data={data} />
+              {data ? (
+                <div>
+                  tab1
+                  {/* <Chart data={data} /> */}
+                </div>
+              ) : loading ? (
+                <div> loading mothafuckin bitch</div>
+              ) : (
+                <div> idk bruh </div>
+              )}
             </div>
             <input
               type="radio"
@@ -118,7 +134,16 @@ const Content = () => {
               aria-label="NFTs"
             />
             <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
-              tab 2<Chart data={data} />
+              {data ? (
+                <div>
+                  tab1
+                  {/* <Chart data={data} /> */}
+                </div>
+              ) : loading ? (
+                <div> loading mothafuckin bitch</div>
+              ) : (
+                <div> idk brosive</div>
+              )}
             </div>
           </div>
         </div>
