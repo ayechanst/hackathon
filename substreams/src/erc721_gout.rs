@@ -46,15 +46,7 @@ pub fn transfers(tables: &mut Tables, erc721_transfers: Vec<Erc721Transfer>) {
             .set("tokenId", &erc721_transfer.token_id)
             .set("volume", &volume)
             .set("blocknumber", blocknumber)
-            .set("timestamp", erc721_transfer.timestamp_seconds)
-            .set(
-                "nftHolderTo",
-                &format!("{}:{}", &erc721_transfer.to, &erc721_transfer.address),
-            )
-            .set(
-                "nftHolderFrom",
-                &format!("{}:{}", &erc721_transfer.from, &erc721_transfer.address),
-            );
+            .set("timestamp", erc721_transfer.timestamp_seconds);
 
         tables
             .update_row("Nft", &erc721_transfer.address)

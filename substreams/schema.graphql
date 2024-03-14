@@ -17,7 +17,6 @@ type Token @entity(immutable: false) {
     deploymentTimestamp: BigInt
     tokenDeployment: TokenDeployment @derivedFrom(field: "token")
     tokenTransfers: [TokenTransfer!] @derivedFrom(field: "token")
-    tokenHolders: [TokenHolder!] @derivedFrom(field: "token")
     tokenDailySnapshots: [TokenDailySnapshot!] @derivedFrom(field: "token")
     tokenWeeklySnapshots: [TokenWeeklySnapshot!] @derivedFrom(field: "token")
 }
@@ -26,7 +25,6 @@ type TokenDeployment @entity(immutable: false) {
     id: ID!
     blocknumber: BigInt!
     timestamp: BigInt!
-    # txHash: String
     token: Token 
 }
 
@@ -60,28 +58,6 @@ type TokenTransfer @entity(immutable: true) {
     token: Token
     blocknumber: BigInt!
     timestamp: BigInt!
-    tokenHolderTo: TokenHolder
-    tokenHolderFrom: TokenHolder
-}
-
-type TokenHolder @entity(immutable: false) {
-    id: ID!
-    holderAddress: String!
-    tokenHolderSnapshots: [TokenHolderSnapshot!] @derivedFrom(field: "tokenHolder")
-    transfersTo: [TokenTransfer!] @derivedFrom(field: "tokenHolderTo")
-    transfersFrom: [TokenTransfer!] @derivedFrom(field: "tokenHolderFrom")
-    token: Token
-    timestamp: BigInt!
-}
-
-type TokenHolderSnapshot @entity(immutable: false) {
-    id: ID!
-    tokenHolder: TokenHolder
-    balance: BigInt!
-    transferVolume: BigInt!
-    transferCount: BigInt!
-    timestamp: BigInt!
-    monthId: BigInt!
 }
 
 type Nft @entity(immutable: false) {
@@ -96,7 +72,6 @@ type Nft @entity(immutable: false) {
     deploymentTimestamp: BigInt
     nftDeployment: NftDeployment @derivedFrom(field: "nft")
     nftTransfers: [NftTransfer!] @derivedFrom(field: "nft")
-    nftHolders: [NftHolder!] @derivedFrom(field: "nft")
     nftTokens: [NftToken!] @derivedFrom(field: "nft")
 }
 
@@ -104,7 +79,6 @@ type NftDeployment @entity(immutable: false) {
     id: ID!
     blocknumber: BigInt!
     timestamp: BigInt!
-    # txHash: String
     nft: Nft
 }
 
@@ -117,26 +91,6 @@ type NftTransfer @entity(immutable: true) {
     nft: Nft
     blocknumber: BigInt!
     timestamp: BigInt!
-    nftHolderTo: NftHolder
-    nftHolderFrom: NftHolder
-}
-
-type NftHolder @entity(immutable: false) {
-    id: ID!
-    holderAddress: String!
-    nftHolderSnapshots: [NftHolderSnapshot!] @derivedFrom(field: "nftHolder")
-    transfersTo: [NftTransfer!] @derivedFrom(field: "nftHolderTo")
-    transfersFrom: [NftTransfer!] @derivedFrom(field: "nftHolderFrom")
-    nft: Nft
-    timestamp: BigInt!
-}
-
-type NftHolderSnapshot @entity(immutable: false) {
-    id: ID!
-    nftHolder: NftHolder
-    tokenBalance: BigInt!
-    timestamp: BigInt!
-    monthId: BigInt!
 }
 
 type NftToken @entity(immutable: false) {

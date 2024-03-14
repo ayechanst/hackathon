@@ -60,15 +60,7 @@ pub fn transfers(tables: &mut Tables, erc20_transfers: Vec<Erc20Transfer>) {
                 "blocknumber",
                 BigInt::from_str(&erc20_transfer.blocknumber).unwrap_or(BigInt::zero()),
             )
-            .set("timestamp", erc20_transfer.timestamp_seconds)
-            .set(
-                "tokenHolderTo",
-                &format!("{}:{}", &erc20_transfer.to, erc20_transfer.address),
-            )
-            .set(
-                "tokenHolderFrom",
-                &format!("{}:{}", &erc20_transfer.from, erc20_transfer.address),
-            );
+            .set("timestamp", erc20_transfer.timestamp_seconds);
 
         tables
             .update_row("Token", &erc20_transfer.address)
