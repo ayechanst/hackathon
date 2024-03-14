@@ -22,6 +22,8 @@ const Content = () => {
     },
   );
 
+  console.log("data: ", data);
+
   useEffect(() => {
     console.log("selectedTab", selectedTab);
     console.log("filter", filter);

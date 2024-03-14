@@ -18,6 +18,7 @@ const Chart: React.FC<ChartProps> = ({ data }) => {
     const dataChunk = [];
     const key = Object.keys(data);
     console.log("key");
+    console.log("data: ", data);
     const newData = data[key[0]];
     for (let i = 0; i < newData.length; i += 10) {
       dataChunk.push(newData.slice(i, (i += 10)));
