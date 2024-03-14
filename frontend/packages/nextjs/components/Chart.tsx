@@ -15,10 +15,10 @@ const Chart: React.FC<ChartProps> = ({ data }) => {
   const controls = useAnimation();
 
   useEffect(() => {
-    let dataChunk = [];
-    let key = Object.keys(data);
+    const dataChunk = [];
+    const key = Object.keys(data);
     console.log("key");
-    let newData = data[key[0]];
+    const newData = data[key[0]];
     for (let i = 0; i < newData.length; i += 10) {
       dataChunk.push(newData.slice(i, (i += 10)));
     }

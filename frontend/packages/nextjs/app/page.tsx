@@ -3,7 +3,6 @@
 import React from "react";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import type { NextPage } from "next";
-import { RecoilRoot } from "recoil";
 import Content from "~~/components/Content";
 import Nav from "~~/components/Nav";
 
@@ -16,16 +15,14 @@ const Home: NextPage = () => {
   });
 
   return (
-    <RecoilRoot>
-      <ApolloProvider client={client}>
-        <div className="bg-primary">
-          <Nav />
-          <div className="w-screen">
-            <Content />
-          </div>
+    <ApolloProvider client={client}>
+      <div className="bg-primary">
+        <Nav />
+        <div className="w-screen">
+          <Content />
         </div>
-      </ApolloProvider>
-    </RecoilRoot>
+      </div>
+    </ApolloProvider>
   );
 };
 

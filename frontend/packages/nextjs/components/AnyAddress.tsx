@@ -14,7 +14,7 @@ type AddressProps = {
 
 export const AnyAddress = ({ address }: AddressProps) => {
   const [addressCopied, setAddressCopied] = useState(false);
-  let displayAddress = address?.slice(0, 5) + "..." + address?.slice(-4);
+  const displayAddress = address?.slice(0, 5) + "..." + address?.slice(-4);
 
   return (
     <div className="flex items-center">
@@ -31,7 +31,7 @@ export const AnyAddress = ({ address }: AddressProps) => {
         />
       )}
       <CopyToClipboard
-        text={address?.toString()}
+        text={address!.toString()}
         onCopy={() => {
           setAddressCopied(true);
           setTimeout(() => {

@@ -27,7 +27,7 @@ const Content = () => {
     console.log("filter", filter);
     console.log("timeFilter", timeFilter);
     setQuery(queryHelper(selectedTab, filter, timeFilter, searchInputValue));
-  }, [selectedTab, filter, timeFilter]);
+  }, [selectedTab, filter, timeFilter, searchInputValue]);
 
   return (
     <>
