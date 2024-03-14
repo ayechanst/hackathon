@@ -14,6 +14,7 @@ const Chart: React.FC<ChartProps> = ({ data }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const controls = useAnimation();
 
+  console.log("data: ", data);
   useEffect(() => {
     const dataChunk = [];
     const key = Object.keys(data);

@@ -28,6 +28,8 @@ const Content = () => {
     console.log("selectedTab", selectedTab);
     console.log("filter", filter);
     console.log("timeFilter", timeFilter);
+
+    console.log("data: ", data);
     setQuery(queryHelper(selectedTab, filter, timeFilter, searchInputValue));
   }, [selectedTab, filter, timeFilter, searchInputValue]);
 
