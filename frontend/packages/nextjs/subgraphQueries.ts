@@ -140,6 +140,7 @@ export const queries = {
       query nftSearch($address: String) {
           nftTokens(first: 10, where: {address: $address}, orderBy: volume, orderDirection: desc){
             tokenId
+            tokenUri
             volume
           }
         }
