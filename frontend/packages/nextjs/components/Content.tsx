@@ -22,18 +22,9 @@ const Content = () => {
     },
   );
 
-  const handleSearchInputChange = (value: any) => {
-    setSearchInputValue(value);
-  };
-
-  useEffect(() => {
-    if (!data) return;
-    console.log("data: ", data);
-
-    console.log("keys: ", Object.keys(data["tokens"][0]));
-    //   // setSelectedTab(selectedTab);
-    //   ``setSubgraphDataArray``(data);
-  }, [data]);
+  // useEffect(() => {
+  //   setQuery(queryHelper(selectedTab, filter, timeFilter));
+  // }, [selectedTab, filter, timeFilter]);
 
   return (
     <>
@@ -47,7 +38,7 @@ const Content = () => {
                 {selectedTab === "Tokens" ? <div>Search a Token</div> : <div>Search an NFT Collection</div>}
               </div>
               <div className="flex flex-col items-center">
-                <SearchInput onFormSubmit={handleSearchInputChange} />
+                <SearchInput onFormSubmit={(value: any) => setSearchInputValue(value)} />
               </div>
             </div>
             <div className="px-3 pb-3">
@@ -112,7 +103,7 @@ const Content = () => {
               className={`tab text-primary  ${selectedTab === "Tokens" ? active : "text-yellow-100"}`}
               onClick={() => setSelectedTab("Tokens")}
               aria-label="Tokens"
-              checked={selectedTab === "Tokens"}
+              // checked={selectedTab === "Tokens"}
             />
             <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
               {data ? (

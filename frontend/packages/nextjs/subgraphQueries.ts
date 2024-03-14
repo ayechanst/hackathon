@@ -28,6 +28,7 @@ export const queries = {
         }
       }
     `,
+    
     tokensByTimeQuery: `
       query tokenTimes($rows: Int, $by: String, $direction: String) {
         tokenDeployments(first: $rows, where: {name_not: "", symbol_not: ""}, orderBy: $by, orderDirection: $direction) {

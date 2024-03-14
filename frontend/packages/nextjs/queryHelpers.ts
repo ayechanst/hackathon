@@ -1,18 +1,18 @@
 import { variables, queries } from "./subgraphQueries";
 
-export const queryHelper = (selectedTab: string, tabFilter: string = "default", timeFilter: string = "default") => {
+export const queryHelper = (selectedTab: string, filter: string = "default", timeFilter: string = "default") => {
   if (selectedTab === "Tokens") {
-    if (tabFilter === "oldest") {
+    if (filter === "oldest") {
       return { subgraphQuery: queries.tokensByTimeQuery, variables: variables.timestampAscending };
-    } else if (tabFilter === "newest") {
+    } else if (filter === "newest") {
       return { subgraphQuery: queries.tokensByTimeQuery, variables: variables.timestampDescending };
     } else {
       return { subgraphQuery: queries.defaultTokenQuery, variables: variables.default };
     }
   } else if (selectedTab === "NFTs") {
-    if (tabFilter === "oldest") {
+    if (filter === "oldest") {
       return { subgraphQuery: queries.NFTsByTimeQuery, variables: variables.timestampAscending };
-    } else if (tabFilter === "newest") {
+    } else if (filter === "newest") {
       return { subgraphQuery: queries.NFTsByTimeQuery, variables: variables.timestampDescending };
     } else {
       return { subgraphQuery: queries.defaultNFTQuery, variables: variables.default };
