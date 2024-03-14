@@ -8,7 +8,7 @@ const Nav = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setIsPulsating(prevState => !prevState);
-    }, 500); // secs
+    }, 500);
     return () => clearInterval(interval);
   }, []);
 
