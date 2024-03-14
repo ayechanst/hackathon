@@ -26,7 +26,7 @@ const Nav = () => {
             <div>
               <img src="/fingerprint.svg" alt="Your SVG" className="h-11 w-11 text-yellow-100" />
             </div>
-            <button className="btn btn-ghost text-yellow-100 text-3xl">Data Detective Test</button>
+            <button className="btn btn-ghost text-yellow-100 text-3xl">Data Detective Test 2</button>
           </div>
           <div className="ml-55">
             <Breadcrumbs breadcrumbList={["Question", "Investigate", "Discover"]} />
