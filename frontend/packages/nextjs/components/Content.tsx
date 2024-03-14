@@ -7,24 +7,27 @@ import { Query, queryHelper } from "~~/queryHelpers";
 
 const Content = () => {
   const [selectedTab, setSelectedTab] = useState("Tokens");
-  const [filter, setFilter] = useState("");
-  const [timeFilter, setTimeFilter] = useState("");
-  const [query, setQuery] = useState<Query>(queryHelper("Tokens"));
+  const [filter, setFilter] = useState("volume");
+  const [timeFilter, setTimeFilter] = useState("all");
+  const [queryState, setQuery] = useState<any>(queryHelper("", "", "", ""));
   const [searchInputValue, setSearchInputValue] = useState<string | void>("");
   const active = "text-primary";
 
   const { loading, error, data } = useQuery(
     gql`
-      ${query.subgraphQuery}
+      ${queryState.subgraphQuery}
     `,
     {
-      variables: query.variables,
+      variables: queryState.variables,
     },
   );
 
-  // useEffect(() => {
-  //   setQuery(queryHelper(selectedTab, filter, timeFilter));
-  // }, [selectedTab, filter, timeFilter]);
+  useEffect(() => {
+    console.log("selectedTab", selectedTab);
+    console.log("filter", filter);
+    console.log("timeFilter", timeFilter);
+    setQuery(queryHelper(selectedTab, filter, timeFilter, searchInputValue));
+  }, [selectedTab, filter, timeFilter]);
 
   return (
     <>
@@ -38,7 +41,20 @@ const Content = () => {
                 {selectedTab === "Tokens" ? <div>Search a Token</div> : <div>Search an NFT Collection</div>}
               </div>
               <div className="flex flex-col items-center">
-                <SearchInput onFormSubmit={(value: any) => setSearchInputValue(value)} />
+                <SearchInput
+                  onFormSubmit={(value: string) => {
+                    setFilter("");
+                    setTimeFilter("");
+                    if (value === "") {
+                      setFilter("volume");
+                      return;
+                    } else if (value.startsWith("0x")) {
+                      //remove 0x from the string
+                      value = value.slice(2);
+                    }
+                    setSearchInputValue(value);
+                  }}
+                />
               </div>
             </div>
             <div className="px-3 pb-3">
@@ -48,15 +64,41 @@ const Content = () => {
                   <div>
                     <Button
                       buttonName="Newest Deployments"
-                      isActive={filter === "Newest Deployments"}
-                      onClick={() => setFilter("Newest Deployments")}
+                      isActive={filter === "newest"}
+                      onClick={() => {
+                        setTimeFilter("");
+                        setFilter("newest");
+                      }}
                     />
-                    <Button buttonName="Volume" isActive={filter === "Volume"} onClick={() => setFilter("Volume")} />
+                    <Button
+                      buttonName="Oldest Deployments"
+                      isActive={filter === "oldest"}
+                      onClick={() => {
+                        setTimeFilter("");
+                        setFilter("oldest");
+                      }}
+                    />
+                    <Button buttonName="Tx Count" isActive={filter === "volume"} onClick={() => setFilter("volume")} />
                   </div>
                 ) : (
                   <div>
-                    <Button buttonName="butt" isActive={filter === "butt"} onClick={() => setFilter("butt")} />
-                    <Button buttonName="fee" isActive={filter === "fee"} onClick={() => setFilter("fee")} />
+                    <Button
+                      buttonName="Oldest Deployments"
+                      isActive={filter === "oldest"}
+                      onClick={() => {
+                        setTimeFilter("");
+                        setFilter("oldest");
+                      }}
+                    />
+                    <Button
+                      buttonName="Newest Deployments"
+                      isActive={filter === "newest"}
+                      onClick={() => {
+                        setTimeFilter("");
+                        setFilter("newest");
+                      }}
+                    />
+                    <Button buttonName="Tx Count" isActive={filter === "volume"} onClick={() => setFilter("volume")} />
                   </div>
                 )}
               </div>
@@ -65,31 +107,27 @@ const Content = () => {
           {/* ------------------------------------ end of Menu ------------------------------ */}
 
           {/* ------------------------------------ start of TimeMenu ------------------------------ */}
-          <div className="m-10 h-full bg-secondary shadow-xl rounded-lg">
-            <div className="flex justify-center pt-5 font-bold text-lg">Time Line</div>
-            <div className="divider"></div>
-            <div className="px-3">
-              <div className="flex flex-col items-center">
-                <Button buttonName="1 day" isActive={timeFilter === "1 day"} onClick={() => setTimeFilter("1 day")} />
-                <Button
-                  buttonName="1 week"
-                  isActive={timeFilter === "1 week"}
-                  onClick={() => setTimeFilter("1 week")}
-                />
-                <Button
-                  buttonName="1 month"
-                  isActive={timeFilter === "1 month"}
-                  onClick={() => setTimeFilter("1 month")}
-                />
-                <Button
-                  buttonName="1 year"
-                  isActive={timeFilter === "1 year"}
-                  onClick={() => setTimeFilter("1 year")}
-                />
-                <div className="pb-3"></div>
+          {filter == "volume" ? (
+            <div className="m-5 h-full bg-secondary shadow-xl rounded-lg">
+              <div className="flex justify-center pt-5 font-bold text-lg">Time Line</div>
+              <div className="divider"></div>
+              <div className="px-3">
+                <div className="flex flex-col items-center">
+                  <Button buttonName="1 day" isActive={timeFilter === "day"} onClick={() => setTimeFilter("day")} />
+                  <Button buttonName="1 week" isActive={timeFilter === "week"} onClick={() => setTimeFilter("week")} />
+                  <Button
+                    buttonName="1 month"
+                    isActive={timeFilter === "month"}
+                    onClick={() => setTimeFilter("month")}
+                  />
+                  <Button buttonName="All Time" isActive={timeFilter === "all"} onClick={() => setTimeFilter("all")} />
+                  <div className="pb-3"></div>
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            ""
+          )}
         </div>
         {/* ------------------------------------ end of TimeMenu ------------------------------ */}
 
@@ -101,18 +139,23 @@ const Content = () => {
               name="my_tabs_2"
               role="tab"
               className={`tab text-primary  ${selectedTab === "Tokens" ? active : "text-yellow-100"}`}
-              onClick={() => setSelectedTab("Tokens")}
+              // onChange={() => setSelectedTab("Tokens")}
+              onClick={() => {
+                setSearchInputValue("");
+                setFilter("volume");
+                setTimeFilter("all");
+                setSelectedTab("Tokens");
+              }}
               aria-label="Tokens"
-              // checked={selectedTab === "Tokens"}
+              checked={selectedTab === "Tokens"}
             />
             <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
               {data ? (
                 <div>
-                  tab1
                   <Chart data={data} />
                 </div>
               ) : loading ? (
-                <div> loading mothafuckin bitch</div>
+                <LoadingSpinner />
               ) : (
                 <div> idk bruh </div>
               )}
@@ -122,17 +165,21 @@ const Content = () => {
               name="my_tabs_2"
               role="tab"
               className={`tab text-primary  ${selectedTab === "NFTs" ? active : "text-yellow-100"}`}
-              onClick={() => setSelectedTab("NFTs")}
+              onChange={() => {
+                setSearchInputValue("");
+                setFilter("volume");
+                setTimeFilter("all");
+                setSelectedTab("NFTs");
+              }}
               aria-label="NFTs"
             />
             <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6">
               {data ? (
                 <div>
-                  tab1
                   <Chart data={data} />
                 </div>
               ) : loading ? (
-                <div> loading mothafuckin bitch</div>
+                <LoadingSpinner />
               ) : (
                 <div> idk brosive</div>
               )}
@@ -144,4 +191,13 @@ const Content = () => {
     </>
   );
 };
+
+export const LoadingSpinner = () => {
+  return (
+    <div className="flex justify-center items-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-r-4 border-l-4 border-b-yellow-500 border-b-4 border-gray-900 "></div>
+    </div>
+  );
+};
+
 export default Content;

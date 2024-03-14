@@ -9,7 +9,9 @@ import Nav from "~~/components/Nav";
 
 const Home: NextPage = () => {
   const client = new ApolloClient({
-    uri: "https://api.studio.thegraph.com/query/55738/hackathontest/0.0.1",
+    // uri: "https://api.studio.thegraph.com/query/55738/hackathontest/0.0.1",
+    uri: "https://api.studio.thegraph.com/query/64372/data-detective/0.1.1",
+    headers: {},
     cache: new InMemoryCache(),
   });
 
