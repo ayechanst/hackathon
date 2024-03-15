@@ -1,6 +1,15 @@
-use crate::pb::debbie::MasterProto;
+use crate::deployments;
+use crate::pb::debbie::{Erc721Deployment, MasterProto};
 use substreams::pb::substreams::Clock;
-use substreams::store::{StoreAdd, StoreAddInt64, StoreDelete, StoreNew};
+use substreams::store::{StoreAdd, StoreAddInt64, StoreDelete, StoreNew, StoreSet, StoreSetProto};
+
+#[substreams::handlers::store]
+pub fn store_erc721_contract_data(contracts: MasterProto, store: StoreSetProto<Erc721Deployment>) {
+    for contract in contracts.erc721contracts {
+        store.set(0, &contract.address, &contract)
+    }
+
+}
 
 #[substreams::handlers::store]
 pub fn store_erc721_transfer_vol(transfers: MasterProto, store: StoreAddInt64) {

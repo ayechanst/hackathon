@@ -66,6 +66,7 @@ pub fn token_transfers(tables: &mut Tables, token_transfers: Vec<Erc721Token>) {
             )
             .set("address", &token.token_address)
             .set("tokenId", &token.token_id)
+            .set("tokenUri", &token.token_uri)
             .set(
                 "volume",
                 BigInt::from_str(&token.transfer_volume).unwrap_or(BigInt::one()),

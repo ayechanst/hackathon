@@ -25,13 +25,14 @@ pub struct Erc20Deployments {
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
-
 pub struct Change {
     #[prost(bytes="vec", tag="1")]
     pub key: ::prost::alloc::vec::Vec<u8>,
     #[prost(bytes="vec", tag="2")]
     pub new_value: ::prost::alloc::vec::Vec<u8>,
 }
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Erc20Snapshots {
     #[prost(message, repeated, tag="1")]
     pub token_snapshots: ::prost::alloc::vec::Vec<Erc20Snapshot>,
@@ -219,6 +220,8 @@ pub struct Erc721Token {
     pub transfer_volume: ::prost::alloc::string::String,
     #[prost(int64, tag="4")]
     pub timestamp_seconds: i64,
+    #[prost(string, tag="5")]
+    pub token_uri: ::prost::alloc::string::String,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]

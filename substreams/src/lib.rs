@@ -10,11 +10,12 @@ mod helpers;
 mod pb;
 use abi::erc20::events::Transfer as Erc20TransferEvent;
 use abi::erc721::events::Transfer as Erc721TransferEvent;
+use ethabi::Contract;
 use helpers::erc20helpers::*;
 use helpers::erc721helpers::*;
 
 use pb::debbie::{Erc20Deployment, Erc20Transfer, MasterProto};
-use pb::debbie::{Erc721Deployment, Erc721Transfer};
+use pb::debbie::{Erc721Deployment, Erc721Deployments, Erc721Transfer};
 
 use primitive_types::H256;
 use std::collections::HashMap;
@@ -75,7 +76,7 @@ fn map_blocks(blk: Block, clk: Clock) -> Result<MasterProto, substreams::errors:
                 }
             }
         }
-        // let block_num = clk.number.to_string();
+        let block_num = clk.number.to_string();
         for log in &call.logs {
             let clk = clk.clone();
             let block_num = clk.number.to_string();
@@ -122,3 +123,4 @@ fn map_blocks(blk: Block, clk: Clock) -> Result<MasterProto, substreams::errors:
         erc721transfers: erc721_transfers,
     })
 }
+

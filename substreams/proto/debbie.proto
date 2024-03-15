@@ -129,6 +129,7 @@ message ERC721Token {
   string token_address = 2;
   string transfer_volume = 3;
   int64 timestamp_seconds = 4;
+  string token_uri = 5;
 }
 
 message NFTHolders {

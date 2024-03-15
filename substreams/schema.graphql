@@ -97,6 +97,7 @@ type NftToken @entity(immutable: false) {
     id: ID!
     address: String!
     tokenId: String!
+    tokenUri: String!
     volume: BigInt!
     nft: Nft
     timestamp: BigInt!
